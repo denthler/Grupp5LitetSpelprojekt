@@ -1,8 +1,11 @@
 #include "Application.h"
+#include "OBJ.h"
 
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevious, LPSTR lpCmdLine, int cmd)
 {
+	Object object;
+	object.LoadFromObjFile("C:/Users/User/Documents/GitHub/Grupp5LitetSpelprojekt/", "scalecube.obj");
 	Application application;
 
 	application.Initialize(hInstance);
