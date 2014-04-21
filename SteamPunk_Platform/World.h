@@ -1,20 +1,38 @@
-//
-//World.h
-//
+#ifndef _WORLD_H_
+#define _WORLD_H_
 
-//
-//includes
-//
+//////////////
+// INCLUDES //
+//////////////
+#include "Camera.h"
+#include "model.h"
+#include "Render.h"
+#include "PointLight.h"
+#include "Player.h"
+#include "input.h"
 
-#if defined WORLD_H_
-#define WORLD_H_
-
-class world
+class WorldClass
 {
 public:
-	world();
-	~world();
-private:
+	WorldClass();
+	WorldClass(const WorldClass&);
+	~WorldClass();
 
-};//world
+	bool Initialize(ID3D11Device*, HWND, D3DXMATRIX, HINSTANCE);
+	void Run(ID3D11DeviceContext*);
+	void CleanUp();
+	bool Update();
+	void Draw(ID3D11DeviceContext*);
+
+private:
+	void HandleInput();
+	Camera* camera;
+	ModelClass* model;
+	ModelClass* model2;
+	Render* renderClass;
+	PointLightClass* pointLight;
+	Player* player;
+	InputClass* input;
+};
+
 #endif

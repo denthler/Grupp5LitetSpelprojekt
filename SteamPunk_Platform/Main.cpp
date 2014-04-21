@@ -1,15 +1,13 @@
 #include "Application.h"
-#include "OBJ.h"
-
+//#include "World.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevious, LPSTR lpCmdLine, int cmd)
-{
-	Object object;
-	object.LoadFromObjFile("C:/Users/User/Documents/GitHub/Grupp5LitetSpelprojekt/", "scalecube.obj");
+{	
 	Application application;
-
-	application.Initialize(hInstance);
-
+	WorldClass world;
+	application.Initialize(hInstance, 800, 640);
+	application.InitializeD3D(800, 640, true, true);
+	world.Initialize(application.GetDevice(), application.GetWindow(), application.GetProj(), hInstance);
 	MSG msg;
 	memset(&msg, 0, sizeof(MSG));
 	while (msg.message != WM_QUIT)
@@ -21,9 +19,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevious, LPSTR lpCmdLine, in
 		}
 		else
 		{
-
+			world.Update();
+			application.Begin(1.0f, 0.0f, 0.0f, 1.0f);
+			world.Draw(application.GetDeviceContext());
+			application.End(true);
 		}
 	}
+	application.CleanUp();
+	world.CleanUp();
 	return 0;
 }
 
