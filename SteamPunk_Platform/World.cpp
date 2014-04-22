@@ -146,10 +146,10 @@ void WorldClass::HandleInput()
 	}
 }
 
-void WorldClass::Run(ID3D11DeviceContext* DContext)
+void WorldClass::Run(ID3D11DeviceContext* DContext, DWORD time)
 {
 
-	Update();
+	Update(time);
 
 	Draw(DContext);
 }
@@ -198,15 +198,19 @@ void WorldClass::CleanUp()
 	}
 }
 
-bool WorldClass::Update()
+bool WorldClass::Update(DWORD time)
 {
 	HandleInput();
 	camera->Update(player->GetPosition());
 	std::vector<ModelClass::BoundingBox> tempBB;
 	tempBB.push_back(model->bBox);
 	tempBB.push_back(model2->bBox);
+<<<<<<< HEAD
 	player->Update(0.0f, tempBB); 
 	enemy->Update();
+=======
+	player->Update(time, tempBB);
+>>>>>>> refs/heads/collisions
 	return true;
 }
 

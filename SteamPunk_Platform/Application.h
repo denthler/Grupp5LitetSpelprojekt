@@ -44,10 +44,12 @@ public:
 	{
 		return hwnd;
 	}
+	DWORD GetElapsedTime();
 	bool Initialize(HINSTANCE hInstance, int, int);
 	bool InitializeD3D(int screenWidth, int screenHeight, bool vSync, bool Msaa);
 	bool UpdateStates(int screenWidth, int screenHeight);
 	void CleanUp();
+	bool InitializeTimer();
 	void Begin(float red, float green, float blue, float alpha);
 	void End(bool);
 	D3DXMATRIX GetProj()
@@ -83,6 +85,9 @@ private:
 	WorldClass* m_World;
 	//bool Initialized;
 	
+	LARGE_INTEGER counter;
+	LARGE_INTEGER freq;
+	bool isHighPerformanceSupported;
 };//application
 
 static Application* appPointer = 0;

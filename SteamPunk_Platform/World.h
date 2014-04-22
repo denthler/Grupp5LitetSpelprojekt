@@ -20,9 +20,9 @@ public:
 	~WorldClass();
 
 	bool Initialize(ID3D11Device*, HWND, D3DXMATRIX, HINSTANCE);
-	void Run(ID3D11DeviceContext*);
+	void Run(ID3D11DeviceContext*, DWORD);
 	void CleanUp();
-	bool Update();
+	bool Update(DWORD);
 	void Draw(ID3D11DeviceContext*);
 
 private:
