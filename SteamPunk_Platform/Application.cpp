@@ -31,6 +31,44 @@ Application::~Application()
 	CleanUp();
 }
 
+bool Application::InitializeTimer()
+{
+	QueryPerformanceCounter(&counter);
+
+	if (!QueryPerformanceFrequency(&freq))
+	{
+		if ((freq.LowPart) != 1000)
+		{
+			freq.LowPart = 1000;
+			isHighPerformanceSupported = false;
+			return false;
+		}
+	}
+	else
+	{
+		isHighPerformanceSupported = true;
+		
+	}
+}
+
+DWORD Application::GetElapsedTime()
+{
+	LARGE_INTEGER newCounter;
+	if (isHighPerformanceSupported)
+	{
+		QueryPerformanceCounter(&newCounter);
+	}
+	else
+	{
+		newCounter = counter;
+	}
+
+	DWORD elapsedTicks = newCounter.LowPart - counter.LowPart;
+	DWORD elapsedMilliSeconds = (elapsedTicks) / freq.LowPart;
+
+	return elapsedMilliSeconds;
+}
+
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	switch (msg)
@@ -233,10 +271,12 @@ void Application::CleanUp()
 
 void Application::RunWorld()
 {
+	/*
 	m_World->Update();
 	Begin(1.0f, 0.0f, 0.0f, 1.0f);
 	m_World->Draw(D3DDeviceContext);
 	End(true);
+	*/
 }
 #pragma region D3D11
 bool Application::InitializeD3D(int screenWidth, int screenHeight, bool vSync, bool Msaa)
@@ -417,6 +457,9 @@ bool Application::InitializeD3D(int screenWidth, int screenHeight, bool vSync, b
 
 	m_World->Initialize(GetDevice(), GetWindow(), GetProj());
 	*/
+	//
+	InitializeTimer();
+	//
 	return true;
 }
 

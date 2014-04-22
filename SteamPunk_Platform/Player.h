@@ -13,7 +13,7 @@ public:
 	~Player();
 
 	bool Initialize(ID3D11Device*, WCHAR*, D3DXVECTOR3);
-	void Update(float, std::vector<BoundingBox>&);
+	void Update(DWORD, std::vector<BoundingBox>&);
 	//void Kill();
 	//void Revive();
 	void Jump();

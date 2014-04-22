@@ -30,6 +30,7 @@ cbuffer LightBuffer
 
 //Material gMaterial;
 
+/*
 cbuffer LightPositionBuffer
 {
 	float4 lightPosition[1];
@@ -39,6 +40,7 @@ cbuffer LightColorBuffer
 {
 	float4 diffuseColor[1];
 };
+*/
 
 cbuffer MatrixBuffer
 {

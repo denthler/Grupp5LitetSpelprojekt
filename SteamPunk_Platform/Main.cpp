@@ -20,7 +20,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevious, LPSTR lpCmdLine, in
 		else
 		{
 			
-			world.Update();
+			world.Update(application.GetElapsedTime());
 			application.Begin(1.0f, 0.0f, 0.0f, 1.0f);
 			world.Draw(application.GetDeviceContext());
 			application.End(true);
@@ -30,4 +30,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevious, LPSTR lpCmdLine, in
 	world.CleanUp();
 	return 0;
 }
+
+
 
