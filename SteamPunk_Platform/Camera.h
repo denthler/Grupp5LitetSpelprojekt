@@ -14,6 +14,7 @@ public:
 	Camera();
 	~Camera();
 
+	void Update(D3DXVECTOR3 playerPosition);
 	bool Initialize(float x, float y, float z, D3DXVECTOR3);
 	void Flip();
 	void FlipS();
@@ -25,8 +26,14 @@ public:
 	{
 		return worldMatrix;
 	}
+
+	bool IsNotFlipping() { return ((s + 0.01f) >= 1.0f); }
 private:
 	D3DXMATRIX viewMatrix;
 	D3DXMATRIX worldMatrix;
+	D3DXVECTOR3 camPosition;
+	float s;
+	D3DXVECTOR3 currentUp;
+	D3DXVECTOR3 targetUp;
 };
 #endif

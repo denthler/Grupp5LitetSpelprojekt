@@ -34,11 +34,15 @@ public:
 	void SetDown(){left = true;}
 	void SetUp(){left = true;}
 	void SetJump(){jump = true;}
-	void FlipGravity(){worldAxis = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);}
-	void FlipGravityS(){worldAxis = D3DXVECTOR3(0.0f, 1.0f, 0.0f);}
+	D3DXVECTOR3 GetPosition(){return position;}
+	void FlipGravity(){D3DXVec3Cross(&worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis);}
+		//worldAxis = D3DXVECTOR3(-1.0f, 0.0f, 0.0f); }
+	void FlipGravityS(){D3DXVec3Cross(&worldAxis, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f));}
+		//worldAxis = D3DXVECTOR3(0.0f, 1.0f, 0.0f); }
 private:
 	void VerticalCollisionTest(D3DXVECTOR3&, std::vector<BoundingBox>&);
-	
+	bool HorizontalCollisionTest(D3DXVECTOR3&, std::vector<BoundingBox>&, float);
+
 	D3DXVECTOR3 position;
 	D3DXVECTOR3 velocity;
 	bool dead;

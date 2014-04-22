@@ -20,6 +20,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v100</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -39,9 +40,9 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <ExecutablePath>E:\ProgLibrary\Utilities\bin\x86;$(ExecutablePath)</ExecutablePath>
-    <IncludePath>E:\ProgLibrary\Common;E:\ProgLibrary\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>E:\ProgLibrary\Common;E:\ProgLibrary\Lib\x86;$(LibraryPath)</LibraryPath>
+    <ExecutablePath>..\ProgLibrary\Utilities\bin\x86;$(ExecutablePath)</ExecutablePath>
+    <IncludePath>..\ProgLibrary\Common;..\ProgLibrary\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\ProgLibrary\Common;..\ProgLibrary\Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -80,23 +81,30 @@
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Enemy.h" />
+    <ClInclude Include="Entity.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="model.h" />
+    <ClInclude Include="Platform.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="Render.h" />
+    <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="Entity.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="model.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="Render.cpp" />
+    <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>

@@ -7,7 +7,7 @@ Player::Player()
 	dead = false;
 	left = false; right = false; up = false; down = false; jump = false;
 	OnGround = false;
-	moveScale = 0.1f;
+	moveScale = -0.1f;
 	gravity = -0.001f;
 	worldAxis = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 }
@@ -49,17 +49,16 @@ void Player::Update(float gameTime, std::vector<BoundingBox>& bb)
 
 		if(left)
 		{	
-			
 			D3DXVec3Cross(&temp, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis);
 			velocity += -moveScale * temp;
-			left = false;
+			//left = false;
 		}
 		if(right)
 		{
 			
 			D3DXVec3Cross(&temp, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis);
 			velocity += moveScale * temp;
-			right = false;
+			//right = false;
 		}
 		if(jump)
 		{
@@ -70,11 +69,25 @@ void Player::Update(float gameTime, std::vector<BoundingBox>& bb)
 			jump = false;
 		}
 	}
+	
+	
 	velocity += gravity * worldAxis;
-
 	
 	D3DXVECTOR3 moveAmount = velocity; //* gameTime;
+	if(right)
+	{
+		HorizontalCollisionTest(moveAmount, bb, -1.1f);
+		right = false;
+	}
+	if(left)
+	{
+		HorizontalCollisionTest(moveAmount, bb, 1.1f);
+		left = false;
+	}
+	
+
 	VerticalCollisionTest(moveAmount, bb);
+	
 	if(((abs(worldAxis.x) * moveAmount.x) != 0.0f)||
 		((abs(worldAxis.y) * moveAmount.y) != 0.0f)||
 		((abs(worldAxis.z) * moveAmount.z) != 0.0f))
@@ -91,17 +104,66 @@ void Player::Update(float gameTime, std::vector<BoundingBox>& bb)
 
 void Player::Jump()
 {
+	velocity += (0.08f * worldAxis);
+	/*
 	velocity.x += (0.08f * worldAxis.x);
 	velocity.y += (0.08f * worldAxis.y);
 	velocity.z += (0.08f * worldAxis.z);
+	*/
 }
 
+bool Player::HorizontalCollisionTest(D3DXVECTOR3& amount, std::vector<BoundingBox>& bb, float value)
+{
+	bool result = false;
+	D3DXVECTOR3 temp;
+	D3DXVec3Cross(&temp, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis);
+	D3DXVECTOR3 offset;
+	
+	offset.x = position.x + ((amount.x * worldAxis.x) * -1.01f);
+	offset.y = position.y + ((amount.y * worldAxis.y) * -1.01f);
+	offset.z = position.z + ((amount.z * worldAxis.z) * -1.01f);
+
+	offset.x = position.x + ((amount.x * temp.x) * value);
+	offset.y = position.y + ((amount.y * temp.y)* value);
+	offset.z = position.z + ((amount.z * temp.z)* value);
+	
+	//D3DXVECTOR3 offset = position + amount;
+	D3DXVECTOR3 tempMax = bBox.max;
+	D3DXVECTOR3 tempMin = bBox.min;
+	tempMax = offset + tempMax;
+	tempMin = offset + tempMin;
+	for(int j = 0; j < bb.size(); j++)
+	{
+		if(tempMax.x > bb[j].min.x && 
+			tempMin.x < bb[j].max.x &&
+			tempMax.y > bb[j].min.y &&
+			tempMin.y < bb[j].max.y &&
+			tempMax.z > bb[j].min.z &&
+			tempMin.z < bb[j].max.z)
+		{
+			if((abs(temp.x) * amount.x) != 0.0f)
+			{
+			amount.x = 0.0f;
+			result = true;
+			}
+			if((abs(temp.y) * amount.y) != 0.0f)
+			{
+			amount.y = 0.0f;
+			result = true;
+			}
+			if((abs(temp.z) * amount.z) != 0.0f)
+			{
+			amount.z = 0.0f;
+			result = true;
+			}
+		}
+	}
+
+	return result;
+}
 void Player::VerticalCollisionTest(D3DXVECTOR3& amount, std::vector<BoundingBox>& bb)
 {
-	if ((amount.x * worldAxis.x) == 0.0f && (amount.y * worldAxis.y) == 0.0f &&
-		(amount.z * worldAxis.z) == 0.0f)
-		return;
-
+	D3DXVECTOR3 temp;
 	D3DXVECTOR3 offset = position + amount;
 	D3DXVECTOR3 tempMax = bBox.max;
 	D3DXVECTOR3 tempMin = bBox.min;
@@ -122,6 +184,16 @@ void Player::VerticalCollisionTest(D3DXVECTOR3& amount, std::vector<BoundingBox>
 			amount.y = 0.0f;
 			if((abs(worldAxis.z) * amount.z) != 0.0f)
 			amount.z = 0.0f;
+
+			/*
+			D3DXVec3Cross(&temp, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis);
+			if((abs(temp.x) * amount.x) != 0.0f)
+			amount.x = 0.0f;
+			if((abs(temp.y) * amount.y) != 0.0f)
+			amount.y = 0.0f;
+			if((abs(temp.z) * amount.z) != 0.0f)
+			amount.z = 0.0f;
+			*/
 		}
 	}
 }

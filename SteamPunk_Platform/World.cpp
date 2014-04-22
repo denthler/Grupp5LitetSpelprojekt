@@ -125,13 +125,19 @@ void WorldClass::HandleInput()
 	}
 	if(input->CheckKeyPress(DIK_W))
 	{
-		camera->Flip();
-		player->FlipGravity();
+		if(camera->IsNotFlipping())
+		{
+			camera->Flip();
+			player->FlipGravity();
+		}
 	}
 	if(input->CheckKeyPress(DIK_S))
 	{
-		camera->FlipS();
-		player->FlipGravityS();
+		if(camera->IsNotFlipping())
+		{
+			camera->FlipS();
+			player->FlipGravityS();
+		}
 	}
 }
 
@@ -190,6 +196,7 @@ void WorldClass::CleanUp()
 bool WorldClass::Update()
 {
 	HandleInput();
+	camera->Update(player->GetPosition());
 	std::vector<ModelClass::BoundingBox> tempBB;
 	tempBB.push_back(model->bBox);
 	tempBB.push_back(model2->bBox);
