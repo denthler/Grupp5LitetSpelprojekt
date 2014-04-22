@@ -4,6 +4,7 @@
 //////////////
 // INCLUDES //
 //////////////
+#include "Enemy.h"
 #include "Camera.h"
 #include "model.h"
 #include "Render.h"
@@ -29,6 +30,7 @@ private:
 	Camera* camera;
 	ModelClass* model;
 	ModelClass* model2;
+	Enemy * enemy;
 	Render* renderClass;
 	PointLightClass* pointLight;
 	Player* player;

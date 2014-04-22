@@ -105,6 +105,9 @@ bool WorldClass::Initialize(ID3D11Device* DContext, HWND hwnd, D3DXMATRIX proj, 
 	{
 		return false;
 	}
+	
+	enemy = new Enemy(DContext, L"player.obj", D3DXVECTOR3(0.0f, 10.0f, 0.0f));
+
 	return true;
 }
 
@@ -129,6 +132,7 @@ void WorldClass::HandleInput()
 		{
 			camera->Flip();
 			player->FlipGravity();
+			enemy->FlipWorldRight();
 		}
 	}
 	if(input->CheckKeyPress(DIK_S))
@@ -137,6 +141,7 @@ void WorldClass::HandleInput()
 		{
 			camera->FlipS();
 			player->FlipGravityS();
+			enemy->FlipWorldLeft();
 		}
 	}
 }
@@ -201,6 +206,7 @@ bool WorldClass::Update()
 	tempBB.push_back(model->bBox);
 	tempBB.push_back(model2->bBox);
 	player->Update(0.0f, tempBB); 
+	enemy->Update();
 	return true;
 }
 
@@ -281,6 +287,29 @@ void WorldClass::Draw(ID3D11DeviceContext* DContext)
 				return;
 			}
 			renderClass->Draw(DContext, player->IndexCount(j));
+		}
+	}
+
+	for (int j = 0; j < enemy->GetSubsetCount(); j++)
+	{
+		if (enemy->IndexCount(j) > 0)
+		{
+			enemy->Apply(DContext, j);
+			if (enemy->HasTexture(j))
+			{
+				tempTex = enemy->GetSubsetTexture(j);
+			}
+			else
+			{
+				tempTex = 0;
+			}
+
+			result = renderClass->UpdateRender(DContext, enemy->GetWorldMatrix(), viewMatrix, tempTex, pointLight, player->GetMaterial(j));
+			if (!result)
+			{
+				return;
+			}
+			renderClass->Draw(DContext, enemy->IndexCount(j));
 		}
 	}
 		
