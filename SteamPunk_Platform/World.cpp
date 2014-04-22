@@ -30,7 +30,7 @@ bool WorldClass::Initialize(ID3D11Device* DContext, HWND hwnd, D3DXMATRIX proj, 
 		return false;
 	}
 
-	result = renderClass->Initialize(DContext, hwnd, L"../StemPunk/shader.fx", proj);
+	result = renderClass->Initialize(DContext, hwnd, L"shader.fx", proj);
 	if(!result)
 	{
 		return false;
