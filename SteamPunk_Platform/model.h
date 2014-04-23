@@ -101,8 +101,15 @@ public:
 	ID3D11ShaderResourceView* GetTexture();
 
 	bool LoadDataStructures(std::wstring, std::vector<std::wstring>&);
-
+	virtual bool Update(std::vector<BoundingBox>&);
 	BoundingBox bBox;
+protected:
+	D3DXVECTOR3 position;
+	D3DXVECTOR3 velocity;
+	float gravity;
+	D3DXVECTOR3 worldAxis;
+	float moveScale;
+	bool OnGround;
 
 private:
 	bool InitializeBuffers(ID3D11Device*, int);
@@ -111,6 +118,8 @@ private:
 	bool LoadTexture(ID3D11Device*, const WCHAR*, int i);
 	void ReleaseTexture();
 
+	bool VerticalCollisionTest(D3DXVECTOR3&, std::vector<BoundingBox>&);
+	bool HorizontalCollisionTest(D3DXVECTOR3&, std::vector<BoundingBox>&, float);
 
 	ID3D11Buffer *m_vertexBuffer, *m_indexBuffer;
 	int m_vertexCount, m_indexCount;

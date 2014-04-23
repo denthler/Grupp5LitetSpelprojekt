@@ -33,7 +33,7 @@ bool Player::Initialize(ID3D11Device* device, WCHAR* filename, D3DXVECTOR3 start
 	return ModelClass::Initialize(device, filename);
 }
 
-void Player::Update(DWORD gameTime, std::vector<BoundingBox>& bb)
+bool Player::Update(DWORD gameTime, std::vector<BoundingBox>& bb)
 {
 	float time = (float)gameTime;
 	D3DXVECTOR3 temp;
@@ -41,19 +41,15 @@ void Player::Update(DWORD gameTime, std::vector<BoundingBox>& bb)
 	time = 1.0f;
 	D3DXVec3Cross(&temp, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f));
 	if(!dead)
-	{
-		
-		//temp *= 2.0f;
-		//D3DXVec3Normalize(&temp,&temp);
-
+	{		
 		velocity.x -= (abs(temp.x) * velocity.x);
 		velocity.y -= (abs(temp.y) * velocity.y);
 		velocity.z -= (abs(temp.z) * velocity.z);
-
+		
 		if(left)
 		{	
 			D3DXVec3Cross(&temp, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis);
-			velocity += -moveScale * temp;
+			velocity -= moveScale * temp;
 			left = false;
 		}
 		if(right)
@@ -73,30 +69,8 @@ void Player::Update(DWORD gameTime, std::vector<BoundingBox>& bb)
 		}
 	}
 	
+	return (ModelClass::Update(bb));
 	
-	velocity += gravity * worldAxis;
-	
-	D3DXVECTOR3 moveAmount = velocity; //* gameTime;
-
-	if ((temp.x) > 0.0f || (temp.y) > 0.0f || (temp.z) > 0.0f)
-		HorizontalCollisionTest(moveAmount, bb, 1.1f);
-	else
-		HorizontalCollisionTest(moveAmount, bb, -1.1f);
-
-	VerticalCollisionTest(moveAmount, bb);
-	
-	if(((abs(worldAxis.x) * moveAmount.x) != 0.0f)||
-		((abs(worldAxis.y) * moveAmount.y) != 0.0f)||
-		((abs(worldAxis.z) * moveAmount.z) != 0.0f))
-	{
-		OnGround = false;
-	}
-	else
-	{
-		OnGround = true;
-	}
-	D3DXVECTOR3 newPosition = position + (moveAmount * (time));
-	position = newPosition;
 }
 
 void Player::Jump()
@@ -105,6 +79,7 @@ void Player::Jump()
 	
 }
 
+/*
 bool Player::HorizontalCollisionTest(D3DXVECTOR3& amount, std::vector<BoundingBox>& bb, float value)
 {
 	bool result = false;
@@ -179,16 +154,7 @@ void Player::VerticalCollisionTest(D3DXVECTOR3& amount, std::vector<BoundingBox>
 			amount.y = 0.0f;
 			if((abs(worldAxis.z) * amount.z) != 0.0f)
 			amount.z = 0.0f;
-
-			/*
-			D3DXVec3Cross(&temp, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis);
-			if((abs(temp.x) * amount.x) != 0.0f)
-			amount.x = 0.0f;
-			if((abs(temp.y) * amount.y) != 0.0f)
-			amount.y = 0.0f;
-			if((abs(temp.z) * amount.z) != 0.0f)
-			amount.z = 0.0f;
-			*/
 		}
 	}
 }
+*/

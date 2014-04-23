@@ -13,7 +13,7 @@ public:
 	~Player();
 
 	bool Initialize(ID3D11Device*, WCHAR*, D3DXVECTOR3);
-	void Update(DWORD, std::vector<BoundingBox>&);
+	bool Update(DWORD, std::vector<BoundingBox>&);
 	//void Kill();
 	//void Revive();
 	void Jump();
@@ -40,17 +40,17 @@ public:
 	void FlipGravityS(){D3DXVec3Cross(&worldAxis, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f));}
 		//worldAxis = D3DXVECTOR3(0.0f, 1.0f, 0.0f); }
 private:
-	void VerticalCollisionTest(D3DXVECTOR3&, std::vector<BoundingBox>&);
-	bool HorizontalCollisionTest(D3DXVECTOR3&, std::vector<BoundingBox>&, float);
+	//void VerticalCollisionTest(D3DXVECTOR3&, std::vector<BoundingBox>&);
+	//bool HorizontalCollisionTest(D3DXVECTOR3&, std::vector<BoundingBox>&, float);
 
-	D3DXVECTOR3 position;
-	D3DXVECTOR3 velocity;
+	//D3DXVECTOR3 position;
+	//D3DXVECTOR3 velocity;
 	bool dead;
-	float moveScale;
-	float gravity; 
-	D3DXVECTOR3 worldAxis; 
+	//float moveScale;
+	//float gravity; 
+	//D3DXVECTOR3 worldAxis; 
 	bool left, right, up, down, jump;
-	bool OnGround;
+	//bool OnGround;
 };
 
 #endif

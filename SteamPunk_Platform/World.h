@@ -30,6 +30,7 @@ private:
 	Camera* camera;
 	ModelClass* model;
 	ModelClass* model2;
+	ModelClass* model3;
 	Enemy * enemy;
 	Render* renderClass;
 	PointLightClass* pointLight;

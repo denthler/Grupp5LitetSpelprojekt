@@ -6,6 +6,7 @@ WorldClass::WorldClass()
 	camera = 0;
 	model = 0;
 	model2 = 0;
+	model3 = 0;
 	renderClass = 0;
 	pointLight = 0;
 	player = 0;
@@ -52,6 +53,19 @@ bool WorldClass::Initialize(ID3D11Device* DContext, HWND hwnd, D3DXMATRIX proj, 
 	
 	result = model->Initialize(DContext, L"platform.obj");
 	if(!result)
+	{
+		return false;
+	}
+
+	model3 = new ModelClass();
+
+	if (!model3)
+	{
+		return false;
+	}
+
+	result = model3->Initialize(DContext, L"platform3.obj");
+	if (!result)
 	{
 		return false;
 	}
@@ -179,6 +193,12 @@ void WorldClass::CleanUp()
 		delete model2;
 		model2 = 0;
 	}
+	if (model3)
+	{
+		model3->Shutdown();
+		delete model3;
+		model3 = 0;
+	}
 	if(player)
 	{
 		player->Shutdown();
@@ -205,12 +225,12 @@ bool WorldClass::Update(DWORD time)
 	std::vector<ModelClass::BoundingBox> tempBB;
 	tempBB.push_back(model->bBox);
 	tempBB.push_back(model2->bBox);
-<<<<<<< HEAD
-	player->Update(0.0f, tempBB); 
-	enemy->Update();
-=======
+	tempBB.push_back(model3->bBox);
+	//player->Update(0.0f, tempBB); 
+	enemy->Update(tempBB);
+
 	player->Update(time, tempBB);
->>>>>>> refs/heads/collisions
+
 	return true;
 }
 
@@ -268,6 +288,29 @@ void WorldClass::Draw(ID3D11DeviceContext* DContext)
 				return;
 			}
 			renderClass->Draw(DContext, model2->IndexCount(j));
+		}
+	}
+
+	for (int j = 0; j < model3->GetSubsetCount(); j++)
+	{
+		if (model3->IndexCount(j) > 0)
+		{
+			model3->Apply(DContext, j);
+			if (model3->HasTexture(j))
+			{
+				tempTex = model3->GetSubsetTexture(j);
+			}
+			else
+			{
+				tempTex = 0;
+			}
+
+			result = renderClass->UpdateRender(DContext, worldMatrix, viewMatrix, tempTex, pointLight, model3->GetMaterial(j));
+			if (!result)
+			{
+				return;
+			}
+			renderClass->Draw(DContext, model3->IndexCount(j));
 		}
 	}
 
