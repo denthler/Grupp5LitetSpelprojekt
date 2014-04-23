@@ -205,12 +205,10 @@ bool WorldClass::Update(DWORD time)
 	std::vector<ModelClass::BoundingBox> tempBB;
 	tempBB.push_back(model->bBox);
 	tempBB.push_back(model2->bBox);
-<<<<<<< HEAD
-	player->Update(0.0f, tempBB); 
-	enemy->Update();
-=======
+
+	enemy->Update(time, tempBB);
 	player->Update(time, tempBB);
->>>>>>> refs/heads/collisions
+
 	return true;
 }
 

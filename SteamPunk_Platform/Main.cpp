@@ -18,8 +18,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevious, LPSTR lpCmdLine, in
 			DispatchMessage(&msg);
 		}
 		else
-		{
-			
+		{			
 			world.Update(application.GetElapsedTime());
 			application.Begin(1.0f, 0.0f, 0.0f, 1.0f);
 			world.Draw(application.GetDeviceContext());

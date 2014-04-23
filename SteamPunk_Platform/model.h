@@ -46,6 +46,20 @@ public:
 	{
 		D3DXVECTOR3 min;
 		D3DXVECTOR3 max;
+
+		bool BoundingBox::Intersection(BoundingBox box)
+		{ 
+			if (max.x < box.min.x || min.x > box.max.x) return false;
+			if (max.y < box.min.y || min.y > box.max.y) return false;
+			if (max.z < box.min.z || min.z > box.max.z) return false;
+			return true;
+		}
+
+		void BoundingBox::Translate(D3DXVECTOR3 v)
+		{
+			min += v;
+			max += v;
+		}
 	};
 	struct Material
 	{

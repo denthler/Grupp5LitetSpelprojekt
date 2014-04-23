@@ -3,13 +3,14 @@
 class Enemy : public ModelClass
 {	
 	D3DXVECTOR3 position;
-
+	
 	Enemy(); // Hide the default constructor, it's not needed.
 public:
 	Enemy(ID3D11Device * device, WCHAR * filename, D3DXVECTOR3 position);	
 	~Enemy();
 
-	void Update();
+	void Update(DWORD gameTime, std::vector<BoundingBox> & bb);
+	bool Enemy::WontCollideWithOtherObjects(BoundingBox box, std::vector<BoundingBox> & bb);
 	D3DXMATRIX GetWorldMatrix()
 	{
 		D3DXMATRIX worldMatrix;
