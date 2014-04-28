@@ -90,7 +90,7 @@ void ModelClass::Apply(ID3D11DeviceContext* deviceContext, int i)
 
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-
+	
 }
 
 int ModelClass::GetIndexCount()

@@ -80,12 +80,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
+    <ClInclude Include="AssetImporter.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="input.h" />
+    <ClInclude Include="LevelImporter.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="Platform.h" />
+    <ClInclude Include="PlatformManager.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="Render.h" />
@@ -95,12 +98,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="AssetImporter.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="input.cpp" />
+    <ClCompile Include="LevelImporter.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="model.cpp" />
+    <ClCompile Include="PlatformManager.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="Render.cpp" />

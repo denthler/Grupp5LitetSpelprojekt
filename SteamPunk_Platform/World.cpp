@@ -25,6 +25,9 @@ bool WorldClass::Initialize(ID3D11Device* DContext, HWND hwnd, D3DXMATRIX proj, 
 {
 	bool result;
 
+	rManager.LoadLevel("Level1.SPL", DContext);
+	pManager.CreateLevel(rManager.meshes);
+
 	renderClass = new Render();
 	if(!renderClass)
 	{
@@ -244,6 +247,16 @@ void WorldClass::Draw(ID3D11DeviceContext* DContext)
 	model->GetWorldMatrix(worldMatrix);
 	
 	ID3D11ShaderResourceView* tempTex;
+
+	if (model->HasTexture(0))
+	{
+		tempTex = model->GetSubsetTexture(0);
+	}
+	else
+	{
+		tempTex = 0;
+	}
+	pManager.Draw(DContext, renderClass, viewMatrix, tempTex, pointLight, model->GetMaterial(0));
 
 	for(int j = 0; j < model->GetSubsetCount(); j++)
 	{

@@ -11,6 +11,8 @@
 #include "PointLight.h"
 #include "Player.h"
 #include "input.h"
+#include "ResourceManager.h"
+#include "PlatformManager.h"
 
 class WorldClass
 {
@@ -36,6 +38,8 @@ private:
 	PointLightClass* pointLight;
 	Player* player;
 	InputClass* input;
+	ResourceManager rManager;
+	PlatformManager pManager;
 };
 
 #endif
