@@ -67,13 +67,13 @@ bool WorldClass::Initialize(ID3D11Device* DContext, HWND hwnd, D3DXMATRIX proj, 
 	{
 		return false;
 	}
-
+	/*
 	result = model3->Initialize(DContext, L"platform3.obj");
 	if (!result)
 	{
 		return false;
 	}
-
+	*/
 	model2 = new ModelClass();
 
 	if(!model2)

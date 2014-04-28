@@ -16,6 +16,7 @@
 //
 //includes
 //
+#include <list>
 #include <d3d11.h>
 #include <d3d10effect.h>
 #include <d3d11shader.h>
@@ -24,6 +25,8 @@
 #include "Camera.h"
 #include <D3DX10math.h>
 #include "World.h"
+
+#include "Screen.h"
 
 class Application
 {
@@ -66,6 +69,8 @@ public:
 	}
 	void RunWorld();
 	//void UpdateRender();
+	void AddScreen(Screen * screen);
+	void RemoveScreen(Screen * screen);
 	
 private:
 
@@ -90,6 +95,7 @@ private:
 	bool isHighPerformanceSupported;
 	float ticksPerM;
 	float frameTime;
+	list<Screen *> screens;
 };//application
 
 static Application* appPointer = 0;
