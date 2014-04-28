@@ -5,7 +5,7 @@ Enemy::Enemy(ID3D11Device * device, WCHAR * filename, D3DXVECTOR3 position)
 	//worldUp = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 	ModelClass::Initialize(device, filename);
 	ModelClass::position = position;
-	moveScale = -0.1f;
+	moveScale = -0.05f;
 }
 
 Enemy::~Enemy()

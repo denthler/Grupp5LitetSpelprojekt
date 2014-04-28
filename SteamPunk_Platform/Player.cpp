@@ -73,7 +73,7 @@ bool Player::Update(float gameTime, std::vector<BoundingBox>& bb)
 
 void Player::Jump()
 {
-	velocity += (0.08f * worldAxis);
+	velocity += (0.15f * worldAxis);
 	
 }
 

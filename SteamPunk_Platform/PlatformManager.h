@@ -13,7 +13,7 @@
 struct GameObject
 {
 	D3DXMATRIX world;
-	BoundingBox bBox;
+	ModelClass::BoundingBox bBox;
 };
 
 struct meshStruct
@@ -32,6 +32,7 @@ public:
 
 	void CreateLevel(std::vector<Mesh>&);
 	void Draw(ID3D11DeviceContext*, Render*, D3DXMATRIX, ID3D11ShaderResourceView*, PointLightClass*, ModelClass::Material*);
+	void Update(D3DXVECTOR3 playerPosition, std::vector<ModelClass::BoundingBox>& bb);
 	//Get Boundingboxes
 private:
 	void OrganizeLevel(std::vector<GameObject>&);

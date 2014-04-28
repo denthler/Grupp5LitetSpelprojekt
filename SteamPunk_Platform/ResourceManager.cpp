@@ -44,23 +44,55 @@ void ResourceManager::CreateMesh(ID3D11Device* DContext, int index)
 				tempVertices.push_back(newVert);
 			}
 
-		for (int j = 0; j < lImporter.types[index]->transforms.size(); j++)
-			newMesh.transforms.push_back(lImporter.types[index]->transforms[j]);
-
-		newMesh.bBox.min = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-		newMesh.bBox.max = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		ModelClass::BoundingBox bBox;
+		bBox.min = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		bBox.max = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		for (int j = 0; j < tempVertices.size(); j++)
 		{
-			newMesh.bBox.max.x = max(newMesh.bBox.max.x, tempVertices[j].position.x);
-			newMesh.bBox.min.x = min(newMesh.bBox.min.x, tempVertices[j].position.x);
+			bBox.max.x = max(bBox.max.x, tempVertices[j].position.x);
+			bBox.min.x = min(bBox.min.x, tempVertices[j].position.x);
 
-			newMesh.bBox.max.y = max(newMesh.bBox.max.y, tempVertices[j].position.y);
-			newMesh.bBox.min.y = min(newMesh.bBox.min.y, tempVertices[j].position.y);
+			bBox.max.y = max(bBox.max.y, tempVertices[j].position.y);
+			bBox.min.y = min(bBox.min.y, tempVertices[j].position.y);
 
-			newMesh.bBox.max.z = max(newMesh.bBox.max.z, tempVertices[j].position.z);
-			newMesh.bBox.min.z = min(newMesh.bBox.min.z, tempVertices[j].position.z);
+			bBox.max.z = max(bBox.max.z, tempVertices[j].position.z);
+			bBox.min.z = min(bBox.min.z, tempVertices[j].position.z);
 		}
 
+		ModelClass::BoundingBox tempBox;
+		for (int j = 0; j < lImporter.types[index]->transforms.size(); j++)
+		{
+			newMesh.transforms.push_back(lImporter.types[index]->transforms[j]);
+			D3DXVECTOR4 tempVec;
+			D3DXVec3Transform(&tempVec, &bBox.max, &newMesh.transforms[j]);
+			tempBox.max.x = tempVec.x;
+			tempBox.max.y = tempVec.y;
+			tempBox.max.z = tempVec.z;
+			D3DXVec3Transform(&tempVec, &bBox.min, &newMesh.transforms[j]);
+			tempBox.min.x = tempVec.x;
+			tempBox.min.y = tempVec.y;
+			tempBox.min.z = tempVec.z;
+
+			if ((tempBox.min.x > tempBox.max.x))
+			{
+				tempBox.min.x = tempBox.max.x;
+				tempBox.max.x = tempVec.x;
+			}
+			if ((tempBox.min.y > tempBox.max.y))
+			{
+				tempBox.min.y = tempBox.max.y;
+				tempBox.max.y = tempVec.y;
+			}
+			if ((tempBox.min.z > tempBox.max.z))
+			{
+				tempBox.min.z = tempBox.max.z;
+				tempBox.max.z = tempVec.z;
+			}
+
+
+			newMesh.bBox.push_back(tempBox);
+		}
+		
 		newMesh.vCount = tempVertices.size();
 
 		D3D11_BUFFER_DESC vBD;

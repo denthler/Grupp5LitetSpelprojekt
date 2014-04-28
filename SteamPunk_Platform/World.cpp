@@ -232,10 +232,11 @@ bool WorldClass::Update(float time)
 	HandleInput();
 	camera->Update(player->GetPosition());
 	std::vector<ModelClass::BoundingBox> tempBB;
-	tempBB.push_back(model->bBox);
-	tempBB.push_back(model2->bBox);
-	tempBB.push_back(model3->bBox);
+	//tempBB.push_back(model->bBox);
+	//tempBB.push_back(model2->bBox);
+	//tempBB.push_back(model3->bBox);
 	//player->Update(0.0f, tempBB); 
+	pManager.Update(player->GetPosition(), tempBB);
 	enemy->Update(time, tempBB);
 
 	player->Update(time, tempBB);
@@ -264,6 +265,7 @@ void WorldClass::Draw(ID3D11DeviceContext* DContext)
 	}
 	pManager.Draw(DContext, renderClass, viewMatrix, tempTex, pointLight, model->GetMaterial(0));
 
+	/*
 	for(int j = 0; j < model->GetSubsetCount(); j++)
 	{
 		if(model->IndexCount(j) > 0)
@@ -332,7 +334,7 @@ void WorldClass::Draw(ID3D11DeviceContext* DContext)
 			renderClass->Draw(DContext, model3->IndexCount(j));
 		}
 	}
-
+	*/
 	for(int j = 0; j < player->GetSubsetCount(); j++)
 	{
 		if(player->IndexCount(j) > 0)

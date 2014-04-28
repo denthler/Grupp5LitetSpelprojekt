@@ -10,11 +10,8 @@
 #include "LevelImporter.h"
 #include "AssetImporter.h"
 
-struct BoundingBox
-{
-	D3DXVECTOR3 min;
-	D3DXVECTOR3 max;
-};
+#include "model.h"
+
 
 struct VertexTypeT
 {
@@ -29,7 +26,7 @@ struct Mesh
 	std::string type;
 	ID3D11Buffer* m_vertexBuffer;
 	std::vector<D3DXMATRIX> transforms;
-	BoundingBox bBox;
+	std::vector<ModelClass::BoundingBox> bBox;
 	int vCount;
 };
 
