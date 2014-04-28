@@ -32,7 +32,7 @@ bool Render::Initialize(ID3D11Device* device, HWND hwnd, WCHAR* filename, D3DXMA
 {
 	HRESULT result;
 	ID3D10Blob* compiledShader;
-	D3D11_INPUT_ELEMENT_DESC vertexLayout[3];
+	D3D11_INPUT_ELEMENT_DESC vertexLayout[4];
 	D3D11_BUFFER_DESC matrixBufferDesc;
 	D3D11_SAMPLER_DESC samplerDesc;
 	D3D11_BUFFER_DESC lightBufferDesc;
@@ -103,7 +103,7 @@ bool Render::Initialize(ID3D11Device* device, HWND hwnd, WCHAR* filename, D3DXMA
 	vertexLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	vertexLayout[0].InstanceDataStepRate = 0;
 
-	vertexLayout[1].SemanticName = "TEXCOORD";
+	/*vertexLayout[1].SemanticName = "TEXCOORD";
 	vertexLayout[1].SemanticIndex = 0;
 	vertexLayout[1].Format = DXGI_FORMAT_R32G32_FLOAT;
 	vertexLayout[1].InputSlot = 0;
@@ -117,12 +117,35 @@ bool Render::Initialize(ID3D11Device* device, HWND hwnd, WCHAR* filename, D3DXMA
 	vertexLayout[2].InputSlot = 0;
 	vertexLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 	vertexLayout[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	vertexLayout[2].InstanceDataStepRate = 0;*/
+
+	vertexLayout[1].SemanticName = "NORMAL";
+	vertexLayout[1].SemanticIndex = 0;
+	vertexLayout[1].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	vertexLayout[1].InputSlot = 0;
+	vertexLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	vertexLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	vertexLayout[1].InstanceDataStepRate = 0;
+
+	vertexLayout[2].SemanticName = "TEXCOORD";
+	vertexLayout[2].SemanticIndex = 0;
+	vertexLayout[2].Format = DXGI_FORMAT_R32G32_FLOAT;
+	vertexLayout[2].InputSlot = 0;
+	vertexLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	vertexLayout[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	vertexLayout[2].InstanceDataStepRate = 0;
 
+	vertexLayout[3].SemanticName = "TANGENT";
+	vertexLayout[3].SemanticIndex = 0;
+	vertexLayout[3].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	vertexLayout[3].InputSlot = 0;
+	vertexLayout[3].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	vertexLayout[3].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	vertexLayout[3].InstanceDataStepRate = 0;
 
 	D3DX11_PASS_DESC passDesc;
     eTech->GetPassByIndex(0)->GetDesc(&passDesc);
-	result = device->CreateInputLayout(vertexLayout, 3, passDesc.pIAInputSignature, 
+	result = device->CreateInputLayout(vertexLayout, 4, passDesc.pIAInputSignature, 
 		passDesc.IAInputSignatureSize, &layout);
 
 	if(FAILED(result))
@@ -253,7 +276,8 @@ void Render::Draw(ID3D11DeviceContext* deviceContext, int indexCount)
     {
         eTech->GetPassByIndex(p)->Apply(0, deviceContext);
         
-		deviceContext->DrawIndexed(indexCount, 0, 0);
+		deviceContext->Draw(indexCount, 0);
+		//deviceContext->DrawIndexed(indexCount, 0, 0);
     }
 }
 

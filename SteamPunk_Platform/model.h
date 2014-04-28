@@ -29,8 +29,8 @@ private:
 	struct VertexType
 	{
 		D3DXVECTOR3 position;
-		D3DXVECTOR2 texture;
 		D3DXVECTOR3 normal;
+		D3DXVECTOR2 texture;		
 	};
 
 	struct FaceType
@@ -101,7 +101,9 @@ public:
 	ID3D11ShaderResourceView* GetTexture();
 
 	bool LoadDataStructures(std::wstring, std::vector<std::wstring>&);
-	virtual bool Update(std::vector<BoundingBox>&);
+	virtual bool Update(float, std::vector<BoundingBox>&);
+	virtual void FlipGravity(){ D3DXVec3Cross(&worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis); }
+	virtual void FlipGravityS(){ D3DXVec3Cross(&worldAxis, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f)); }
 	BoundingBox bBox;
 protected:
 	D3DXVECTOR3 position;

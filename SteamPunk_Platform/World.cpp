@@ -11,6 +11,7 @@ WorldClass::WorldClass()
 	pointLight = 0;
 	player = 0;
 	input = 0;
+	enemy = 0;
 }
 
 WorldClass::WorldClass(const WorldClass& other)
@@ -24,6 +25,9 @@ WorldClass::~WorldClass()
 bool WorldClass::Initialize(ID3D11Device* DContext, HWND hwnd, D3DXMATRIX proj, HINSTANCE hInstance)
 {
 	bool result;
+
+	rManager.LoadLevel("Level1.SPL", DContext);
+	pManager.CreateLevel(rManager.meshes);
 
 	renderClass = new Render();
 	if(!renderClass)
@@ -120,7 +124,7 @@ bool WorldClass::Initialize(ID3D11Device* DContext, HWND hwnd, D3DXMATRIX proj, 
 		return false;
 	}
 	
-	enemy = new Enemy(DContext, L"player.obj", D3DXVECTOR3(0.0f, 10.0f, 0.0f));
+	enemy = new FallingEnemy(DContext, L"player.obj", D3DXVECTOR3(0.0f, 10.0f, 0.0f));
 
 	return true;
 }
@@ -146,7 +150,7 @@ void WorldClass::HandleInput()
 		{
 			camera->Flip();
 			player->FlipGravity();
-			enemy->FlipWorldRight();
+			enemy->FlipGravity();
 		}
 	}
 	if(input->CheckKeyPress(DIK_S))
@@ -155,7 +159,7 @@ void WorldClass::HandleInput()
 		{
 			camera->FlipS();
 			player->FlipGravityS();
-			enemy->FlipWorldLeft();
+			enemy->FlipGravityS();
 		}
 	}
 }
@@ -216,9 +220,14 @@ void WorldClass::CleanUp()
 		delete input;
 		input = 0; 
 	}
+	if (enemy)
+	{
+		delete enemy;
+		enemy = 0;
+	}
 }
 
-bool WorldClass::Update(DWORD time)
+bool WorldClass::Update(float time)
 {
 	HandleInput();
 	camera->Update(player->GetPosition());
@@ -227,7 +236,7 @@ bool WorldClass::Update(DWORD time)
 	tempBB.push_back(model2->bBox);
 	tempBB.push_back(model3->bBox);
 	//player->Update(0.0f, tempBB); 
-	enemy->Update(tempBB);
+	enemy->Update(time, tempBB);
 
 	player->Update(time, tempBB);
 
@@ -244,6 +253,16 @@ void WorldClass::Draw(ID3D11DeviceContext* DContext)
 	model->GetWorldMatrix(worldMatrix);
 	
 	ID3D11ShaderResourceView* tempTex;
+
+	if (model->HasTexture(0))
+	{
+		tempTex = model->GetSubsetTexture(0);
+	}
+	else
+	{
+		tempTex = 0;
+	}
+	pManager.Draw(DContext, renderClass, viewMatrix, tempTex, pointLight, model->GetMaterial(0));
 
 	for(int j = 0; j < model->GetSubsetCount(); j++)
 	{

@@ -44,7 +44,7 @@ public:
 	{
 		return hwnd;
 	}
-	DWORD GetElapsedTime();
+	float GetElapsedTime();
 	bool Initialize(HINSTANCE hInstance, int, int);
 	bool InitializeD3D(int screenWidth, int screenHeight, bool vSync, bool Msaa);
 	bool UpdateStates(int screenWidth, int screenHeight);
@@ -85,9 +85,11 @@ private:
 	WorldClass* m_World;
 	//bool Initialized;
 	
-	LARGE_INTEGER counter;
-	LARGE_INTEGER freq;
+	INT64 startT;
+	INT64 freq;
 	bool isHighPerformanceSupported;
+	float ticksPerM;
+	float frameTime;
 };//application
 
 static Application* appPointer = 0;

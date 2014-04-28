@@ -24,6 +24,11 @@ Application::Application()
 	mClientHeight = 0;
 
 	m_World = 0;
+
+	startT = 0;
+	freq = 0;
+	ticksPerM = 0.0f;
+	frameTime = 0.0f;
 }
 
 Application::~Application()
@@ -33,13 +38,14 @@ Application::~Application()
 
 bool Application::InitializeTimer()
 {
-	QueryPerformanceCounter(&counter);
+	QueryPerformanceCounter((LARGE_INTEGER*)&startT);
+	bool result = QueryPerformanceFrequency((LARGE_INTEGER*)&freq);
 
-	if (!QueryPerformanceFrequency(&freq))
+	if (!result)
 	{
-		if ((freq.LowPart) != 1000)
+		if (freq != 1000)
 		{
-			freq.LowPart = 1000;
+			freq = 1000;
 			isHighPerformanceSupported = false;
 			return false;
 		}
@@ -47,26 +53,29 @@ bool Application::InitializeTimer()
 	else
 	{
 		isHighPerformanceSupported = true;
-		
 	}
+	ticksPerM = (float)(freq / 1000);
+	return true;
 }
 
-DWORD Application::GetElapsedTime()
+float Application::GetElapsedTime()
 {
-	LARGE_INTEGER newCounter;
+	INT64 current = 0.;
+	float difference;
 	if (isHighPerformanceSupported)
 	{
-		QueryPerformanceCounter(&newCounter);
+		QueryPerformanceCounter((LARGE_INTEGER*)&current);
 	}
 	else
 	{
-		newCounter = counter;
+		current = startT;
 	}
 
-	DWORD elapsedTicks = newCounter.LowPart - counter.LowPart;
-	DWORD elapsedMilliSeconds = (elapsedTicks) / freq.LowPart;
-
-	return elapsedMilliSeconds;
+	difference = (float)(current - startT);
+	frameTime = difference / ticksPerM;
+	
+	startT = current;
+	return frameTime;
 }
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -458,7 +467,8 @@ bool Application::InitializeD3D(int screenWidth, int screenHeight, bool vSync, b
 	m_World->Initialize(GetDevice(), GetWindow(), GetProj());
 	*/
 	//
-	InitializeTimer();
+	if (!InitializeTimer())
+		return false;
 	//
 	return true;
 }
@@ -557,7 +567,7 @@ bool Application::UpdateStates(int screenWidth, int screenHeight)
 	fieldOfView = (float)D3DX_PI / 4.0f;
 	screenAspect = (float)screenWidth / (float)screenHeight;
 
-	D3DXMatrixPerspectiveFovLH(&projectionMatrix, fieldOfView, screenAspect, 0.1f, 1000.0f);
+	D3DXMatrixPerspectiveFovLH(&projectionMatrix, fieldOfView, screenAspect, 0.1f, 10000.0f);
 
 	return true;
 }

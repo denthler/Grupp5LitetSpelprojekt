@@ -13,8 +13,9 @@ Enemy::~Enemy()
 
 }
 
-bool Enemy::Update(std::vector<BoundingBox>& bb)
+bool Enemy::Update(float gameTime, std::vector<BoundingBox>& bb)
 {
+	gameTime *= 0.05f;
 	static bool test = false;
 	bool test2;
 	D3DXVECTOR3 right;
@@ -23,7 +24,7 @@ bool Enemy::Update(std::vector<BoundingBox>& bb)
 		velocity = right * moveScale;
 	
 	test = OnGround;
-	test2 = ModelClass::Update(bb);
+	test2 = ModelClass::Update(gameTime, bb);
 
 	if (!(OnGround) && (test))
 	{

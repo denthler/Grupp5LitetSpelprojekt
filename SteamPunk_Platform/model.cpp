@@ -90,7 +90,7 @@ void ModelClass::Apply(ID3D11DeviceContext* deviceContext, int i)
 
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-
+	
 }
 
 int ModelClass::GetIndexCount()
@@ -203,11 +203,11 @@ void ModelClass::ShutdownBuffers()
 	return;
 }
 
-bool ModelClass::Update(std::vector<BoundingBox>& bb)
+bool ModelClass::Update(float time, std::vector<BoundingBox>& bb)
 {
 	D3DXVECTOR3 temp;
 	bool res = false;
-	float time = 1.0f;
+	//float time = 1.0f;
 	D3DXVec3Cross(&temp, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f));
 
 	velocity += gravity * worldAxis;
@@ -215,9 +215,9 @@ bool ModelClass::Update(std::vector<BoundingBox>& bb)
 	D3DXVECTOR3 moveAmount = velocity; //* gameTime;
 
 	if ((temp.x) > 0.0f || (temp.y) > 0.0f || (temp.z) > 0.0f)
-		res = HorizontalCollisionTest(moveAmount, bb, -1.1f);
+		res = HorizontalCollisionTest(moveAmount, bb, -1.1f);//-1.1f
 	else
-		res = HorizontalCollisionTest(moveAmount, bb, 1.1f);
+		res = HorizontalCollisionTest(moveAmount, bb, 1.1f);//1.1f
 
 	if (!(VerticalCollisionTest(moveAmount, bb)) && !(res) && !(OnGround))
 	{

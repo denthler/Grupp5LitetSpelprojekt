@@ -13,7 +13,7 @@ public:
 	~Player();
 
 	bool Initialize(ID3D11Device*, WCHAR*, D3DXVECTOR3);
-	bool Update(DWORD, std::vector<BoundingBox>&);
+	bool Update(float, std::vector<BoundingBox>&);
 	//void Kill();
 	//void Revive();
 	void Jump();
@@ -35,9 +35,9 @@ public:
 	void SetUp(){left = true;}
 	void SetJump(){jump = true;}
 	D3DXVECTOR3 GetPosition(){return position;}
-	void FlipGravity(){D3DXVec3Cross(&worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis);}
+	//void FlipGravity(){D3DXVec3Cross(&worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis);}
 		//worldAxis = D3DXVECTOR3(-1.0f, 0.0f, 0.0f); }
-	void FlipGravityS(){D3DXVec3Cross(&worldAxis, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f));}
+	//void FlipGravityS(){D3DXVec3Cross(&worldAxis, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f));}
 		//worldAxis = D3DXVECTOR3(0.0f, 1.0f, 0.0f); }
 private:
 	//void VerticalCollisionTest(D3DXVECTOR3&, std::vector<BoundingBox>&);

@@ -33,12 +33,10 @@ bool Player::Initialize(ID3D11Device* device, WCHAR* filename, D3DXVECTOR3 start
 	return ModelClass::Initialize(device, filename);
 }
 
-bool Player::Update(DWORD gameTime, std::vector<BoundingBox>& bb)
+bool Player::Update(float gameTime, std::vector<BoundingBox>& bb)
 {
-	float time = (float)gameTime;
 	D3DXVECTOR3 temp;
-
-	time = 1.0f;
+	gameTime *= 0.05f;
 	D3DXVec3Cross(&temp, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f));
 	if(!dead)
 	{		
@@ -69,7 +67,7 @@ bool Player::Update(DWORD gameTime, std::vector<BoundingBox>& bb)
 		}
 	}
 	
-	return (ModelClass::Update(bb));
+	return (ModelClass::Update(gameTime, bb));
 	
 }
 

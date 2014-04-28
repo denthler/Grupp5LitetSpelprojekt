@@ -63,11 +63,11 @@ struct PixelInputType
 
 struct VertexInputType
 {
-	float4 position : POSITION;
-	float2 tex : TEXCOORD0;
+	float3 position : POSITION;
 	float3 normal : NORMAL;
+	float2 tex : TEXCOORD0;	
+	float3 tangent : TANGENT;
 };
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // Vertex Shader
@@ -77,9 +77,7 @@ PixelInputType VS(VertexInputType input)
 	PixelInputType output;
 	float4 worldPosition;
 
-	input.position.w = 1.0f;
-
-	output.position = mul(input.position, (float4x4)worldMatrix);
+	output.position = mul(float4(input.position, 1.0f), (float4x4)worldMatrix);
 	output.position = mul(output.position, viewMatrix);
 	output.position = mul(output.position, projectionMatrix);
 
@@ -89,7 +87,7 @@ PixelInputType VS(VertexInputType input)
 
 	output.normal = normalize(output.normal);
 
-	worldPosition = mul(input.position, (float4x4)worldMatrix);
+	worldPosition = mul(float4(input.position, 1.0f), (float4x4)worldMatrix);
 	
 	output.lightPos1.xyz = pos.xyz - worldPosition.xyz; 	
 
@@ -111,7 +109,7 @@ float4 PS(PixelInputType input) : SV_TARGET
 
 	if(hasTexture)
 	{
-		textureColor = shaderTexture.Sample(SampleType, 			      input.tex);
+		textureColor = shaderTexture.Sample(SampleType, input.tex);
 	}
 	//textureColor = shaderTexture.Sample(SampleType, 	//input.tex);
 	float d = length(input.lightPos1);
@@ -159,8 +157,8 @@ technique11 ShaderTech
     pass P0
     {
         SetVertexShader( CompileShader( vs_5_0, VS() ) );
-	//SetGeometryShader( CompileShader( gs_5_0, GS() ));
-	SetGeometryShader( NULL );
+		//SetGeometryShader( CompileShader( gs_5_0, GS() ));
+		SetGeometryShader( NULL );
         SetPixelShader( CompileShader( ps_5_0, PS() ) );
     }
 }
