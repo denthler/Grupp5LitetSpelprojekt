@@ -32,7 +32,6 @@ public:
 
 	void CreateLevel(std::vector<Mesh>&);
 	void Draw(ID3D11DeviceContext*, Render*, D3DXMATRIX, ID3D11ShaderResourceView*, PointLightClass*, ModelClass::Material*);
-	//Get Boundingboxes
 private:
 	void OrganizeLevel(std::vector<GameObject>&);
 	std::vector<meshStruct> objects;
