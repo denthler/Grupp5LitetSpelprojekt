@@ -25,23 +25,17 @@ struct meshStruct
 
 class PlatformManager
 {
-
 public:
 	PlatformManager();
 	PlatformManager(const PlatformManager&);
 	~PlatformManager();
 
 	void CreateLevel(std::vector<Mesh>&);
-
 	void Draw(ID3D11DeviceContext*, Render*, D3DXMATRIX, ID3D11ShaderResourceView*, PointLightClass*, ModelClass::Material*);
-
 	//Get Boundingboxes
 private:
 	void OrganizeLevel(std::vector<GameObject>&);
 	std::vector<meshStruct> objects;
-
 	std::vector<ID3D11Buffer*> buffers;
-
-
 };
 #endif

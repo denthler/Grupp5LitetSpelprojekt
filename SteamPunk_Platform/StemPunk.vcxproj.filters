@@ -65,9 +65,12 @@
     </ClInclude>
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     <ClInclude Include="FallingEnemy.h">
       <Filter>Header Files</Filter>
 =======
+=======
+>>>>>>> 1942ea8ae0fe23fa51ba12355473ba4b73207c63
 =======
 >>>>>>> 1942ea8ae0fe23fa51ba12355473ba4b73207c63
     <ClInclude Include="AssetImporter.h">
@@ -76,6 +79,9 @@
     <ClInclude Include="LevelImporter.h">
       <Filter>Header Files\Resources</Filter>
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> 1942ea8ae0fe23fa51ba12355473ba4b73207c63
+=======
 >>>>>>> 1942ea8ae0fe23fa51ba12355473ba4b73207c63
 =======
 >>>>>>> 1942ea8ae0fe23fa51ba12355473ba4b73207c63
@@ -126,9 +132,12 @@
     </ClCompile>
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     <ClCompile Include="FallingEnemy.cpp">
       <Filter>Source Files</Filter>
 =======
+=======
+>>>>>>> 1942ea8ae0fe23fa51ba12355473ba4b73207c63
 =======
 >>>>>>> 1942ea8ae0fe23fa51ba12355473ba4b73207c63
     <ClCompile Include="LevelImporter.cpp">
@@ -137,6 +146,9 @@
     <ClCompile Include="AssetImporter.cpp">
       <Filter>Source Files\Resources</Filter>
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> 1942ea8ae0fe23fa51ba12355473ba4b73207c63
+=======
 >>>>>>> 1942ea8ae0fe23fa51ba12355473ba4b73207c63
 =======
 >>>>>>> 1942ea8ae0fe23fa51ba12355473ba4b73207c63

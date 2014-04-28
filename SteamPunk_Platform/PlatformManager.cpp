@@ -27,30 +27,33 @@ void PlatformManager::CreateLevel(std::vector<Mesh>& meshes)
 		buffers.push_back(meshes[i].m_vertexBuffer);
 
 		//BBox tempBox = meshes[i].BoundingBox;
-		
+
+		meshStruct newMesh;
+		newMesh.vCount = meshes[i].vCount;
+
 		//if (tempSubString.c_str() == "bg")
 		//{
 			for (int j = 0; j < meshes[i].transforms.size(); j++)
 			{
-
 				GameObject newObject;
 				newObject.world = meshes[i].transforms[j];
 				newObject.bBox = meshes[i].bBox;
-				objects..push_back(newObject);
+				newMesh.bufferIndices.push_back(i);
+				newMesh.objectData.push_back(newObject);
 			}
-		//}
-			/*
+		/*}
 		else
 		{
-			for (int j = 0; j < meshes[i].positions.size(); j++)
+			for (int j = 0; j < meshes[i].transforms.size(); j++)
 			{
 				Platform newPlatform;
-				newPlatform.position = meshes[i].positions[j];
+				newPlatform.position = meshes[i].transforms[j];
 				newPlatform.BoundingBox = meshes[i].BoundingBox;
 				tempObjects.push_back(newPlatform); 
 			}
-		}
-		*/
+		}*/
+
+		objects.push_back(newMesh);
 	}
 }
 
