@@ -49,6 +49,15 @@
     <ClCompile Include="World.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="NonFallingEnemy.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -97,6 +106,15 @@
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="LevelImporter.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="NonFallingEnemy.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyManager.h">
       <Filter>Header</Filter>
     </ClInclude>
   </ItemGroup>

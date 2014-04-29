@@ -26,6 +26,8 @@ bool WorldClass::Initialize(ID3D11Device* DContext, HWND hwnd, D3DXMATRIX proj, 
 {
 	bool result;
 
+	projection = proj;
+
 	rManager.LoadLevel("Level1.SPL", DContext);
 	pManager.CreateLevel(rManager.meshes);
 
@@ -67,13 +69,13 @@ bool WorldClass::Initialize(ID3D11Device* DContext, HWND hwnd, D3DXMATRIX proj, 
 	{
 		return false;
 	}
-
+	/*
 	result = model3->Initialize(DContext, L"platform3.obj");
 	if (!result)
 	{
 		return false;
 	}
-
+	*/
 	model2 = new ModelClass();
 
 	if(!model2)
@@ -95,7 +97,7 @@ bool WorldClass::Initialize(ID3D11Device* DContext, HWND hwnd, D3DXMATRIX proj, 
 	pointLight->SetDiffuseColor(0.5f, 0.5f, 0.5f, 1.0f);
 	pointLight->SetPosition(0.0f, 20.0f, 0.0f); 
 	pointLight->SetAmbientColor(0.4f, 0.4f, 0.4f, 1.0f);
-	pointLight->SetAttenuation(0.2f, 0.025f, 0.0f);
+	pointLight->SetAttenuation(0.2f, 0.01f, 0.0f);
 	pointLight->SetRange(500.0f);
 
 	player = new Player();
@@ -124,7 +126,7 @@ bool WorldClass::Initialize(ID3D11Device* DContext, HWND hwnd, D3DXMATRIX proj, 
 		return false;
 	}
 	
-	enemy = new FallingEnemy(DContext, L"player.obj", D3DXVECTOR3(0.0f, 10.0f, 0.0f));
+	enemy = new NonFallingEnemy(DContext, L"player.obj", D3DXVECTOR3(0.0f, 10.0f, 0.0f));
 
 	return true;
 }
@@ -231,6 +233,7 @@ bool WorldClass::Update(float time)
 {
 	HandleInput();
 	camera->Update(player->GetPosition());
+	renderClass->UpdateFrustum(camera->GetView(), projection);
 	std::vector<ModelClass::BoundingBox> tempBB;
 	//tempBB.push_back(model->bBox);
 	//tempBB.push_back(model2->bBox);
@@ -238,8 +241,16 @@ bool WorldClass::Update(float time)
 	//player->Update(0.0f, tempBB); 
 	pManager.Update(player->GetPosition(), tempBB);
 	enemy->Update(time, tempBB);
-
+	//
+	//static float red = 0.0f;
+	//static float redCount = 0.01f;
+	//red += redCount;
+	//if ((red > 1.0f) || (red < 0.0f))
+	//	redCount *= -1.0f ;
+	//
 	player->Update(time, tempBB);
+	pointLight->SetPosition(player->GetPosition().x, player->GetPosition().y, -50.0f);
+	//pointLight->SetDiffuseColor(red, 0.5f, 0.5f, 1.0f);
 
 	return true;
 }

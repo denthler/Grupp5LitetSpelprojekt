@@ -11,6 +11,7 @@
 #include "d3dx11Effect.h"
 #include "PointLight.h"
 #include "model.h"
+
 using namespace std;
 
 
@@ -41,6 +42,8 @@ private:
 		float range;
 		D3DXVECTOR4 ambientColor;
 	};
+
+
 public:
 	Render();
 	Render(const Render&);
@@ -52,6 +55,8 @@ public:
 	D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, PointLightClass*, ModelClass::Material*);
 	void Draw(ID3D11DeviceContext*, int);
 	void CleanShader();
+	void UpdateFrustum(D3DXMATRIX view, D3DXMATRIX proj);
+	bool InsideFrustum(D3DXVECTOR3 min, D3DXVECTOR3 max);
 
 private:
 	
@@ -68,6 +73,8 @@ private:
 	ID3D11Buffer* materialBuffer;
 	ID3DX11EffectConstantBuffer* Mat;
 	D3DXMATRIX projectionMatrix;
+	//Frustum
+	D3DXPLANE plane[6];
 };
 
 #endif 

@@ -17,7 +17,7 @@ Render::Render()
 	lightBuffer = 0;
 	Mat = 0;
 	materialBuffer = 0;
-
+	
 }
 
 Render::Render(const Render& other)
@@ -26,6 +26,92 @@ Render::Render(const Render& other)
 
 Render::~Render()
 {
+
+}
+
+bool SphereCollision(const D3DXPLANE& plane, float radius, D3DXVECTOR3 center)
+{
+	int i;
+	
+	if (D3DXPlaneDot(&plane, &D3DXVECTOR4(center.x, center.y, center.z, 1.0f)) < -radius)
+	{
+		return false;
+	}
+	
+	return true;
+}
+
+bool Render::InsideFrustum(D3DXVECTOR3 min, D3DXVECTOR3 max)
+{
+	D3DXVECTOR3 extense = (max - min) / 2.0f;
+
+	D3DXVECTOR3 center = min + extense;
+
+	int count = 0;
+	for (int i = 0; i < 6; i++)
+	{
+		D3DXVECTOR3 Normal = D3DXVECTOR3(plane[0].a, plane[0].b, plane[0].c);
+		D3DXVec3Normalize(&Normal, &Normal);
+		Normal *= 3.0f;
+
+		float radius = abs(Normal.x * extense.x) + abs(Normal.y * extense.y) + abs(Normal.z * extense.z);
+
+		if (SphereCollision(plane[i], radius, center))
+			count++;
+	}
+	/*
+	int count = 0;
+	for (int i = 0; i < 6; i++)
+	{
+		if ((D3DXPlaneDotCoord(&plane[i], &min) > 0.0f) || (D3DXPlaneDotCoord(&plane[i], &max) > 0.0f))
+			count++;
+	}
+	*/
+	return count == 6;
+	
+}
+
+void Render::UpdateFrustum(D3DXMATRIX view, D3DXMATRIX proj)
+{
+	D3DXMATRIX m2;
+
+	m2 = view * proj;
+
+	plane[0].a = m2[3] + m2[0];
+	plane[0].b = m2[7] + m2[4];
+	plane[0].c = m2[11] + m2[8];
+	plane[0].d = m2[15] + m2[12];
+	D3DXPlaneNormalize(&plane[0], &plane[0]);
+
+	plane[1].a = m2[3] - m2[0];
+	plane[1].b = m2[7] - m2[4];
+	plane[1].c = m2[11] - m2[8];
+	plane[1].d = m2[15] - m2[12];
+	D3DXPlaneNormalize(&plane[1], &plane[1]);
+
+	plane[2].a = m2[3] + m2[1];
+	plane[2].b = m2[7] + m2[5];
+	plane[2].c = m2[11] + m2[9];
+	plane[2].d = m2[15] + m2[13];
+	D3DXPlaneNormalize(&plane[2], &plane[2]);
+
+	plane[3].a = m2[3] - m2[1];
+	plane[3].b = m2[7] - m2[5];
+	plane[3].c = m2[11] - m2[9];
+	plane[3].d = m2[15] - m2[13];
+	D3DXPlaneNormalize(&plane[3], &plane[3]);
+
+	plane[4].a = m2[3] + m2[2];
+	plane[4].b = m2[7] + m2[6];
+	plane[4].c = m2[11] + m2[10];
+	plane[4].d = m2[15] + m2[14];
+	D3DXPlaneNormalize(&plane[4], &plane[4]);
+
+	plane[5].a = m2[3] - m2[2];
+	plane[5].b = m2[7] - m2[6];
+	plane[5].c = m2[11] - m2[10];
+	plane[5].d = m2[15] - m2[14];
+	D3DXPlaneNormalize(&plane[5], &plane[5]);
 }
 
 bool Render::Initialize(ID3D11Device* device, HWND hwnd, WCHAR* filename, D3DXMATRIX proj)
@@ -260,6 +346,10 @@ void Render::CleanShader()
 		effect = 0;
 	}
 
+	if (plane)
+	{
+		delete[] plane;
+	}
 }
 
 void Render::Draw(ID3D11DeviceContext* deviceContext, int indexCount)

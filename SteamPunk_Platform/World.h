@@ -5,6 +5,7 @@
 // INCLUDES //
 //////////////
 #include "FallingEnemy.h"
+#include "NonFallingEnemy.h"
 #include "Camera.h"
 #include "model.h"
 #include "Render.h"
@@ -33,13 +34,14 @@ private:
 	ModelClass* model;
 	ModelClass* model2;
 	ModelClass* model3;
-	FallingEnemy * enemy;
+	NonFallingEnemy * enemy;
 	Render* renderClass;
 	PointLightClass* pointLight;
 	Player* player;
 	InputClass* input;
 	ResourceManager rManager;
 	PlatformManager pManager;
+	D3DXMATRIX projection;
 };
 
 #endif

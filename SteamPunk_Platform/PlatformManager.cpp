@@ -31,27 +31,29 @@ void PlatformManager::CreateLevel(std::vector<Mesh>& meshes)
 		meshStruct newMesh;
 		newMesh.vCount = meshes[i].vCount;
 
-		//if (tempSubString.c_str() == "bg")
-		//{
+		if (tempSubString == "bg")
+		{
 			for (int j = 0; j < meshes[i].transforms.size(); j++)
 			{
-				GameObject newObject;
-				newObject.world = meshes[i].transforms[j];
-				newObject.bBox = meshes[i].bBox[j];
+				GameObject* newObject = new GameObject(meshes[i].transforms[j], meshes[i].bBox[j], true);
+				//newObject.world = meshes[i].transforms[j];
+				//newObject.bBox = meshes[i].bBox[j];
 				newMesh.bufferIndices.push_back(i);
 				newMesh.objectData.push_back(newObject);
 			}
-		/*}
+		}
 		else
 		{
 			for (int j = 0; j < meshes[i].transforms.size(); j++)
 			{
-				Platform newPlatform;
-				newPlatform.position = meshes[i].transforms[j];
-				newPlatform.BoundingBox = meshes[i].BoundingBox;
-				tempObjects.push_back(newPlatform); 
+				Platform* newPlatform = new Platform(meshes[i].transforms[j], meshes[i].bBox[j], false);
+				//newPlatform.position = meshes[i].transforms[j];
+				//newPlatform.BoundingBox = meshes[i].BoundingBox;
+				//tempObjects.push_back(newPlatform); 
+				newMesh.bufferIndices.push_back(i);
+				newMesh.objectData.push_back(newPlatform);
 			}
-		}*/
+		}
 
 		objects.push_back(newMesh);
 	}
@@ -65,7 +67,8 @@ void PlatformManager::Update(D3DXVECTOR3 playerPosition, std::vector<ModelClass:
 	{
 		for (int j = 0; j < objects[i].objectData.size(); j++)
 		{
-			bb.push_back(objects[i].objectData[j].bBox);
+			if (!objects[i].objectData[j]->IsBackground())
+				bb.push_back(objects[i].objectData[j]->getBoundingBox());
 		}
 	}
 	
@@ -84,10 +87,13 @@ void PlatformManager::Draw(ID3D11DeviceContext* deviceContext, Render* render, D
 	{
 		for (int j = 0; j < objects[i].objectData.size(); j++)
 		{
-			deviceContext->IASetVertexBuffers(0, 1, &buffers[objects[i].bufferIndices[j]], &stride, &offset);
-
-			bool result = render->UpdateRender(deviceContext, objects[i].objectData[j].world, viewMatrix, texture, lightStruct, mat);
-			render->Draw(deviceContext, objects[i].vCount);
+			
+			if (render->InsideFrustum(objects[i].objectData[j]->getBoundingBox().min, objects[i].objectData[j]->getBoundingBox().max))
+			{
+				deviceContext->IASetVertexBuffers(0, 1, &buffers[objects[i].bufferIndices[j]], &stride, &offset);
+				bool result = render->UpdateRender(deviceContext, objects[i].objectData[j]->getWorld(), viewMatrix, texture, lightStruct, mat);
+				render->Draw(deviceContext, objects[i].vCount);
+			}
 		}
 	}	
 }
