@@ -12,7 +12,7 @@ class NonFallingEnemy : public Enemy
 public:
 	//NonFallingEnemy();
 	NonFallingEnemy(ID3D11Device * device, WCHAR * filename, D3DXVECTOR3 position) :
-		Enemy(device, filename, position){}
+		Enemy(device, position){}
 	~NonFallingEnemy();
 
 	bool Update(float, std::vector<BoundingBox>&);

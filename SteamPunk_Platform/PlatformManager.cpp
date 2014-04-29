@@ -24,15 +24,17 @@ void PlatformManager::CreateLevel(std::vector<Mesh>& meshes)
 		tempString = meshes[i].type;
 		std::string tempSubString = tempString.substr(0, 2);
 
-		buffers.push_back(meshes[i].m_vertexBuffer);
+			buffers.push_back(meshes[i].m_vertexBuffer);
 
-		//BBox tempBox = meshes[i].BoundingBox;
+			//BBox tempBox = meshes[i].BoundingBox;
 
-		meshStruct newMesh;
-		newMesh.vCount = meshes[i].vCount;
+			meshStruct newMesh;
+			newMesh.vCount = meshes[i].vCount;
 
 		if (tempSubString == "bg")
 		{
+			//if (tempSubString.c_str() == "bg")
+			//{
 			for (int j = 0; j < meshes[i].transforms.size(); j++)
 			{
 				GameObject* newObject = new GameObject(meshes[i].transforms[j], meshes[i].bBox[j], true);
@@ -42,7 +44,7 @@ void PlatformManager::CreateLevel(std::vector<Mesh>& meshes)
 				newMesh.objectData.push_back(newObject);
 			}
 		}
-		else
+		else if (tempSubString == "pf")
 		{
 			for (int j = 0; j < meshes[i].transforms.size(); j++)
 			{
@@ -55,7 +57,8 @@ void PlatformManager::CreateLevel(std::vector<Mesh>& meshes)
 			}
 		}
 
-		objects.push_back(newMesh);
+			objects.push_back(newMesh);
+		
 	}
 }
 
@@ -74,7 +77,7 @@ void PlatformManager::Update(D3DXVECTOR3 playerPosition, std::vector<ModelClass:
 	
 }
 
-void PlatformManager::Draw(ID3D11DeviceContext* deviceContext, Render* render, D3DXMATRIX viewMatrix, ID3D11ShaderResourceView* texture, PointLightClass* lightStruct, ModelClass::Material* mat)
+void PlatformManager::Draw(ID3D11DeviceContext* deviceContext, Render* render, D3DXMATRIX viewMatrix, ID3D11ShaderResourceView* texture, PointLightClass* lightStruct, ModelClass::Material mat)
 {
 	unsigned int stride;
 	unsigned int offset;

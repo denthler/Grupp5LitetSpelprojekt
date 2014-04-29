@@ -12,13 +12,12 @@ public:
 	Player();
 	~Player();
 
-	bool Initialize(ID3D11Device*, WCHAR*, D3DXVECTOR3);
+	bool Initialize(ID3D11Device*, D3DXVECTOR3);
 	bool Update(float, std::vector<BoundingBox>&);
 	//void Kill();
 	//void Revive();
 	void Jump();
 	void Shutdown();
-	void Apply(ID3D11DeviceContext*, int);
 	bool IsDead()
 	{
 		return dead;

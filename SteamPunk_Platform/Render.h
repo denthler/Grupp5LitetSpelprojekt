@@ -52,7 +52,7 @@ public:
 	bool Initialize(ID3D11Device*, HWND, WCHAR*, D3DXMATRIX);
 	void Shutdown();
 	bool UpdateRender(ID3D11DeviceContext*,
-	D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, PointLightClass*, ModelClass::Material*);
+	D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, PointLightClass*, ModelClass::Material);
 	void Draw(ID3D11DeviceContext*, int);
 	void CleanShader();
 	void UpdateFrustum(D3DXMATRIX view, D3DXMATRIX proj);

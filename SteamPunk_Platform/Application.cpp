@@ -610,6 +610,7 @@ void Application::AddScreen(Screen * screen)
 
 void Application::RemoveScreen(Screen * screen)
 {
+	delete screen;
 	screens.remove(screen);
 }
 

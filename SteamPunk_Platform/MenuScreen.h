@@ -9,6 +9,7 @@
 class MenuScreen : public Screen
 {
 	ID3D11Device * device;
+	ID3D11DeviceContext * deviceContext;
 public:
 	MenuScreen(ID3D11Device* DContext, ID3D11DeviceContext * deviceContext, HWND hwnd, D3DXMATRIX proj, HINSTANCE hInstance);
 	~MenuScreen();

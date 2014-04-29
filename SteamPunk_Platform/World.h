@@ -31,10 +31,7 @@ public:
 private:
 	void HandleInput();
 	Camera* camera;
-	ModelClass* model;
-	ModelClass* model2;
-	ModelClass* model3;
-	NonFallingEnemy * enemy;
+	FallingEnemy * enemy;
 	Render* renderClass;
 	PointLightClass* pointLight;
 	Player* player;
