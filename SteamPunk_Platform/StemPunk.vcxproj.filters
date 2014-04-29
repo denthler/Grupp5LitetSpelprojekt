@@ -1,115 +1,43 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="Application.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="AssetImporter.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Enemy.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="FallingEnemy.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="input.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="LevelImporter.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Main.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="model.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="PlatformManager.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="PointLight.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Render.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceManager.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="World.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
+    <ClCompile Include="Application.cpp" />
+    <ClCompile Include="AssetImporter.cpp" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="FallingEnemy.cpp" />
+    <ClCompile Include="input.cpp" />
+    <ClCompile Include="LevelImporter.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="model.cpp" />
+    <ClCompile Include="PlatformManager.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PointLight.cpp" />
+    <ClCompile Include="Render.cpp" />
+    <ClCompile Include="ResourceManager.cpp" />
+    <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Application.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Enemy.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="FallingEnemy.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="input.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="model.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Platform.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="PlatformManager.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="PointLight.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Render.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourceManager.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="World.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="AssetImporter.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="LevelImporter.h">
-      <Filter>Header</Filter>
-    </ClInclude>
+    <ClInclude Include="Application.h" />
+    <ClInclude Include="AssetImporter.h" />
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="Enemy.h" />
+    <ClInclude Include="FallingEnemy.h" />
+    <ClInclude Include="input.h" />
+    <ClInclude Include="LevelImporter.h" />
+    <ClInclude Include="model.h" />
+    <ClInclude Include="Platform.h" />
+    <ClInclude Include="PlatformManager.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="PointLight.h" />
+    <ClInclude Include="Render.h" />
+    <ClInclude Include="ResourceManager.h" />
+    <ClInclude Include="Texture.h" />
+    <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="effect.fx" />
     <None Include="shader.fx" />
-  </ItemGroup>
-  <ItemGroup>
-    <Filter Include="Header">
-      <UniqueIdentifier>{30950e92-f026-4a9d-9bc7-796704d4ebbe}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source">
-      <UniqueIdentifier>{84b563f4-9827-4ade-8083-0b454bd7f77e}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
 </Project>

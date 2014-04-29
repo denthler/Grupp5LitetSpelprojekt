@@ -12,15 +12,6 @@
 
 #include "model.h"
 
-
-struct VertexTypeT
-{
-	D3DXVECTOR3 position;
-	D3DXVECTOR3 normal;
-	D3DXVECTOR2 texture;	
-	D3DXVECTOR3 tangent;
-};
-
 struct Mesh
 {
 	std::string type;
@@ -41,6 +32,8 @@ private:
 	void						CreateMesh(ID3D11Device* DContext, int index);
 
 public:
+	Mesh						player;
+	std::vector<Mesh>			enemys;
 	std::vector<Mesh>			meshes;
 private:
 	LevelImporter				lImporter;

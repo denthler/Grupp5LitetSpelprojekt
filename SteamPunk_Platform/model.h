@@ -22,26 +22,18 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Class name: ModelClass
 ////////////////////////////////////////////////////////////////////////////////
+
+struct VertexTypeT
+{
+	D3DXVECTOR3 position;
+	D3DXVECTOR3 normal;
+	D3DXVECTOR2 texture;
+	D3DXVECTOR3 tangent;
+};
+
 class ModelClass
 {
-
-private:
-	struct VertexType
-	{
-		D3DXVECTOR3 position;
-		D3DXVECTOR3 normal;
-		D3DXVECTOR2 texture;		
-	};
-
-	struct FaceType
-	{
-		int vIndex1, vIndex2, vIndex3;
-		int tIndex1, tIndex2, tIndex3;
-		int nIndex1, nIndex2, nIndex3;
-	};
-	
 public:
-
 	struct BoundingBox
 	{
 		D3DXVECTOR3 min;
@@ -55,55 +47,28 @@ public:
 		bool hasTexture;
 		std::wstring name;
 	};
-	struct SubsetType
-	{
-		TextureClass* m_Texture;
 
-		ID3D11Buffer* vertBuff;
-		ID3D11Buffer* indexBuff;
-
-		std::vector<unsigned long> indices;
-		std::vector<VertexType> vertices;
-		Material mat;
-	};
 	ModelClass();
 	ModelClass(const ModelClass&);
 	~ModelClass();
 
-	virtual bool Initialize(ID3D11Device*, WCHAR*);
+	virtual bool Initialize(ID3D11Device*);
 	virtual void Shutdown();
-	virtual void Apply(ID3D11DeviceContext*, int);
+	virtual void Apply(ID3D11DeviceContext*, ID3D11Buffer*);
 
 	void GetWorldMatrix(D3DXMATRIX&);
 	int GetIndexCount();
 
-	Material* GetMaterial(int i)
+	Material GetMaterial()
 	{
-		return &subset[i].mat;
+		return mat;
 	};
-	int GetSubsetCount()
-	{
-		return subset.size();
-	}
-	bool HasTexture(int i)
-	{
-		return subset[i].mat.hasTexture;
-	}
-	ID3D11ShaderResourceView* GetSubsetTexture(int i)
-	{
-		return subset[i].m_Texture->GetTexture();
-	}
-	int IndexCount(int i)
-	{
-		return subset[i].indices.size();
-	}
 
 	ID3D11ShaderResourceView* GetTexture();
 
-	bool LoadDataStructures(std::wstring, std::vector<std::wstring>&);
-	virtual bool Update(float, std::vector<BoundingBox>&);
-	virtual void FlipGravity(){ D3DXVec3Cross(&worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis); }
-	virtual void FlipGravityS(){ D3DXVec3Cross(&worldAxis, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f)); }
+	virtual bool Update(float, std::vector<ModelClass::BoundingBox>&);
+	virtual void FlipGravity(){ D3DXVec3Cross(&worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis); };
+	virtual void FlipGravityS(){ D3DXVec3Cross(&worldAxis, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f)); };
 	BoundingBox bBox;
 protected:
 	D3DXVECTOR3 position;
@@ -114,29 +79,13 @@ protected:
 	bool OnGround;
 
 private:
-	bool InitializeBuffers(ID3D11Device*, int);
-	void ShutdownBuffers();
+	//bool LoadTexture(ID3D11Device*, const WCHAR*, int i);
 
-	bool LoadTexture(ID3D11Device*, const WCHAR*, int i);
-	void ReleaseTexture();
-
-	bool VerticalCollisionTest(D3DXVECTOR3&, std::vector<BoundingBox>&);
-	bool HorizontalCollisionTest(D3DXVECTOR3&, std::vector<BoundingBox>&, float);
-
-	ID3D11Buffer *m_vertexBuffer, *m_indexBuffer;
-	int m_vertexCount, m_indexCount;
+	bool VerticalCollisionTest(D3DXVECTOR3&, std::vector<ModelClass::BoundingBox>&);
+	bool HorizontalCollisionTest(D3DXVECTOR3&, std::vector<ModelClass::BoundingBox>&, float);
 
 	D3DXMATRIX m_worldMatrix;
-
-	//TextureClass* m_Texture;
-	std::vector<TextureClass*> m_Texture;
-	std::vector<VertexType> vertices;
-	std::vector<Material> material;
-	std::vector<SubsetType> subset;
-	std::vector<int> subsetIndexStart;
-	std::vector<int> subsetMaterialArray;
-	std::vector<unsigned long> indices;
-	int subsetCount;
+	Material mat;
 };
 
 #endif

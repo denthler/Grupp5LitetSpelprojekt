@@ -24,15 +24,18 @@ void PlatformManager::CreateLevel(std::vector<Mesh>& meshes)
 		tempString = meshes[i].type;
 		std::string tempSubString = tempString.substr(0, 2);
 
-		buffers.push_back(meshes[i].m_vertexBuffer);
+		if (tempSubString != "e_" && tempSubString != "p_")
+		{
 
-		//BBox tempBox = meshes[i].BoundingBox;
+			buffers.push_back(meshes[i].m_vertexBuffer);
 
-		meshStruct newMesh;
-		newMesh.vCount = meshes[i].vCount;
+			//BBox tempBox = meshes[i].BoundingBox;
 
-		//if (tempSubString.c_str() == "bg")
-		//{
+			meshStruct newMesh;
+			newMesh.vCount = meshes[i].vCount;
+
+			//if (tempSubString.c_str() == "bg")
+			//{
 			for (int j = 0; j < meshes[i].transforms.size(); j++)
 			{
 				GameObject newObject;
@@ -41,19 +44,20 @@ void PlatformManager::CreateLevel(std::vector<Mesh>& meshes)
 				newMesh.bufferIndices.push_back(i);
 				newMesh.objectData.push_back(newObject);
 			}
-		/*}
-		else
-		{
+			/*}
+			else
+			{
 			for (int j = 0; j < meshes[i].transforms.size(); j++)
 			{
-				Platform newPlatform;
-				newPlatform.position = meshes[i].transforms[j];
-				newPlatform.BoundingBox = meshes[i].BoundingBox;
-				tempObjects.push_back(newPlatform); 
+			Platform newPlatform;
+			newPlatform.position = meshes[i].transforms[j];
+			newPlatform.BoundingBox = meshes[i].BoundingBox;
+			tempObjects.push_back(newPlatform);
 			}
-		}*/
+			}*/
 
-		objects.push_back(newMesh);
+			objects.push_back(newMesh);
+		}
 	}
 }
 
@@ -71,7 +75,7 @@ void PlatformManager::Update(D3DXVECTOR3 playerPosition, std::vector<ModelClass:
 	
 }
 
-void PlatformManager::Draw(ID3D11DeviceContext* deviceContext, Render* render, D3DXMATRIX viewMatrix, ID3D11ShaderResourceView* texture, PointLightClass* lightStruct, ModelClass::Material* mat)
+void PlatformManager::Draw(ID3D11DeviceContext* deviceContext, Render* render, D3DXMATRIX viewMatrix, ID3D11ShaderResourceView* texture, PointLightClass* lightStruct, ModelClass::Material mat)
 {
 	unsigned int stride;
 	unsigned int offset;

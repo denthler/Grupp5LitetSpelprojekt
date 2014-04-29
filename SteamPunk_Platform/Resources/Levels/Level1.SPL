@@ -14,3 +14,7 @@ mtransform 1 0 0 0 0 1 0 0 0 0 1 0 -58.0847 -100.563 89.1934 1
 type bg_normalhouse_
 mtransform 1 0 0 0 0 1 0 0 0 0 1 0 0 -328.167 988.08 1 
 mtransform -1 0 -1.22465e-016 0 0 1 0 0 1.22465e-016 0 -1 0 261.691 -290.035 1123.17 1 
+type p_Start_
+mtransform 1 0 0 0 0 1 0 0 0 0 1 0 3.80196 6.33933 0 1 
+type e_type1_rabbit_
+mtransform 1 0 0 0 0 1 0 0 0 0 1 0 19.1892 -0.326919 0 1 
