@@ -1,6 +1,6 @@
 #include "Application.h"
 //#include "World.h"
-
+#include "MenuScreen.h"
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevious, LPSTR lpCmdLine, int cmd)
 {	
 	Application application;
@@ -8,6 +8,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevious, LPSTR lpCmdLine, in
 	application.Initialize(hInstance, 800, 640);
 	application.InitializeD3D(800, 640, true, true);
 	world.Initialize(application.GetDevice(), application.GetWindow(), application.GetProj(), hInstance);
+	//MenuScreen menu(application.GetDevice(), application.GetDeviceContext(), application.GetWindow(), application.GetProj(), hInstance);
+
+
 	MSG msg;
 	memset(&msg, 0, sizeof(MSG));
 	while (msg.message != WM_QUIT)
@@ -18,8 +21,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevious, LPSTR lpCmdLine, in
 			DispatchMessage(&msg);
 		}
 		else
-		{
-			
+		{			
 			world.Update(application.GetElapsedTime());
 			application.Begin(1.0f, 0.0f, 0.0f, 1.0f);
 			world.Draw(application.GetDeviceContext());

@@ -33,6 +33,10 @@ Application::Application()
 
 Application::~Application()
 {
+	for (auto it = screens.begin(); it != screens.end(); ++it)
+	{
+		delete *it;
+	}
 	CleanUp();
 }
 
@@ -597,6 +601,16 @@ void Application::End(bool vSync)
 	{
 		swapChain->Present(0, 0);
 	}
+}
+
+void Application::AddScreen(Screen * screen)
+{
+	screens.push_back(screen);
+}
+
+void Application::RemoveScreen(Screen * screen)
+{
+	screens.remove(screen);
 }
 
 #pragma endregion

@@ -5,6 +5,10 @@
     <ClCompile Include="AssetImporter.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Enemy.cpp" />
+<<<<<<< HEAD
+=======
+    <ClCompile Include="Entity.cpp" />
+>>>>>>> 8285ef778f1fe1b99ed60e50b429e1630f974c9e
     <ClCompile Include="FallingEnemy.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="LevelImporter.cpp" />
@@ -17,12 +21,20 @@
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="World.cpp" />
+<<<<<<< HEAD
+=======
+    <ClCompile Include="MenuScreen.cpp" />
+>>>>>>> 8285ef778f1fe1b99ed60e50b429e1630f974c9e
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="AssetImporter.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Enemy.h" />
+<<<<<<< HEAD
+=======
+    <ClInclude Include="Entity.h" />
+>>>>>>> 8285ef778f1fe1b99ed60e50b429e1630f974c9e
     <ClInclude Include="FallingEnemy.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="LevelImporter.h" />
@@ -35,6 +47,11 @@
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="World.h" />
+<<<<<<< HEAD
+=======
+    <ClInclude Include="Screen.h" />
+    <ClInclude Include="MenuScreen.h" />
+>>>>>>> 8285ef778f1fe1b99ed60e50b429e1630f974c9e
   </ItemGroup>
   <ItemGroup>
     <None Include="effect.fx" />
