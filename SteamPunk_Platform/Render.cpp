@@ -284,7 +284,7 @@ void Render::Draw(ID3D11DeviceContext* deviceContext, int indexCount)
 
 
 bool Render::UpdateRender(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix,
-	D3DXMATRIX viewMatrix, ID3D11ShaderResourceView* texture, PointLightClass* lightStruct, ModelClass::Material* mat)
+	D3DXMATRIX viewMatrix, ID3D11ShaderResourceView* texture, PointLightClass* lightStruct, ModelClass::Material mat)
 {
 
 	HRESULT result;
@@ -347,9 +347,9 @@ bool Render::UpdateRender(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMa
 
 	dataPtr3 = (MaterialType*)mappedResource.pData;
 
-	dataPtr3->ambColor = mat->ambColor;
-	dataPtr3->difColor = mat->difColor;
-	dataPtr3->hasTexture = mat->hasTexture;
+	dataPtr3->ambColor = mat.ambColor;
+	dataPtr3->difColor = mat.difColor;
+	dataPtr3->hasTexture = mat.hasTexture;
 	dataPtr3->padding = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
 	deviceContext->Unmap(materialBuffer, 0);	

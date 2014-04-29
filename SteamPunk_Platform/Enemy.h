@@ -12,7 +12,7 @@ class Enemy : public ModelClass
 
 	Enemy(); // Hide the default constructor, it's not needed.
 public:
-	Enemy(ID3D11Device * device, WCHAR * filename, D3DXVECTOR3 position);	
+	Enemy(ID3D11Device * device, D3DXVECTOR3 position);	
 	~Enemy();
 
 	virtual bool Update(float, std::vector<BoundingBox>&);

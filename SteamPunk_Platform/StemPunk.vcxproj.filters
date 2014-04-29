@@ -1,168 +1,43 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="Effect">
-      <UniqueIdentifier>{fc085756-88a0-438e-a4c5-e8980a05cc9f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Resources">
-      <UniqueIdentifier>{d07d13c0-ba99-47ae-8731-bf10e169532e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Resources">
-      <UniqueIdentifier>{0a4958a9-4491-4ea5-9327-e39af78738fe}</UniqueIdentifier>
-    </Filter>
+    <ClCompile Include="Application.cpp" />
+    <ClCompile Include="AssetImporter.cpp" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="FallingEnemy.cpp" />
+    <ClCompile Include="input.cpp" />
+    <ClCompile Include="LevelImporter.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="model.cpp" />
+    <ClCompile Include="PlatformManager.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PointLight.cpp" />
+    <ClCompile Include="Render.cpp" />
+    <ClCompile Include="ResourceManager.cpp" />
+    <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Application.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="model.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PointLight.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Render.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="World.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="input.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Enemy.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Entity.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourceManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Platform.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    <ClInclude Include="FallingEnemy.h">
-      <Filter>Header Files</Filter>
-=======
-=======
->>>>>>> 1942ea8ae0fe23fa51ba12355473ba4b73207c63
-=======
->>>>>>> 1942ea8ae0fe23fa51ba12355473ba4b73207c63
-    <ClInclude Include="AssetImporter.h">
-      <Filter>Header Files\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="LevelImporter.h">
-      <Filter>Header Files\Resources</Filter>
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 1942ea8ae0fe23fa51ba12355473ba4b73207c63
-=======
->>>>>>> 1942ea8ae0fe23fa51ba12355473ba4b73207c63
-=======
->>>>>>> 1942ea8ae0fe23fa51ba12355473ba4b73207c63
-    </ClInclude>
-    <ClInclude Include="PlatformManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <ClInclude Include="Application.h" />
+    <ClInclude Include="AssetImporter.h" />
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="Enemy.h" />
+    <ClInclude Include="FallingEnemy.h" />
+    <ClInclude Include="input.h" />
+    <ClInclude Include="LevelImporter.h" />
+    <ClInclude Include="model.h" />
+    <ClInclude Include="Platform.h" />
+    <ClInclude Include="PlatformManager.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="PointLight.h" />
+    <ClInclude Include="Render.h" />
+    <ClInclude Include="ResourceManager.h" />
+    <ClInclude Include="Texture.h" />
+    <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Application.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="model.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PointLight.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Render.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="World.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="input.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Enemy.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Entity.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    <ClCompile Include="FallingEnemy.cpp">
-      <Filter>Source Files</Filter>
-=======
-=======
->>>>>>> 1942ea8ae0fe23fa51ba12355473ba4b73207c63
-=======
->>>>>>> 1942ea8ae0fe23fa51ba12355473ba4b73207c63
-    <ClCompile Include="LevelImporter.cpp">
-      <Filter>Source Files\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="AssetImporter.cpp">
-      <Filter>Source Files\Resources</Filter>
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 1942ea8ae0fe23fa51ba12355473ba4b73207c63
-=======
->>>>>>> 1942ea8ae0fe23fa51ba12355473ba4b73207c63
-=======
->>>>>>> 1942ea8ae0fe23fa51ba12355473ba4b73207c63
-    </ClCompile>
-    <ClCompile Include="PlatformManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="effect.fx">
-      <Filter>Effect</Filter>
-    </None>
-    <None Include="shader.fx">
-      <Filter>Effect</Filter>
-    </None>
+    <None Include="effect.fx" />
+    <None Include="shader.fx" />
   </ItemGroup>
 </Project>

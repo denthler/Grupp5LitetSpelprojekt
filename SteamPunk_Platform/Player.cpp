@@ -17,20 +17,15 @@ Player::~Player()
 	
 }
 
-void Player::Apply(ID3D11DeviceContext* device, int count)
-{
-	ModelClass::Apply(device, count);
-}
-
 void Player::Shutdown()
 {
 	ModelClass::Shutdown();
 }
 
-bool Player::Initialize(ID3D11Device* device, WCHAR* filename, D3DXVECTOR3 startPos)
+bool Player::Initialize(ID3D11Device* device, D3DXVECTOR3 startPos)
 {
 	position = startPos;
-	return ModelClass::Initialize(device, filename);
+	return ModelClass::Initialize(device);
 }
 
 bool Player::Update(float gameTime, std::vector<BoundingBox>& bb)
@@ -73,7 +68,7 @@ bool Player::Update(float gameTime, std::vector<BoundingBox>& bb)
 
 void Player::Jump()
 {
-	velocity += (0.08f * worldAxis);
+	velocity += (0.15f * worldAxis);
 	
 }
 

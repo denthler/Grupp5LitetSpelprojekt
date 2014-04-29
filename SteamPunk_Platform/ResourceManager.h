@@ -10,26 +10,14 @@
 #include "LevelImporter.h"
 #include "AssetImporter.h"
 
-struct BoundingBox
-{
-	D3DXVECTOR3 min;
-	D3DXVECTOR3 max;
-};
-
-struct VertexTypeT
-{
-	D3DXVECTOR3 position;
-	D3DXVECTOR3 normal;
-	D3DXVECTOR2 texture;	
-	D3DXVECTOR3 tangent;
-};
+#include "model.h"
 
 struct Mesh
 {
 	std::string type;
 	ID3D11Buffer* m_vertexBuffer;
 	std::vector<D3DXMATRIX> transforms;
-	BoundingBox bBox;
+	std::vector<ModelClass::BoundingBox> bBox;
 	int vCount;
 };
 
@@ -44,6 +32,8 @@ private:
 	void						CreateMesh(ID3D11Device* DContext, int index);
 
 public:
+	Mesh						player;
+	std::vector<Mesh>			enemys;
 	std::vector<Mesh>			meshes;
 private:
 	LevelImporter				lImporter;
