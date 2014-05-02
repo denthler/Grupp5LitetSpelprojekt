@@ -22,7 +22,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevious, LPSTR lpCmdLine, in
 		}
 		else
 		{			
-			world.Update(application.GetElapsedTime());
+			world.Update(application.GetElapsedTime(), application.GetDevice());
 			application.Begin(1.0f, 0.0f, 0.0f, 1.0f);
 			world.Draw(application.GetDeviceContext());
 			//menu.Draw();

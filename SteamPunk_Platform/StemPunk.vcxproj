@@ -82,6 +82,7 @@
     <ClInclude Include="Application.h" />
     <ClInclude Include="AssetImporter.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CogWheel.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemyManager.h" />
     <ClInclude Include="FallingEnemy.h" />
@@ -105,7 +106,9 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="AssetImporter.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CogWheel.cpp" />
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="EnemyManager.cpp" />
     <ClCompile Include="FallingEnemy.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="input.cpp" />

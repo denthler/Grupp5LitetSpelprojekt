@@ -109,8 +109,9 @@ void InputClass::Shutdown()
 
 bool InputClass::Update()
 {
-
 	bool result;
+	memcpy(m_prevKeyboardState, m_keyboardState, sizeof(unsigned char)* 256);
+	//m_prevKeyboardState = m_keyboardState;
 
 	result = ReadKeyboard();
 	if(!result)
@@ -177,12 +178,20 @@ bool InputClass::isEscapePressed()
 	return false;
 }
 
-bool InputClass::CheckKeyPress(int key)
+bool InputClass::CheckSingleKeyPress(int key)
 {
-	if(m_keyboardState[key] & 0x80)
+	if ((m_keyboardState[key] & 0x80) && !(m_prevKeyboardState[key] & 0x80))
 	{
 		return true;
 	}
 	return false;
 }
 
+bool InputClass::CheckKeyPress(int key)
+{
+	if (m_keyboardState[key] & 0x80)
+	{
+		return true;
+	}
+	return false;
+}

@@ -64,12 +64,23 @@ public:
 		return mat;
 	};
 
+	BoundingBox GetBoundingBox()
+	{
+		return bBox;
+	}
+
+	D3DXVECTOR3 GetPosition()
+	{
+		//D3DXVECTOR3 p = D3DXVECTOR3(m_worldMatrix._41, m_worldMatrix._42, m_worldMatrix._43);
+		return position;
+	}
 	ID3D11ShaderResourceView* GetTexture();
 
 	virtual bool Update(float, std::vector<ModelClass::BoundingBox>&);
 	virtual void FlipGravity(){ D3DXVec3Cross(&worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis); };
 	virtual void FlipGravityS(){ D3DXVec3Cross(&worldAxis, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f)); };
 	BoundingBox bBox;
+	BoundingBox bBoxOriginal;
 protected:
 	D3DXVECTOR3 position;
 	D3DXVECTOR3 velocity;
@@ -77,14 +88,14 @@ protected:
 	D3DXVECTOR3 worldAxis;
 	float moveScale;
 	bool OnGround;
-
+	bool Rotated;
+	D3DXMATRIX m_worldMatrix;
 private:
 	//bool LoadTexture(ID3D11Device*, const WCHAR*, int i);
 
 	bool VerticalCollisionTest(D3DXVECTOR3&, std::vector<ModelClass::BoundingBox>&);
 	bool HorizontalCollisionTest(D3DXVECTOR3&, std::vector<ModelClass::BoundingBox>&, float);
-
-	D3DXMATRIX m_worldMatrix;
+	
 	Material mat;
 };
 

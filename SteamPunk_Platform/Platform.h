@@ -9,7 +9,7 @@
 class Platform : public GameObject
 {
 public:
-	Platform(D3DXMATRIX, ModelClass::BoundingBox, bool);
+	Platform(D3DXMATRIX, ModelClass::BoundingBox, bool, ObjectType);
 	Platform(const Platform&);
 	~Platform();
 

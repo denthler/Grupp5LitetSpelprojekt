@@ -14,6 +14,7 @@
 #include "input.h"
 #include "ResourceManager.h"
 #include "PlatformManager.h"
+#include "EnemyManager.h"
 
 class WorldClass
 {
@@ -25,7 +26,7 @@ public:
 	bool Initialize(ID3D11Device*, HWND, D3DXMATRIX, HINSTANCE);
 	void Run(ID3D11DeviceContext*, DWORD);
 	void CleanUp();
-	bool Update(float);
+	bool Update(float, ID3D11Device*);
 	void Draw(ID3D11DeviceContext*);
 
 private:
@@ -39,6 +40,8 @@ private:
 	ResourceManager rManager;
 	PlatformManager pManager;
 	D3DXMATRIX projection;
+	EnemyManager* eManager;
+
 };
 
 #endif

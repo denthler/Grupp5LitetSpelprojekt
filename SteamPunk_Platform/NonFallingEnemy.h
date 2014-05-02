@@ -11,7 +11,7 @@ class NonFallingEnemy : public Enemy
 
 public:
 	//NonFallingEnemy();
-	NonFallingEnemy(ID3D11Device * device, WCHAR * filename, D3DXVECTOR3 position) :
+	NonFallingEnemy(ID3D11Device * device, WCHAR * filename, D3DXMATRIX position) :
 		Enemy(device, position){}
 	~NonFallingEnemy();
 

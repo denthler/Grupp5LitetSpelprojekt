@@ -1,14 +1,13 @@
 #include "Player.h"
 
-
 Player::Player()
 {
 	velocity = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	dead = false;
 	left = false; right = false; up = false; down = false; jump = false;
 	OnGround = false;
-	moveScale = -0.1f;
-	gravity = -0.001f;
+	moveScale = -0.2f;//-0.1f
+	gravity = -0.01f;
 	worldAxis = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 }
 
@@ -25,7 +24,102 @@ void Player::Shutdown()
 bool Player::Initialize(ID3D11Device* device, D3DXVECTOR3 startPos)
 {
 	position = startPos;
+	StartPos = startPos;
 	return ModelClass::Initialize(device);
+}
+
+void Player::Kill()
+{
+	position = StartPos;
+}
+
+D3DXMATRIX Player::GetWorldMatrix()
+{
+	//Move this code to superclass later!!!!!
+	D3DXMATRIX posMatrix;
+	D3DXMatrixTranslation(&posMatrix, position.x, position.y, position.z);
+	D3DXMATRIX rotMatrix, rotMatrix2;
+	if (Rotated)
+	{
+		if (worldAxis.y > 0.0f)
+		{
+			D3DXMatrixRotationY(&rotMatrix, D3DX_PI);
+		}
+		else if (worldAxis.y < 0.0f)
+		{
+			D3DXMatrixRotationY(&rotMatrix, 0.0f);
+			D3DXMatrixRotationX(&rotMatrix2, D3DX_PI);
+			rotMatrix *= rotMatrix2;
+		}
+		else if (worldAxis.x < 0.0f)
+		{
+			D3DXMatrixRotationZ(&rotMatrix, D3DX_PI / 2);
+			D3DXMatrixRotationX(&rotMatrix2, D3DX_PI);
+			rotMatrix *= rotMatrix2;
+		}
+		else if (worldAxis.x > 0.0f)
+		{
+			D3DXMatrixRotationZ(&rotMatrix, (3 * D3DX_PI) / 2);
+			D3DXMatrixRotationX(&rotMatrix2, D3DX_PI);
+			rotMatrix *= rotMatrix2;
+		}
+	}
+	else
+	{
+		if (worldAxis.y > 0.0f)
+		{
+			D3DXMatrixRotationY(&rotMatrix, 0.0f);
+		}
+		else if (worldAxis.y < 0.0f)
+		{
+			D3DXMatrixRotationY(&rotMatrix, D3DX_PI);
+			D3DXMatrixRotationX(&rotMatrix2, D3DX_PI);
+			rotMatrix *= rotMatrix2;
+		}
+		else if (worldAxis.x < 0.0f)
+		{
+			D3DXMatrixRotationZ(&rotMatrix, D3DX_PI / 2);
+			D3DXMatrixRotationX(&rotMatrix2, 0.0f);
+			rotMatrix *= rotMatrix2;
+		}
+		else if (worldAxis.x > 0.0f)
+		{
+			D3DXMatrixRotationZ(&rotMatrix, (3 * D3DX_PI) / 2);
+			D3DXMatrixRotationX(&rotMatrix2, 0.0f);
+			rotMatrix *= rotMatrix2;
+		}
+	}
+	m_worldMatrix = rotMatrix;
+	m_worldMatrix._41 = position.x;
+	m_worldMatrix._42 = position.y;
+	m_worldMatrix._43 = position.z;
+	D3DXVECTOR4 tempVec;
+	D3DXVec3Transform(&tempVec, &bBoxOriginal.max, &rotMatrix);
+	bBox.max.x = tempVec.x;
+	bBox.max.y = tempVec.y;
+	bBox.max.z = tempVec.z;
+	D3DXVec3Transform(&tempVec, &bBoxOriginal.min, &rotMatrix);
+	bBox.min.x = tempVec.x;
+	bBox.min.y = tempVec.y;
+	bBox.min.z = tempVec.z;
+
+	if ((bBox.min.x > bBox.max.x))
+	{
+		bBox.min.x = bBox.max.x;
+		bBox.max.x = tempVec.x;
+	}
+	if ((bBox.min.y > bBox.max.y))
+	{
+		bBox.min.y = bBox.max.y;
+		bBox.max.y = tempVec.y;
+	}
+	if ((bBox.min.z > bBox.max.z))
+	{
+		bBox.min.z = bBox.max.z;
+		bBox.max.z = tempVec.z;
+	}
+	return m_worldMatrix;
+
 }
 
 bool Player::Update(float gameTime, std::vector<BoundingBox>& bb)
@@ -44,6 +138,7 @@ bool Player::Update(float gameTime, std::vector<BoundingBox>& bb)
 			D3DXVec3Cross(&temp, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis);
 			velocity -= moveScale * temp;
 			left = false;
+			Rotated = true;
 		}
 		if(right)
 		{
@@ -51,6 +146,7 @@ bool Player::Update(float gameTime, std::vector<BoundingBox>& bb)
 			D3DXVec3Cross(&temp, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis);
 			velocity += moveScale * temp;
 			right = false;
+			Rotated = false;;
 		}
 		if(jump)
 		{
@@ -68,7 +164,7 @@ bool Player::Update(float gameTime, std::vector<BoundingBox>& bb)
 
 void Player::Jump()
 {
-	velocity += (0.15f * worldAxis);
+	velocity += (0.4f * worldAxis);
 	
 }
 
