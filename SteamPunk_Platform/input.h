@@ -38,6 +38,7 @@ public:
 	bool isEscapePressed();
 	
 	bool CheckKeyPress(int);
+	bool CheckSingleKeyPress(int);
 
 private:
 	bool ReadKeyboard();
@@ -48,6 +49,7 @@ private:
 	IDirectInputDevice8* m_mouse;
 
 	unsigned char m_keyboardState[256];
+	unsigned char m_prevKeyboardState[256];
 	DIMOUSESTATE m_mouseState;
 
 	int m_screenWidth, m_screenHeight;

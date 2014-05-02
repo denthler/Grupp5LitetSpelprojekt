@@ -7,12 +7,13 @@ ModelClass::ModelClass()
 {
 	//m_Texture = 0;
 	D3DXMatrixIdentity(&m_worldMatrix);
-
+	position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	moveScale = -0.1f;
 	gravity = -0.001f;
 	worldAxis = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 	velocity = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	OnGround = false;
+	Rotated = false;
 }
 
 ModelClass::ModelClass(const ModelClass& other)
@@ -22,9 +23,23 @@ ModelClass::ModelClass(const ModelClass& other)
 ModelClass::~ModelClass()
 {
 }
-void ModelClass::GetWorldMatrix(D3DXMATRIX& world)
+
+D3DXMATRIX ModelClass::GetWorldMatrix()
 {
-	world = m_worldMatrix;
+	//Should multiply, bcause of rotation!!
+	D3DXMatrixTranslation(&m_worldMatrix, position.x, position.y, position.z);
+	if (Rotated)
+	{
+		D3DXMATRIX rotMatrix;
+		D3DXMatrixRotationY(&rotMatrix, D3DX_PI);
+		rotMatrix._41 = position.x;
+		rotMatrix._42 = position.y;
+		rotMatrix._43 = position.z;
+		m_worldMatrix = rotMatrix;
+		return m_worldMatrix;
+	}
+
+	return m_worldMatrix;
 }
 
 bool ModelClass::Initialize(ID3D11Device* device)
@@ -107,9 +122,11 @@ bool ModelClass::Update(float time, std::vector<BoundingBox>& bb)
 	else
 	{
 		OnGround = true;
+		velocity -= velocity;
 	}
 	D3DXVECTOR3 newPosition = position + (moveAmount * (time));
 	position = newPosition;
+	//
 	return res;
 }
 

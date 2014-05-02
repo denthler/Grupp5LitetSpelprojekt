@@ -8,7 +8,7 @@ WorldClass::WorldClass()
 	pointLight = 0;
 	player = 0;
 	input = 0;
-	enemy = 0;
+	eManager = 0;
 }
 
 WorldClass::WorldClass(const WorldClass& other)
@@ -68,6 +68,11 @@ bool WorldClass::Initialize(ID3D11Device* DContext, HWND hwnd, D3DXMATRIX proj, 
 	result = player->Initialize(DContext, D3DXVECTOR3(rManager.player.transforms[0]._41, rManager.player.transforms[0]._42, rManager.player.transforms[0]._43), 
 		rManager.player.textureMap, rManager.player.normalMap, rManager.player.animationSets, rManager.player.m_vertexBuffer, rManager.player.vCount);
 	player->bBox = rManager.player.bBox[0];
+	player->bBoxOriginal = rManager.player.bBox[0];
+	if(!result)
+	{
+		return false;
+	}
 
 	input = new InputClass();
 
@@ -81,10 +86,11 @@ bool WorldClass::Initialize(ID3D11Device* DContext, HWND hwnd, D3DXMATRIX proj, 
 	{
 		return false;
 	}
-	
-	enemy = new FallingEnemy(DContext, D3DXVECTOR3(rManager.enemys[0].transforms[0]._41, rManager.enemys[0].transforms[0]._42, rManager.enemys[0].transforms[0]._43), 
-		rManager.enemys[0].textureMap, rManager.enemys[0].normalMap, rManager.enemys[0].animationSets, rManager.enemys[0].m_vertexBuffer, rManager.enemys[0].vCount);
-	enemy->bBox = rManager.enemys[0].bBox[0];
+
+	eManager = new EnemyManager(rManager.enemys[0].transforms[0],
+		rManager.enemys[0].textureMap, rManager.enemys[0].normalMap, rManager.enemys[0].animationSets,
+		rManager.enemys[0].m_vertexBuffer, rManager.enemys[0].vCount, rManager.enemys[0].bBox[0]);
+
 
 	return true;
 }
@@ -92,7 +98,7 @@ bool WorldClass::Initialize(ID3D11Device* DContext, HWND hwnd, D3DXMATRIX proj, 
 void WorldClass::HandleInput()
 {
 	input->Update();
-	if(input->CheckKeyPress(DIK_SPACE))
+	if (input->CheckSingleKeyPress(DIK_SPACE))
 	{
 		player->SetJump();
 	}
@@ -104,22 +110,28 @@ void WorldClass::HandleInput()
 	{
 		player->SetRight();
 	}
-	if(input->CheckKeyPress(DIK_W))
+	if(input->CheckSingleKeyPress(DIK_W))
 	{
 		if(camera->IsNotFlipping())
 		{
-			camera->Flip();
-			player->FlipGravity();
-			enemy->FlipGravity();
+			if (player->IsOnGround())
+			{
+				camera->Flip();
+				player->FlipGravity();
+				eManager->FlipGravity();
+			}
 		}
 	}
-	if(input->CheckKeyPress(DIK_S))
+	if (input->CheckSingleKeyPress(DIK_S))
 	{
 		if(camera->IsNotFlipping())
 		{
-			camera->FlipS();
-			player->FlipGravityS();
-			enemy->FlipGravityS();
+			if (player->IsOnGround())
+			{
+				camera->FlipS();
+				player->FlipGravityS();
+				eManager->FlipGravityS();
+			}
 		}
 	}
 }
@@ -127,7 +139,7 @@ void WorldClass::HandleInput()
 void WorldClass::Run(ID3D11DeviceContext* DContext, DWORD time)
 {
 
-	Update(time);
+	//Update(time);
 
 	Draw(DContext);
 }
@@ -162,14 +174,15 @@ void WorldClass::CleanUp()
 		delete input;
 		input = 0; 
 	}
-	if (enemy)
+	if (eManager)
 	{
-		delete enemy;
-		enemy = 0;
+		eManager->Shutdown();
+		delete eManager;
+		eManager = 0;
 	}
 }
 
-bool WorldClass::Update(float time)
+bool WorldClass::Update(float time, ID3D11Device* DContext)
 {
 	HandleInput();
 	camera->Update(player->GetPosition());
@@ -180,7 +193,9 @@ bool WorldClass::Update(float time)
 	//tempBB.push_back(model3->bBox);
 	//player->Update(0.0f, tempBB); 
 	pManager.Update(player->GetPosition(), tempBB);
-	enemy->Update(time, tempBB);
+	//enemy->Update(time, tempBB);
+	eManager->Update(tempBB, time, player, DContext);
+
 	//
 	//static float red = 0.0f;
 	//static float redCount = 0.01f;
@@ -215,8 +230,6 @@ void WorldClass::Draw(ID3D11DeviceContext* DContext)
 	player->Apply(DContext);
 	result = renderClass->UpdateRender(DContext, player->GetWorldMatrix(), viewMatrix, player->GetTextureMap(), player->GetNormalMap(), pointLight, player->GetMaterial(), temp);
 	renderClass->Draw(DContext, rManager.player.vCount, 1);
-	
-	enemy->Apply(DContext);
-	result = renderClass->UpdateRender(DContext, enemy->GetWorldMatrix(), viewMatrix, enemy->GetTextureMap(), enemy->GetNormalMap(), pointLight, enemy->GetMaterial(), enemy->GetCurrentFrame());// rManager.enemys[0].animationSets[0].keyFrames[test].boneTransforms);
-	renderClass->Draw(DContext, enemy->GetVertexCount(), 1);
+
+	eManager->Draw(DContext, renderClass, viewMatrix, pointLight);
 }

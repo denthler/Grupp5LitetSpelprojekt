@@ -1,20 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-<<<<<<< HEAD
-    <ClCompile Include="Application.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="AssetImporter.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Enemy.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="FallingEnemy.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="input.cpp">
@@ -26,7 +16,16 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="MenuScreen.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
     <ClCompile Include="model.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="NonFallingEnemy.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="PlatformManager.cpp">
@@ -50,18 +49,30 @@
     <ClCompile Include="World.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="GameObject.cpp">
+    <ClCompile Include="Enemy.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Platform.cpp">
+    <ClCompile Include="Camera.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="NonFallingEnemy.cpp">
+    <ClCompile Include="AssetImporter.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Application.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyManager.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="CogWheel.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="AssetImporter.h">
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
@@ -70,22 +81,37 @@
     <ClInclude Include="Enemy.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="EnemyManager.h">
+      <Filter>Header</Filter>
+    </ClInclude>
     <ClInclude Include="FallingEnemy.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="input.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="LevelImporter.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuScreen.h">
+      <Filter>Header</Filter>
+    </ClInclude>
     <ClInclude Include="model.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="NonFallingEnemy.h">
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="Platform.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="Player.h">
+    <ClInclude Include="PlatformManager.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="PlatformManager.h">
+    <ClInclude Include="Player.h">
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="PointLight.h">
@@ -97,83 +123,29 @@
     <ClInclude Include="ResourceManager.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="Screen.h">
+      <Filter>Header</Filter>
+    </ClInclude>
     <ClInclude Include="Texture.h">
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="World.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="AssetImporter.h">
+    <ClInclude Include="CogWheel.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="LevelImporter.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="NonFallingEnemy.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="EnemyManager.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-=======
-    <ClCompile Include="Application.cpp" />
-    <ClCompile Include="AssetImporter.cpp" />
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="Enemy.cpp" />
-<<<<<<< HEAD
-=======
-    <ClCompile Include="Entity.cpp" />
->>>>>>> 8285ef778f1fe1b99ed60e50b429e1630f974c9e
-    <ClCompile Include="FallingEnemy.cpp" />
-    <ClCompile Include="input.cpp" />
-    <ClCompile Include="LevelImporter.cpp" />
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="model.cpp" />
-    <ClCompile Include="PlatformManager.cpp" />
-    <ClCompile Include="Player.cpp" />
-    <ClCompile Include="PointLight.cpp" />
-    <ClCompile Include="Render.cpp" />
-    <ClCompile Include="ResourceManager.cpp" />
-    <ClCompile Include="Texture.cpp" />
-    <ClCompile Include="World.cpp" />
-<<<<<<< HEAD
-=======
-    <ClCompile Include="MenuScreen.cpp" />
->>>>>>> 8285ef778f1fe1b99ed60e50b429e1630f974c9e
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Application.h" />
-    <ClInclude Include="AssetImporter.h" />
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="Enemy.h" />
-<<<<<<< HEAD
-=======
-    <ClInclude Include="Entity.h" />
->>>>>>> 8285ef778f1fe1b99ed60e50b429e1630f974c9e
-    <ClInclude Include="FallingEnemy.h" />
-    <ClInclude Include="input.h" />
-    <ClInclude Include="LevelImporter.h" />
-    <ClInclude Include="model.h" />
-    <ClInclude Include="Platform.h" />
-    <ClInclude Include="PlatformManager.h" />
-    <ClInclude Include="Player.h" />
-    <ClInclude Include="PointLight.h" />
-    <ClInclude Include="Render.h" />
-    <ClInclude Include="ResourceManager.h" />
-    <ClInclude Include="Texture.h" />
-    <ClInclude Include="World.h" />
-<<<<<<< HEAD
-=======
-    <ClInclude Include="Screen.h" />
-    <ClInclude Include="MenuScreen.h" />
->>>>>>> 8285ef778f1fe1b99ed60e50b429e1630f974c9e
->>>>>>> bf6748ab2d7d966fcac395c8c245e6b5b7dcb245
   </ItemGroup>
   <ItemGroup>
     <None Include="effect.fx" />
     <None Include="shader.fx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header">
+      <UniqueIdentifier>{87ac9811-5238-4dd9-9913-3795e930784d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{d6d97bb0-7ff2-4fd2-8520-838dbd19eb52}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

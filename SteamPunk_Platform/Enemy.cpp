@@ -1,10 +1,11 @@
 #include "Enemy.h"
 
-Enemy::Enemy(ID3D11Device * device, D3DXVECTOR3 position, ID3D11ShaderResourceView* tM, ID3D11ShaderResourceView* nM, std::vector<AnimationStack> aS, ID3D11Buffer* vB, int vC)
+
+Enemy::Enemy(ID3D11Device * device, D3DXMATRIX p, ID3D11ShaderResourceView* tM, ID3D11ShaderResourceView* nM, std::vector<AnimationStack> aS, ID3D11Buffer* vB, int vC)
 {
 	//worldUp = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	
 	ModelClass::Initialize(device);
-	ModelClass::position = position;
 
 	textureMap = tM;
 	if (textureMap)
@@ -30,6 +31,10 @@ Enemy::Enemy(ID3D11Device * device, D3DXVECTOR3 position, ID3D11ShaderResourceVi
 	m_vertexBuffer = vB;
 	vCount = vC;
 	animationTime = 0;
+
+	//ModelClass::position = position;
+	m_worldMatrix = p;
+	position = D3DXVECTOR3(p._41, p._42, p._43);
 	moveScale = -0.05f;
 }
 
@@ -55,12 +60,20 @@ bool Enemy::Update(float gameTime, std::vector<BoundingBox>& bb)
 	{
 		moveScale *= -1.0f;
 		velocity = right * (moveScale);
-		velocity += (worldAxis * 0.003f);
-		
+		velocity += (worldAxis * 0.0032f);
 	}
 	else if (test2)
 	{
 		moveScale *= -1.0f;
+		if (moveScale > 0.0f)
+		{
+			Rotated = false;
+		}
+		else
+		{
+			Rotated = true;
+		}
+			
 		//velocity += right * (moveScale);
 		return true;
 	}

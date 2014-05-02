@@ -22,34 +22,29 @@ public:
 	{
 		return dead;
 	}
-	D3DXMATRIX GetWorldMatrix()
+	bool IsOnGround()
 	{
-		D3DXMATRIX posMatrix;
-		D3DXMatrixTranslation(&posMatrix, position.x, position.y, position.z);
-		return posMatrix;
+		return OnGround;
 	}
+	D3DXMATRIX GetWorldMatrix();
+
 	void SetLeft(){left = true;}
 	void SetRight(){right = true;}
 	void SetDown(){left = true;}
 	void SetUp(){left = true;}
 	void SetJump(){jump = true;}
+	void Kill();
 	D3DXVECTOR3 GetPosition(){return position;}
 	//void FlipGravity(){D3DXVec3Cross(&worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis);}
 		//worldAxis = D3DXVECTOR3(-1.0f, 0.0f, 0.0f); }
 	//void FlipGravityS(){D3DXVec3Cross(&worldAxis, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f));}
 		//worldAxis = D3DXVECTOR3(0.0f, 1.0f, 0.0f); }
 private:
-	//void VerticalCollisionTest(D3DXVECTOR3&, std::vector<BoundingBox>&);
-	//bool HorizontalCollisionTest(D3DXVECTOR3&, std::vector<BoundingBox>&, float);
 
-	//D3DXVECTOR3 position;
-	//D3DXVECTOR3 velocity;
 	bool dead;
-	//float moveScale;
-	//float gravity; 
-	//D3DXVECTOR3 worldAxis; 
+	D3DXVECTOR3 StartPos;
 	bool left, right, up, down, jump;
-	//bool OnGround;
+
 };
 
 #endif

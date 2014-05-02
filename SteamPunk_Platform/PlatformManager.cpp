@@ -39,7 +39,7 @@ void PlatformManager::CreateLevel(std::vector<Mesh>& meshes)
 			//{
 			for (int j = 0; j < meshes[i].transforms.size(); j++)
 			{
-				GameObject* newObject = new GameObject(meshes[i].transforms[j], meshes[i].bBox[j], true);
+				GameObject* newObject = new GameObject(meshes[i].transforms[j], meshes[i].bBox[j], true, GameObject::ObjectType::Background);
 				//newObject.world = meshes[i].transforms[j];
 				//newObject.bBox = meshes[i].bBox[j];
 				newMesh.bufferIndices.push_back(i);
@@ -50,7 +50,7 @@ void PlatformManager::CreateLevel(std::vector<Mesh>& meshes)
 		{
 			for (int j = 0; j < meshes[i].transforms.size(); j++)
 			{
-				Platform* newPlatform = new Platform(meshes[i].transforms[j], meshes[i].bBox[j], false);
+				Platform* newPlatform = new Platform(meshes[i].transforms[j], meshes[i].bBox[j], false, GameObject::ObjectType::Platform);
 				//newPlatform.position = meshes[i].transforms[j];
 				//newPlatform.BoundingBox = meshes[i].BoundingBox;
 				//tempObjects.push_back(newPlatform); 
@@ -72,8 +72,33 @@ void PlatformManager::Update(D3DXVECTOR3 playerPosition, std::vector<ModelClass:
 	{
 		for (int j = 0; j < objects[i].objectData.size(); j++)
 		{
-			if (!objects[i].objectData[j]->IsBackground())
-				bb.push_back(objects[i].objectData[j]->getBoundingBox());
+			switch (objects[i].objectData[j]->GetType())
+			{
+				case GameObject::ObjectType::Background :
+				{
+
+					break;
+				}
+				case GameObject::ObjectType::Platform :
+				{
+					bb.push_back(objects[i].objectData[j]->getBoundingBox());
+					break;
+				}
+				case GameObject::ObjectType::Gear :
+				{
+					float length = D3DXVec3Length(&(playerPosition - objects[i].objectData[j]->GetPosition()));
+					if (length < 2.0f)
+					{
+						objects[i].objectData.erase(objects[i].objectData.begin() + j);
+					}
+					else
+						objects[i].objectData[j]->Update();
+
+					break;
+				}
+			}
+			//if (!objects[i].objectData[j]->IsBackground())
+				//bb.push_back(objects[i].objectData[j]->getBoundingBox());
 		}
 	}
 	
