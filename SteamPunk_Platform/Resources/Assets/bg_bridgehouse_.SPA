@@ -1,21 +1,11 @@
 material lambert1
-matdiffuse 0.5 0.5 0.5 1
-matspecular 0 0 0 1
-matambient 0 0 0 1
-mattransp 0 0 0 1
-material bridgehouse:initialShadingGroup1
-matdiffuse 0.5 0.5 0.5 1
-matspecular 0 0 0 1
-matambient 0 0 0 1
-mattransp 0 0 0 1
-material tablehouse:initialShadingGroup1
 matdiffuse 0 0 0 1
 matspecular 0 0 0 1
 matambient 0 0 0 1
 mattransp 0 0 0 1
 mattexturemap bg_tablehouse_texture.png
 camera perspShape
-viewmatrix 0.960294 4.16334e-017 -0.278991 0 -0.135846 0.873446 -0.467586 0 0.243684 0.48692 0.838765 0 48.3807 93.4988 165.429 1
+viewmatrix 0.999507 0 -0.0314108 0 -0.00444663 0.989929 -0.141494 0 0.0310944 0.141564 0.989441 0 1.93218 37.5827 193.118 1
 hfov 0.950022
 vfov 0.660595
 nearplane 0.1
@@ -23,7 +13,7 @@ farplane 10000
 aspect 1.5
 meshes 1
 mesh bg_tablehouse_Shape
-usemat tablehouse:initialShadingGroup1
+usemat lambert1
 vertices 57
 v -30.2221 12.34 29.5646
 v 30.2221 12.34 29.5646

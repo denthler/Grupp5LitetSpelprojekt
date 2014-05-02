@@ -3,7 +3,7 @@
 
 #include <d3d11.h>
 #include <D3DX11tex.h>
-
+#include <vector>
 
 class TextureClass
 {
@@ -13,7 +13,7 @@ public:
 	TextureClass(const TextureClass&);
 	~TextureClass();
 
-	bool Initialize(ID3D11Device*, const WCHAR*);
+	bool Initialize(ID3D11Device*, std::string);
 	void Shutdown();
 
 	ID3D11ShaderResourceView* GetTexture();

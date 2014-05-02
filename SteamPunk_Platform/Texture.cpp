@@ -14,12 +14,14 @@ TextureClass::~TextureClass()
 {
 }
 
-bool TextureClass::Initialize(ID3D11Device* device, const WCHAR* filename)
+bool TextureClass::Initialize(ID3D11Device* device, std::string filename)
 {
 
 	HRESULT result;
 
-	result = D3DX11CreateShaderResourceViewFromFile(device, filename, NULL, NULL, &m_texture, NULL); 
+	std::wstring tempS = std::wstring(filename.begin(), filename.end());
+	LPCWSTR sw = tempS.c_str();
+	result = D3DX11CreateShaderResourceViewFromFile(device, sw, NULL, NULL, &m_texture, NULL); 
 	if(FAILED(result))
 	{
 		return false;

@@ -11,6 +11,18 @@
 #include "AssetImporter.h"
 
 #include "model.h"
+#include "Texture.h"
+
+/*struct KeyFramesAni
+{
+	std::vector<D3DMATRIX> boneTransforms;
+};
+
+struct AnimationStack
+{
+	std::string name;
+	std::vector<KeyFramesAni> keyFrames;
+};*/
 
 struct Mesh
 {
@@ -18,6 +30,10 @@ struct Mesh
 	ID3D11Buffer* m_vertexBuffer;
 	std::vector<D3DXMATRIX> transforms;
 	std::vector<ModelClass::BoundingBox> bBox;
+
+	ID3D11ShaderResourceView* textureMap;
+	ID3D11ShaderResourceView* normalMap;
+	std::vector<AnimationStack> animationSets;
 	int vCount;
 };
 
@@ -29,7 +45,8 @@ public:
 
 	bool						LoadLevel(std::string level, ID3D11Device* DContext);
 private:
-	void						CreateMesh(ID3D11Device* DContext, int index);
+	void						CreateStaticMeshes(ID3D11Device* DContext, int index);
+	void						CreateAnimatedMeshes(ID3D11Device* DContext, int index);
 
 public:
 	Mesh						player;
@@ -38,6 +55,7 @@ public:
 private:
 	LevelImporter				lImporter;
 	AssetImporter				aImporter;
+	TextureClass				texture;
 };
 
 #endif

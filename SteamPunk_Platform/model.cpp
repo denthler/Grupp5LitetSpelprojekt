@@ -34,6 +34,7 @@ bool ModelClass::Initialize(ID3D11Device* device)
 	mat.ambColor = D3DXVECTOR4(0.0f, 0.0f, 0.0f, 1.0f);
 	mat.difColor = D3DXVECTOR4(0.5f, 0.5f, 0.5f, 1.0f);
 	mat.hasTexture = false;
+	mat.hasNormal = false;
 
 	return true;
 }
@@ -43,21 +44,16 @@ void ModelClass::Shutdown()
 	return;
 }
 
-void ModelClass::Apply(ID3D11DeviceContext* deviceContext, ID3D11Buffer* m_vertexBuffer)
+void ModelClass::Apply(ID3D11DeviceContext* deviceContext)
 {
 	unsigned int stride;
 	unsigned int offset;
 
-	stride = sizeof(VertexTypeT);
+	stride = sizeof(VertexTypeAni);
 	offset = 0;
 
 	deviceContext->IASetVertexBuffers(0, 1, &m_vertexBuffer, &stride, &offset);
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-}
-
-ID3D11ShaderResourceView* ModelClass::GetTexture()
-{
-	return NULL;// m_Texture[0]->GetTexture();
 }
 
 /*bool ModelClass::LoadTexture(ID3D11Device* device, const WCHAR* filename, int i)

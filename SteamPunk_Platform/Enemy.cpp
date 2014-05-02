@@ -1,10 +1,35 @@
 #include "Enemy.h"
 
-Enemy::Enemy(ID3D11Device * device, D3DXVECTOR3 position)
+Enemy::Enemy(ID3D11Device * device, D3DXVECTOR3 position, ID3D11ShaderResourceView* tM, ID3D11ShaderResourceView* nM, std::vector<AnimationStack> aS, ID3D11Buffer* vB, int vC)
 {
 	//worldUp = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 	ModelClass::Initialize(device);
 	ModelClass::position = position;
+
+	textureMap = tM;
+	if (textureMap)
+	{
+		mat.hasTexture = true;
+	}
+	else
+	{
+		mat.hasTexture = false;
+	}
+
+	normalMap = nM;
+	if (normalMap)
+	{
+		mat.hasNormal = true;
+	}
+	else
+	{
+		mat.hasNormal = false;
+	}
+
+	animationStack = aS;
+	m_vertexBuffer = vB;
+	vCount = vC;
+	animationTime = 0;
 	moveScale = -0.05f;
 }
 
@@ -39,6 +64,12 @@ bool Enemy::Update(float gameTime, std::vector<BoundingBox>& bb)
 		//velocity += right * (moveScale);
 		return true;
 	}
+
+	animationTime++;
+	currentFrame = animationStack[0].keyFrames[animationTime].boneTransforms;
+
+	if (animationTime > 24)
+		animationTime = 0;
 
 	return false;
 }

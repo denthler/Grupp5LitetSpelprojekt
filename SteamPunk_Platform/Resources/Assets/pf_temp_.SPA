@@ -3,23 +3,8 @@ matdiffuse 0.5 0.5 0.5 1
 matspecular 0 0 0 1
 matambient 0 0 0 1
 mattransp 0 0 0 1
-material bridgehouse:initialShadingGroup1
-matdiffuse 0.5 0.5 0.5 1
-matspecular 0 0 0 1
-matambient 0 0 0 1
-mattransp 0 0 0 1
-material bridgehouse1:initialShadingGroup1
-matdiffuse 0.5 0.5 0.5 1
-matspecular 0 0 0 1
-matambient 0 0 0 1
-mattransp 0 0 0 1
-material kupol:initialShadingGroup1
-matdiffuse 0.5 0.5 0.5 1
-matspecular 0 0 0 1
-matambient 0 0 0 1
-mattransp 0 0 0 1
 camera perspShape
-viewmatrix -0.997801 6.93889e-018 -0.0662739 0 -0.0322701 0.873446 0.48585 0 0.0578867 0.48692 -0.871526 0 2.39699 36.3532 -61.2952 1
+viewmatrix 0.999945 0 0.0104718 0 0.00431568 0.911128 -0.412102 0 -0.00954113 0.412124 0.911078 0 -0.200716 8.66981 19.1662 1
 hfov 0.950022
 vfov 0.660595
 nearplane 0.1

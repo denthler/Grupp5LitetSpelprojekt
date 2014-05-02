@@ -19,6 +19,11 @@ class Render
 {
 
 private:
+	struct AnimationMatrixBufferType
+	{
+		D3DMATRIX boneTransform[30];
+	};
+
 	struct MatrixBufferType
 	{
 		D3DMATRIX world;
@@ -30,8 +35,9 @@ private:
 	{
 		D3DXVECTOR4 difColor;
 		D3DXVECTOR4 ambColor;
-		D3DXVECTOR3 padding;
-		bool hasTexture;
+		int hasTexture;
+		int hasNormal;
+		int pad[2];
 	};
 	
 	struct LightBufferType
@@ -43,7 +49,6 @@ private:
 		D3DXVECTOR4 ambientColor;
 	};
 
-
 public:
 	Render();
 	Render(const Render&);
@@ -52,24 +57,26 @@ public:
 	bool Initialize(ID3D11Device*, HWND, WCHAR*, D3DXMATRIX);
 	void Shutdown();
 	bool UpdateRender(ID3D11DeviceContext*,
-	D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, PointLightClass*, ModelClass::Material);
-	void Draw(ID3D11DeviceContext*, int);
+		D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, PointLightClass*, ModelClass::Material, std::vector<D3DMATRIX>);
+	void Draw(ID3D11DeviceContext*, int, int);
 	void CleanShader();
 	void UpdateFrustum(D3DXMATRIX view, D3DXMATRIX proj);
 	bool InsideFrustum(D3DXVECTOR3 min, D3DXVECTOR3 max);
 
-private:
-	
+private:	
 	ID3DX11EffectConstantBuffer* cbMatrix;
+	ID3DX11EffectConstantBuffer* cbAniMatrix;
 	ID3DX11EffectConstantBuffer* lightConstantBuffer;
 	ID3DX11Effect* effect;
 	ID3D11InputLayout* layout;
 	ID3DX11EffectTechnique* eTech;
+	ID3D11Buffer* cbAniMatrixBuffer;
 	ID3D11Buffer* cbMatrixBuffer;
 	ID3D11Buffer* lightBuffer;
 	ID3D11SamplerState* sampleState; 
 	ID3DX11EffectSamplerVariable* samplerVariable; 
 	ID3DX11EffectShaderResourceVariable* shaderResourceView;
+	ID3DX11EffectShaderResourceVariable* normalMapShaderResourceView;
 	ID3D11Buffer* materialBuffer;
 	ID3DX11EffectConstantBuffer* Mat;
 	D3DXMATRIX projectionMatrix;

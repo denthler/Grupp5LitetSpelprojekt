@@ -65,12 +65,9 @@ bool WorldClass::Initialize(ID3D11Device* DContext, HWND hwnd, D3DXMATRIX proj, 
 		return false;
 	}
 	
-	result = player->Initialize(DContext, D3DXVECTOR3(rManager.player.transforms[0]._41, rManager.player.transforms[0]._42, rManager.player.transforms[0]._43));
+	result = player->Initialize(DContext, D3DXVECTOR3(rManager.player.transforms[0]._41, rManager.player.transforms[0]._42, rManager.player.transforms[0]._43), 
+		rManager.player.textureMap, rManager.player.normalMap, rManager.player.animationSets, rManager.player.m_vertexBuffer, rManager.player.vCount);
 	player->bBox = rManager.player.bBox[0];
-	if(!result)
-	{
-		return false;
-	}
 
 	input = new InputClass();
 
@@ -85,7 +82,8 @@ bool WorldClass::Initialize(ID3D11Device* DContext, HWND hwnd, D3DXMATRIX proj, 
 		return false;
 	}
 	
-	enemy = new FallingEnemy(DContext, D3DXVECTOR3(rManager.enemys[0].transforms[0]._41, rManager.enemys[0].transforms[0]._42, rManager.enemys[0].transforms[0]._43));
+	enemy = new FallingEnemy(DContext, D3DXVECTOR3(rManager.enemys[0].transforms[0]._41, rManager.enemys[0].transforms[0]._42, rManager.enemys[0].transforms[0]._43), 
+		rManager.enemys[0].textureMap, rManager.enemys[0].normalMap, rManager.enemys[0].animationSets, rManager.enemys[0].m_vertexBuffer, rManager.enemys[0].vCount);
 	enemy->bBox = rManager.enemys[0].bBox[0];
 
 	return true;
@@ -205,24 +203,20 @@ void WorldClass::Draw(ID3D11DeviceContext* DContext)
 
 	viewMatrix = camera->GetView();
 
+	Player::Material material = player->GetMaterial();
 	ID3D11ShaderResourceView* tempTex;
+	ID3D11ShaderResourceView* tempNor;
+	std::vector<D3DMATRIX> temp;
 
+	tempNor = 0;
 	tempTex = 0;
-	pManager.Draw(DContext, renderClass, viewMatrix, tempTex, pointLight, player->GetMaterial());
+	pManager.Draw(DContext, renderClass, viewMatrix, tempTex, tempNor, pointLight, material);
 
-	player->Apply(DContext, rManager.player.m_vertexBuffer);
-	result = renderClass->UpdateRender(DContext, player->GetWorldMatrix(), viewMatrix, tempTex, pointLight, player->GetMaterial());
-	if (!result)
-	{
-		return;
-	}
-	renderClass->Draw(DContext, rManager.player.vCount);
-
-	enemy->Apply(DContext, rManager.enemys[0].m_vertexBuffer);
-	result = renderClass->UpdateRender(DContext, enemy->GetWorldMatrix(), viewMatrix, tempTex, pointLight, player->GetMaterial());
-	if (!result)
-	{
-		return;
-	}
-	renderClass->Draw(DContext, rManager.enemys[0].vCount);
+	player->Apply(DContext);
+	result = renderClass->UpdateRender(DContext, player->GetWorldMatrix(), viewMatrix, player->GetTextureMap(), player->GetNormalMap(), pointLight, player->GetMaterial(), temp);
+	renderClass->Draw(DContext, rManager.player.vCount, 1);
+	
+	enemy->Apply(DContext);
+	result = renderClass->UpdateRender(DContext, enemy->GetWorldMatrix(), viewMatrix, enemy->GetTextureMap(), enemy->GetNormalMap(), pointLight, enemy->GetMaterial(), enemy->GetCurrentFrame());// rManager.enemys[0].animationSets[0].keyFrames[test].boneTransforms);
+	renderClass->Draw(DContext, enemy->GetVertexCount(), 1);
 }

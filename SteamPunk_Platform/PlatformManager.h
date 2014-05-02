@@ -34,7 +34,7 @@ public:
 	~PlatformManager();
 
 	void CreateLevel(std::vector<Mesh>&);
-	void Draw(ID3D11DeviceContext*, Render*, D3DXMATRIX, ID3D11ShaderResourceView*, PointLightClass*, ModelClass::Material);
+	void Draw(ID3D11DeviceContext*, Render*, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, PointLightClass*, ModelClass::Material);
 	void Update(D3DXVECTOR3 playerPosition, std::vector<ModelClass::BoundingBox>& bb);
 	//Get Boundingboxes
 
@@ -42,5 +42,7 @@ private:
 	void OrganizeLevel(std::vector<GameObject>&);
 	std::vector<meshStruct> objects;
 	std::vector<ID3D11Buffer*> buffers;
+	std::vector<ID3D11ShaderResourceView*> textureMap;
+	std::vector<ID3D11ShaderResourceView*> normalMap;
 };
 #endif

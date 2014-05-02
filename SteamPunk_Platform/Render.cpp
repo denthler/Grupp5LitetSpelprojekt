@@ -8,9 +8,12 @@ Render::Render()
 	effect = 0;
 	eTech = 0;
 	samplerVariable = 0;
+	cbAniMatrixBuffer = 0;
 	cbMatrixBuffer = 0;
 	cbMatrix = 0;
+	cbAniMatrix = 0;
 	shaderResourceView = 0;
+	normalMapShaderResourceView = 0;
 	sampleState = 0;
 	lightConstantBuffer = 0;
 	cbMatrix = 0;
@@ -118,8 +121,9 @@ bool Render::Initialize(ID3D11Device* device, HWND hwnd, WCHAR* filename, D3DXMA
 {
 	HRESULT result;
 	ID3D10Blob* compiledShader;
-	D3D11_INPUT_ELEMENT_DESC vertexLayout[4];
+	D3D11_INPUT_ELEMENT_DESC vertexLayout[6];
 	D3D11_BUFFER_DESC matrixBufferDesc;
+	D3D11_BUFFER_DESC animationMatrixBufferDesc;
 	D3D11_SAMPLER_DESC samplerDesc;
 	D3D11_BUFFER_DESC lightBufferDesc;
 	D3D11_BUFFER_DESC materialBufferDesc;
@@ -176,8 +180,10 @@ bool Render::Initialize(ID3D11Device* device, HWND hwnd, WCHAR* filename, D3DXMA
 	eTech = effect->GetTechniqueByName("ShaderTech");
 	
 	cbMatrix = effect->GetConstantBufferByName("MatrixBuffer");
+	cbAniMatrix = effect->GetConstantBufferByName("AnimationMatrixBuffer");
 	lightConstantBuffer = effect->GetConstantBufferByName("LightBuffer");
 	shaderResourceView = effect->GetVariableByName("shaderTexture")->AsShaderResource();
+	normalMapShaderResourceView = effect->GetVariableByName("normalMap")->AsShaderResource();
 	samplerVariable = effect->GetVariableByName("SampleType")->AsSampler();
 	Mat = effect->GetConstantBufferByName("gMaterial");
 
@@ -229,9 +235,25 @@ bool Render::Initialize(ID3D11Device* device, HWND hwnd, WCHAR* filename, D3DXMA
 	vertexLayout[3].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	vertexLayout[3].InstanceDataStepRate = 0;
 
+	vertexLayout[4].SemanticName = "WEIGHT";
+	vertexLayout[4].SemanticIndex = 0;
+	vertexLayout[4].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	vertexLayout[4].InputSlot = 0;
+	vertexLayout[4].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	vertexLayout[4].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	vertexLayout[4].InstanceDataStepRate = 0;
+
+	vertexLayout[5].SemanticName = "BONEINDEX";
+	vertexLayout[5].SemanticIndex = 0;
+	vertexLayout[5].Format = DXGI_FORMAT_R8G8B8A8_UINT;
+	vertexLayout[5].InputSlot = 0;
+	vertexLayout[5].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	vertexLayout[5].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	vertexLayout[5].InstanceDataStepRate = 0;
+
 	D3DX11_PASS_DESC passDesc;
     eTech->GetPassByIndex(0)->GetDesc(&passDesc);
-	result = device->CreateInputLayout(vertexLayout, 4, passDesc.pIAInputSignature, 
+	result = device->CreateInputLayout(vertexLayout, 6, passDesc.pIAInputSignature, 
 		passDesc.IAInputSignatureSize, &layout);
 
 	if(FAILED(result))
@@ -241,6 +263,19 @@ bool Render::Initialize(ID3D11Device* device, HWND hwnd, WCHAR* filename, D3DXMA
 
 	compiledShader->Release();
 	compiledShader = 0;
+
+	animationMatrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	animationMatrixBufferDesc.ByteWidth = sizeof(AnimationMatrixBufferType);
+	animationMatrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	animationMatrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	animationMatrixBufferDesc.MiscFlags = 0;
+	animationMatrixBufferDesc.StructureByteStride = 0;
+
+	result = device->CreateBuffer(&animationMatrixBufferDesc, NULL, &cbAniMatrixBuffer);
+	if (FAILED(result))
+	{
+		return false;
+	}
 	
 	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 	matrixBufferDesc.ByteWidth = sizeof(MatrixBufferType);
@@ -316,6 +351,10 @@ void Render::CleanShader()
 	{
 		shaderResourceView = 0;
 	}
+	if (normalMapShaderResourceView)
+	{
+		normalMapShaderResourceView = 0;
+	}
 	if(lightBuffer)
 	{
 		lightBuffer->Release();
@@ -326,6 +365,12 @@ void Render::CleanShader()
 	{
 		sampleState->Release();
 		sampleState = 0;
+	}
+
+	if (cbAniMatrixBuffer)
+	{
+		cbAniMatrixBuffer->Release();
+		cbAniMatrixBuffer = 0;
 	}
 
 	if(cbMatrixBuffer)
@@ -352,36 +397,31 @@ void Render::CleanShader()
 	}
 }
 
-void Render::Draw(ID3D11DeviceContext* deviceContext, int indexCount)
+void Render::Draw(ID3D11DeviceContext* deviceContext, int indexCount, int technique)
 {
-
-
 	deviceContext->IASetInputLayout(layout);
 
 	samplerVariable->SetSampler(0, sampleState);
 
 	D3DX11_TECHNIQUE_DESC techDesc;
     eTech->GetDesc( &techDesc );
-    for(UINT p = 0; p < techDesc.Passes; ++p)
-    {
-        eTech->GetPassByIndex(p)->Apply(0, deviceContext);
+	eTech->GetPassByIndex(technique)->Apply(0, deviceContext);
         
-		deviceContext->Draw(indexCount, 0);
-		//deviceContext->DrawIndexed(indexCount, 0, 0);
-    }
+	deviceContext->Draw(indexCount, 0); 
 }
 
 
 
 bool Render::UpdateRender(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix,
-	D3DXMATRIX viewMatrix, ID3D11ShaderResourceView* texture, PointLightClass* lightStruct, ModelClass::Material mat)
+	D3DXMATRIX viewMatrix, ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* normalMap, PointLightClass* lightStruct, ModelClass::Material mat, std::vector<D3DMATRIX> boneTransforms)
 {
 
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	MatrixBufferType* dataPtr;
 	LightBufferType* dataPtr2;
-	MaterialType* dataPtr3;
+	AnimationMatrixBufferType* dataPtr3;
+	MaterialType* dataPtr4;
 	unsigned int bufferNumber;
 
 	
@@ -407,7 +447,28 @@ bool Render::UpdateRender(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMa
 
 	cbMatrix->SetConstantBuffer(cbMatrixBuffer);
 
+
+	result = deviceContext->Map(cbAniMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0,
+		&mappedResource);
+	if (FAILED(result))
+	{
+		return false;
+	}
+	dataPtr3 = (AnimationMatrixBufferType*)mappedResource.pData;
+
+	for (int x = 0; x < boneTransforms.size(); x++)
+	{
+		dataPtr3->boneTransform[x] = boneTransforms[x];
+	}
+
+	deviceContext->Unmap(cbAniMatrixBuffer, 0);
+
+	bufferNumber = 2;
+	cbAniMatrix->SetConstantBuffer(cbAniMatrixBuffer);
+
+
 	shaderResourceView->SetResource(texture);
+	normalMapShaderResourceView->SetResource(normalMap);
 	
 	result = deviceContext->Map(lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if(FAILED(result))
@@ -435,14 +496,14 @@ bool Render::UpdateRender(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMa
 		return false;
 	}
 
-	dataPtr3 = (MaterialType*)mappedResource.pData;
+	dataPtr4 = (MaterialType*)mappedResource.pData;
 
-	dataPtr3->ambColor = mat.ambColor;
-	dataPtr3->difColor = mat.difColor;
-	dataPtr3->hasTexture = mat.hasTexture;
-	dataPtr3->padding = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	dataPtr4->ambColor = mat.ambColor;
+	dataPtr4->difColor = mat.difColor;
+	dataPtr4->hasTexture = mat.hasTexture;
+	dataPtr4->hasNormal = mat.hasNormal;
 
-	deviceContext->Unmap(materialBuffer, 0);	
+   	deviceContext->Unmap(materialBuffer, 0);	
 
 	Mat->SetConstantBuffer(materialBuffer);
 
