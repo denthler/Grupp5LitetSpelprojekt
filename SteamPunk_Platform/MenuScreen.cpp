@@ -77,6 +77,15 @@ MenuScreen::MenuScreen(ID3D11Device* device, ID3D11DeviceContext * deviceContext
 		D3DMATRIX projection;
 	};
 
+	MatrixBufferType matrixBuffer;
+	matrixBuffer.projection = D3DMATRIX();
+	matrixBuffer.projection._11 = 1.0f;
+	matrixBuffer.projection._22 = 1.0f;
+	matrixBuffer.projection._33 = 1.0f;
+	matrixBuffer.projection._44 = 1.0f;
+	matrixBuffer.view = D3DMATRIX(matrixBuffer.projection);
+	matrixBuffer.world = D3DMATRIX(matrixBuffer.projection);
+
 	D3D11_BUFFER_DESC matrixBufferDesc;
 	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 	matrixBufferDesc.ByteWidth = sizeof(MatrixBufferType);
@@ -88,6 +97,10 @@ MenuScreen::MenuScreen(ID3D11Device* device, ID3D11DeviceContext * deviceContext
 	ID3D11Buffer* cbMatrixBuffer;
 	device->CreateBuffer(&matrixBufferDesc, NULL, &cbMatrixBuffer);
 	deviceContext->VSSetConstantBuffers(0, 1, &cbMatrixBuffer);
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	deviceContext->Map(cbMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	memcpy(cbMatrixBuffer, &matrixBuffer, sizeof(MatrixBufferType));
+	deviceContext->Unmap(cbMatrixBuffer, 0);
 
 	this->device = device;
 	this->deviceContext = deviceContext;
