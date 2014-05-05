@@ -17,6 +17,7 @@ WorldClass::WorldClass(const WorldClass& other)
 
 WorldClass::~WorldClass()
 {
+
 }
 
 bool WorldClass::Initialize(ID3D11Device* DContext, HWND hwnd, D3DXMATRIX proj, HINSTANCE hInstance)
@@ -65,7 +66,9 @@ bool WorldClass::Initialize(ID3D11Device* DContext, HWND hwnd, D3DXMATRIX proj, 
 		return false;
 	}
 	
-	result = player->Initialize(DContext, D3DXVECTOR3(rManager.player.transforms[0]._41, rManager.player.transforms[0]._42, rManager.player.transforms[0]._43), 
+	//D3DXVECTOR3 playerPos(rManager.player.transforms[0]._41, rManager.player.transforms[0]._42, rManager.player.transforms[0]._43);
+	D3DXVECTOR3 playerPos(-4.0f, 8.0f, 0.0f);
+	result = player->Initialize(DContext, playerPos, 
 		rManager.player.textureMap, rManager.player.normalMap, rManager.player.animationSets, rManager.player.m_vertexBuffer, rManager.player.vCount);
 	player->bBox = rManager.player.bBox[0];
 	player->bBoxOriginal = rManager.player.bBox[0];

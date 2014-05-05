@@ -31,7 +31,6 @@ public:
 private:
 	D3DXMATRIX viewMatrix;
 	D3DXMATRIX worldMatrix;
-	D3DXVECTOR3 camPosition;
 	float s;
 	D3DXVECTOR3 currentUp;
 	D3DXVECTOR3 targetUp;

@@ -17,6 +17,7 @@ InputClass::InputClass(const InputClass& other)
 
 InputClass::~InputClass()
 {
+
 }
 
 bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int screenHeight)
