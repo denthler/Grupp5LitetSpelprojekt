@@ -19,13 +19,17 @@ Camera::~Camera()
 void Camera::Update(D3DXVECTOR3 playerPosition)
 {
 	// Rotate camera
-	if(targetUp != currentUp && s < 1.0f)
+	if (s != 1.0f)
 	{
-		s += 0.01f;
-		D3DXVECTOR3 temp;	
-		D3DXVec3Lerp(&temp, &currentUp, &targetUp, s);
-		Initialize(viewMatrix._41, viewMatrix._42, -50.0f, temp);
-		currentUp = temp;
+		if (s < 1.0f)
+		{
+			s += 0.01f;
+		}
+		else
+		{
+			s = 1.0f;
+		}
+		D3DXVec3Lerp(&currentUp, &currentUp, &targetUp, s);
 	}
 
 	// Camera movement. It follows the player's movement.

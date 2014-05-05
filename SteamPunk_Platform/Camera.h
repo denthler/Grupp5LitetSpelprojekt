@@ -27,7 +27,7 @@ public:
 		return worldMatrix;
 	}
 
-	bool IsNotFlipping() { return ((s + 0.01f) >= 1.0f); }
+	bool IsNotFlipping() { return s == 1.0f; }
 private:
 	D3DXMATRIX viewMatrix;
 	D3DXMATRIX worldMatrix;
