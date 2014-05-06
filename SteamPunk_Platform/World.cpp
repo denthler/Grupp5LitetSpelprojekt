@@ -66,8 +66,8 @@ bool WorldClass::Initialize(ID3D11Device* DContext, HWND hwnd, D3DXMATRIX proj, 
 		return false;
 	}
 	
-	//D3DXVECTOR3 playerPos(rManager.player.transforms[0]._41, rManager.player.transforms[0]._42, rManager.player.transforms[0]._43);
-	D3DXVECTOR3 playerPos(-4.0f, 8.0f, 0.0f);
+	D3DXVECTOR3 playerPos(rManager.player.transforms[0]._41, rManager.player.transforms[0]._42 + 10.0f, rManager.player.transforms[0]._43);
+	//D3DXVECTOR3 playerPos(-4.0f, 8.0f, 0.0f);
 	result = player->Initialize(DContext, playerPos, 
 		rManager.player.textureMap, rManager.player.normalMap, rManager.player.animationSets, rManager.player.m_vertexBuffer, rManager.player.vCount);
 	player->bBox = rManager.player.bBox[0];
