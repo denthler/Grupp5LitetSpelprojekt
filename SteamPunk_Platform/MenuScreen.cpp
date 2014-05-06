@@ -2,29 +2,25 @@
 
 MenuScreen::MenuScreen(ID3D11Device* device, ID3D11DeviceContext * deviceContext, HWND hwnd, D3DXMATRIX proj, HINSTANCE hInstance)
 {	
-	// Trying to draw a simple triangle on the screen. 
-	// The plan was to draw more complicated things after that (buttons, textures, etc...)
-	// but I can't get this to work ...
+	// Drawing a simple triangle on the screen. 
 	HRESULT result;
 	ID3D10Blob * VS_Buffer, * PS_Buffer;
 	result = D3DX11CompileFromFile(L"effect.fx", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &VS_Buffer, 0, 0);
 	result = D3DX11CompileFromFile(L"effect.fx", 0, 0, "PShader", "ps_5_0", 0, 0, 0, &PS_Buffer, 0, 0);
 
-	ID3D11VertexShader * VS;
-	ID3D11PixelShader * PS;
 	result = device->CreateVertexShader(VS_Buffer->GetBufferPointer(), VS_Buffer->GetBufferSize(), NULL, &VS);
 	result = device->CreatePixelShader(PS_Buffer->GetBufferPointer(), PS_Buffer->GetBufferSize(), NULL, &PS);
 	
 	deviceContext->VSSetShader(VS, 0, 0);
 	deviceContext->PSSetShader(PS, 0, 0);
 
-	float triangleData[] = 
+	float triangleData[] =
 	{
-		0.0f, 0.5f, 0.5f,
-		0.5f, -0.5f, 0.5f,
-		-0.5f, -0.5f, 0.5f
+		-0.875f, 1.0f, 0.0f,
+		-1.0f,  0.75f, 0.0f,
+		-0.75f, 0.75f, 0.0f
 	};
-
+	
 	D3D11_SUBRESOURCE_DATA vertexBufferData;
 	ZeroMemory(&vertexBufferData, sizeof(vertexBufferData));
 	vertexBufferData.pSysMem = triangleData;
@@ -37,7 +33,7 @@ MenuScreen::MenuScreen(ID3D11Device* device, ID3D11DeviceContext * deviceContext
 	bufferDesc.MiscFlags = 0;
 	bufferDesc.StructureByteStride = 0;
 
-	ID3D11Buffer* triangleVertBuffer;
+	triangleVertBuffer;
 	result = device->CreateBuffer(&bufferDesc, &vertexBufferData, &triangleVertBuffer);
 	UINT stride = sizeof(float) * 3;
 	UINT offset = 0;
@@ -69,39 +65,7 @@ MenuScreen::MenuScreen(ID3D11Device* device, ID3D11DeviceContext * deviceContext
 	viewport.Height = 640;
 
 	deviceContext->RSSetViewports(1, &viewport);
-
-	struct MatrixBufferType
-	{
-		D3DMATRIX world;
-		D3DMATRIX view;
-		D3DMATRIX projection;
-	};
-
-	MatrixBufferType matrixBuffer;
-	matrixBuffer.projection = D3DMATRIX();
-	matrixBuffer.projection._11 = 1.0f;
-	matrixBuffer.projection._22 = 1.0f;
-	matrixBuffer.projection._33 = 1.0f;
-	matrixBuffer.projection._44 = 1.0f;
-	matrixBuffer.view = D3DMATRIX(matrixBuffer.projection);
-	matrixBuffer.world = D3DMATRIX(matrixBuffer.projection);
-
-	D3D11_BUFFER_DESC matrixBufferDesc;
-	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	matrixBufferDesc.ByteWidth = sizeof(MatrixBufferType);
-	matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	matrixBufferDesc.MiscFlags = 0;
-	matrixBufferDesc.StructureByteStride = 0;
-
-	ID3D11Buffer* cbMatrixBuffer;
-	device->CreateBuffer(&matrixBufferDesc, NULL, &cbMatrixBuffer);
-	deviceContext->VSSetConstantBuffers(0, 1, &cbMatrixBuffer);
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	deviceContext->Map(cbMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	memcpy(cbMatrixBuffer, &matrixBuffer, sizeof(MatrixBufferType));
-	deviceContext->Unmap(cbMatrixBuffer, 0);
-
+	
 	this->device = device;
 	this->deviceContext = deviceContext;
 }
@@ -118,7 +82,11 @@ void MenuScreen::Update()
 
 void MenuScreen::Draw()
 {
-
-	//device->CreateInputLayout(layout, 1, )
+	deviceContext->VSSetShader(VS, 0, 0);
+	deviceContext->PSSetShader(PS, 0, 0);
+	UINT stride = sizeof(float)* 3;
+	UINT offset = 0;
+	deviceContext->IASetVertexBuffers(0, 1, &triangleVertBuffer, &stride, &offset);
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	deviceContext->Draw(3, 0);
 }

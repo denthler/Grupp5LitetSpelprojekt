@@ -8,7 +8,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevious, LPSTR lpCmdLine, in
 	application.Initialize(hInstance, 800, 640);
 	application.InitializeD3D(800, 640, true, true);
 	world.Initialize(application.GetDevice(), application.GetWindow(), application.GetProj(), hInstance);
-	//MenuScreen menu(application.GetDevice(), application.GetDeviceContext(), application.GetWindow(), application.GetProj(), hInstance);
+	MenuScreen menu(application.GetDevice(), application.GetDeviceContext(), application.GetWindow(), application.GetProj(), hInstance);
 
 
 	MSG msg;
@@ -25,7 +25,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevious, LPSTR lpCmdLine, in
 			world.Update(application.GetElapsedTime(), application.GetDevice());
 			application.Begin(1.0f, 0.0f, 0.0f, 1.0f);
 			world.Draw(application.GetDeviceContext());
-			//menu.Draw();
+			menu.Draw();
 			application.End(true);
 		}
 	}
