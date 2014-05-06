@@ -27,6 +27,7 @@ ModelClass::~ModelClass()
 D3DXMATRIX ModelClass::GetWorldMatrix()
 {
 	//Should multiply, bcause of rotation!!
+	/*
 	D3DXMatrixTranslation(&m_worldMatrix, position.x, position.y, position.z);
 	if (Rotated)
 	{
@@ -35,11 +36,148 @@ D3DXMATRIX ModelClass::GetWorldMatrix()
 		rotMatrix._41 = position.x;
 		rotMatrix._42 = position.y;
 		rotMatrix._43 = position.z;
+<<<<<<< HEAD
+		return rotMatrix;
+	}
+	return m_worldMatrix;
+	*/
+
+	D3DXMATRIX posMatrix;
+	D3DXMatrixTranslation(&posMatrix, position.x, position.y, position.z);
+	D3DXMATRIX rotMatrix, rotMatrix2;
+	if (Rotated)
+	{
+		if (worldAxis.y > 0.0f)
+		{
+			D3DXMatrixRotationY(&rotMatrix, D3DX_PI);
+		}
+		else if (worldAxis.y < 0.0f)
+		{
+			D3DXMatrixRotationY(&rotMatrix, 0.0f);
+			D3DXMatrixRotationX(&rotMatrix2, D3DX_PI);
+			rotMatrix *= rotMatrix2;
+		}
+		else if (worldAxis.x < 0.0f)
+		{
+			D3DXMatrixRotationZ(&rotMatrix, D3DX_PI / 2);
+			D3DXMatrixRotationX(&rotMatrix2, D3DX_PI);
+			rotMatrix *= rotMatrix2;
+		}
+		else if (worldAxis.x > 0.0f)
+		{
+			D3DXMatrixRotationZ(&rotMatrix, (3 * D3DX_PI) / 2);
+			D3DXMatrixRotationX(&rotMatrix2, D3DX_PI);
+			rotMatrix *= rotMatrix2;
+		}
+	}
+	else
+	{
+		if (worldAxis.y > 0.0f)
+		{
+			D3DXMatrixRotationY(&rotMatrix, 0.0f);
+		}
+		else if (worldAxis.y < 0.0f)
+		{
+			D3DXMatrixRotationY(&rotMatrix, D3DX_PI);
+			D3DXMatrixRotationX(&rotMatrix2, D3DX_PI);
+			rotMatrix *= rotMatrix2;
+		}
+		else if (worldAxis.x < 0.0f)
+		{
+			D3DXMatrixRotationZ(&rotMatrix, D3DX_PI / 2);
+			D3DXMatrixRotationX(&rotMatrix2, 0.0f);
+			rotMatrix *= rotMatrix2;
+		}
+		else if (worldAxis.x > 0.0f)
+		{
+			D3DXMatrixRotationZ(&rotMatrix, (3 * D3DX_PI) / 2);
+			D3DXMatrixRotationX(&rotMatrix2, 0.0f);
+			rotMatrix *= rotMatrix2;
+		}
+	}
+	m_worldMatrix = rotMatrix;
+	m_worldMatrix._41 = position.x;
+	m_worldMatrix._42 = position.y;
+	m_worldMatrix._43 = position.z;
+
+	
+	D3DXVECTOR4 tempVec;
+	D3DXVec3Transform(&tempVec, &bBoxOriginal.max, &rotMatrix);
+	bBox.max.x = tempVec.x;
+	bBox.max.y = tempVec.y;
+	bBox.max.z = tempVec.z;
+	D3DXVec3Transform(&tempVec, &bBoxOriginal.min, &rotMatrix);
+	bBox.min.x = tempVec.x;
+	bBox.min.y = tempVec.y;
+	bBox.min.z = tempVec.z;
+
+	if ((bBox.min.x > bBox.max.x))
+	{
+		bBox.min.x = bBox.max.x;
+		bBox.max.x = tempVec.x;
+	}
+	if ((bBox.min.y > bBox.max.y))
+	{
+		bBox.min.y = bBox.max.y;
+		bBox.max.y = tempVec.y;
+	}
+	if ((bBox.min.z > bBox.max.z))
+	{
+		bBox.min.z = bBox.max.z;
+		bBox.max.z = tempVec.z;
+	}
+	
+	return m_worldMatrix;
+}
+
+void ModelClass::FlipGravity()
+{
+	D3DXVECTOR3 temp;
+	temp = (bBox.max - bBox.min) / 2.0f;
+	D3DXVECTOR3 temp2;
+	D3DXVec3Cross(&temp2, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f));
+	if (!Rotated)
+	{
+		position.x -= (temp.x * temp2.x) * (2.5f);
+		position.y -= (temp.y * temp2.y) * (2.5f);
+		position.z -= (temp.z * temp2.z) * (2.5f);
+	}
+	else
+	{
+		position.x += (temp.x * temp2.x) * (2.5f);
+		position.y += (temp.y * temp2.y) * (2.5f);
+		position.z += (temp.z * temp2.z) * (2.5f);
+	}
+	D3DXVec3Cross(&worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis);
+
+}
+
+void ModelClass::FlipGravityS()
+{
+	D3DXVECTOR3 temp;
+	temp = (bBox.max - bBox.min) / 2.0f;
+	D3DXVECTOR3 temp2;
+	D3DXVec3Cross(&temp2, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f));
+	if (!Rotated)
+	{
+		position.x -= (temp.x * temp2.x) * (2.5f);
+		position.y -= (temp.y * temp2.y) * (2.5f);
+		position.z -= (temp.z * temp2.z) * (2.5f);
+	}
+	else
+	{
+		position.x += (temp.x * temp2.x) * (2.5f);
+		position.y += (temp.y * temp2.y) * (2.5f);
+		position.z += (temp.z * temp2.z) * (2.5f);
+	}
+	D3DXVec3Cross(&worldAxis, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f));
+	/*
 		m_worldMatrix = rotMatrix;
 		return m_worldMatrix;
 	}
 
 	return m_worldMatrix;
+	*/
 }
 
 bool ModelClass::Initialize(ID3D11Device* device)
@@ -110,7 +248,8 @@ bool ModelClass::Update(float time, std::vector<BoundingBox>& bb)
 
 	if (!(VerticalCollisionTest(moveAmount, bb)) && !(res) && !(OnGround))
 	{
-		res = true;
+		res = false;
+		//res = true??
 	}
 
 	if (((abs(worldAxis.x) * moveAmount.x) != 0.0f) ||
@@ -138,8 +277,8 @@ bool ModelClass::HorizontalCollisionTest(D3DXVECTOR3& amount, std::vector<Boundi
 	D3DXVECTOR3 offset;
 
 	offset.x = position.x + ((amount.x * temp.x) * value);
-	offset.y = position.y + ((amount.y * temp.y)* value);
-	offset.z = position.z + ((amount.z * temp.z)* value);
+	offset.y = position.y + ((amount.y * temp.y) * value);
+	offset.z = position.z + ((amount.z * temp.z) * value);
 
 	D3DXVECTOR3 tempMax = bBox.max;
 	D3DXVECTOR3 tempMin = bBox.min;

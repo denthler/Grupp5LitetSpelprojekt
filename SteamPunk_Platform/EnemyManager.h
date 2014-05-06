@@ -22,7 +22,8 @@ public:
 	void Update(std::vector<ModelClass::BoundingBox>&, float, Player* playerPosition, ID3D11Device* device);
 	void Draw(ID3D11DeviceContext*, Render*, D3DXMATRIX, PointLightClass*);
 	void Shutdown();
-	void FlipGravity();
+	void FlipGravityW();
+
 	void FlipGravityS();
 private:
 	void SpawnEnemy(ID3D11Device* device);

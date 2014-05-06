@@ -33,7 +33,21 @@ void Camera::Update(D3DXVECTOR3 playerPosition)
 	}
 
 	// Camera movement. It follows the player's movement.
+
+	if((currentUp.y != 0.0f) && (abs(currentUp.y) > abs(currentUp.x)))
+	{
+		viewMatrix._41 = (-playerPosition.x) * currentUp.y;
+		viewMatrix._42 = ((-playerPosition.y) * currentUp.y);// + (10.0f * currentUp.y);
+	}
+	else
+	{
+		viewMatrix._41 = (playerPosition.y) * currentUp.x;
+		viewMatrix._42 = ((-playerPosition.x) * currentUp.x);// + (10.0f * currentUp.x);
+	}
+	
+
 	Initialize(playerPosition.x, playerPosition.y, playerPosition.z, currentUp);
+
 }
 void Camera::Flip()
 {
@@ -49,6 +63,15 @@ void Camera::FlipS()
 
 bool Camera::Initialize(float x, float y, float z, D3DXVECTOR3 up)
 {
+
+	//D3DXVECTOR3 vec, dir;
+	//vec = D3DXVECTOR3(x, y, z);
+	//camPosition = vec;
+	//D3DXVec3Normalize(&dir, &(D3DXVECTOR3(vec.x, vec.y, 0.0f) - camPosition));
+	//dir = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
+	//D3DXMatrixTranslation(&worldMatrix, x, y, z);
+	
+	//D3DXMatrixLookAtLH(&viewMatrix, &vec, &dir, &up);
 	D3DXVECTOR3 target(x, y, z);
 	D3DXVECTOR3 cameraPos(x, y, -50.0f);
 	D3DXMatrixTranslation(&worldMatrix, x, y, z);

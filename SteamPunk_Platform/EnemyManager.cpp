@@ -26,6 +26,7 @@ void EnemyManager::SpawnEnemy(ID3D11Device* device)
 {
 	FallingEnemy* fEnemy = new FallingEnemy(device, enemySpawnPoint, textureMap, normalMap, animationStack, vBuffer, vCount);
 	fEnemy->bBox = bBox;
+	fEnemy->bBoxOriginal = bBox;
 	enemies.push_back(fEnemy);
 }
 
@@ -39,7 +40,8 @@ void EnemyManager::Shutdown()
 	enemies.clear();
 }
 
-void EnemyManager::FlipGravity()
+
+void EnemyManager::FlipGravityW()
 {
 	for (int i = 0; i < enemies.size(); i++)
 	{
@@ -100,8 +102,13 @@ void EnemyManager::Draw(ID3D11DeviceContext* deviceContext, Render* render, D3DX
 		if (render->InsideFrustum(enemies[i]->GetBoundingBox().min, enemies[i]->GetBoundingBox().max))
 		{
 			deviceContext->IASetVertexBuffers(0, 1, &vBuffer, &stride, &offset);
+
+			D3DXMATRIX world;
+			world = enemies[i]->GetWorldMatrix();
+
 			bool result = render->UpdateRender(deviceContext, enemies[i]->GetWorldMatrix(), viewMatrix, enemies[i]->GetTextureMap(), enemies[i]->GetNormalMap(), lightStruct, enemies[i]->GetMaterial(), enemies[i]->GetCurrentFrame());
 			render->Draw(deviceContext, vCount, 1);
+
 		}
 	}
 }

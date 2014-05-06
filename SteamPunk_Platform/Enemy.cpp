@@ -35,7 +35,7 @@ Enemy::Enemy(ID3D11Device * device, D3DXMATRIX p, ID3D11ShaderResourceView* tM, 
 	//ModelClass::position = position;
 	m_worldMatrix = p;
 	position = D3DXVECTOR3(p._41, p._42, p._43);
-	moveScale = -0.05f;
+	moveScale = -0.03f;
 }
 
 Enemy::~Enemy()
@@ -52,7 +52,7 @@ bool Enemy::Update(float gameTime, std::vector<BoundingBox>& bb)
 	D3DXVec3Cross(&right, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f));
 	if (OnGround)
 		velocity = right * moveScale;
-	
+
 	test = OnGround;
 	test2 = ModelClass::Update(gameTime, bb);
 
@@ -60,28 +60,28 @@ bool Enemy::Update(float gameTime, std::vector<BoundingBox>& bb)
 	{
 		moveScale *= -1.0f;
 		velocity = right * (moveScale);
-		velocity += (worldAxis * 0.0032f);
+		velocity += (worldAxis * 0.003f);
 	}
 	else if (test2)
 	{
 		moveScale *= -1.0f;
-		if (moveScale > 0.0f)
-		{
-			Rotated = false;
-		}
-		else
+		if (moveScale > 0.0f)// && OnGround)
 		{
 			Rotated = true;
 		}
-			
+		else
+		{
+			Rotated = false;
+		}
+
 		//velocity += right * (moveScale);
 		return true;
 	}
 
-	animationTime++;
 	currentFrame = animationStack[0].keyFrames[animationTime].boneTransforms;
+	animationTime++;
 
-	if (animationTime > 24)
+	if (animationTime > animationStack[0].keyFrames.size() - 1)
 		animationTime = 0;
 
 	return false;

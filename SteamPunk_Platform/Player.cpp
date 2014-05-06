@@ -9,6 +9,7 @@ Player::Player()
 	moveScale = -0.2f;//-0.1f
 	gravity = -0.01f;
 	worldAxis = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	numberOfCogs = 0;
 }
 
 Player::~Player()
@@ -23,6 +24,8 @@ void Player::Shutdown()
 
 bool Player::Initialize(ID3D11Device* device, D3DXVECTOR3 startPos, ID3D11ShaderResourceView* tM, ID3D11ShaderResourceView* nM, std::vector<AnimationStack> aS, ID3D11Buffer* vB, int vC)
 {
+	ModelClass::Initialize(device);
+
 	position = startPos;
 
 	textureMap = tM;
@@ -38,20 +41,21 @@ bool Player::Initialize(ID3D11Device* device, D3DXVECTOR3 startPos, ID3D11Shader
 	normalMap = nM;
 	if (normalMap)
 	{
-		mat.hasTexture = true;
+		mat.hasNormal = true;
 	}
 	else
 	{
-		mat.hasTexture = false;
+		mat.hasNormal = false;
 	}
 
 	animationStack = aS;
 	m_vertexBuffer = vB;
 	vCount = vC;
+	animationTime = 0;
 
 	StartPos = startPos;
 
-	return ModelClass::Initialize(device);
+	return true;
 }
 
 void Player::Kill()
@@ -59,9 +63,15 @@ void Player::Kill()
 	position = StartPos;
 }
 
+void Player::AddCog()
+{
+	numberOfCogs++;
+}
+
 D3DXMATRIX Player::GetWorldMatrix()
 {
 	//Move this code to superclass later!!!!!
+	/*
 	D3DXMATRIX posMatrix;
 	D3DXMatrixTranslation(&posMatrix, position.x, position.y, position.z);
 	D3DXMATRIX rotMatrix, rotMatrix2;
@@ -145,24 +155,35 @@ D3DXMATRIX Player::GetWorldMatrix()
 		bBox.max.z = tempVec.z;
 	}
 	return m_worldMatrix;
-
+	*/
+	return ModelClass::GetWorldMatrix();
 }
 
 bool Player::Update(float gameTime, std::vector<BoundingBox>& bb)
 {
 	D3DXVECTOR3 temp;
 	gameTime *= 0.05f;
+	static bool tempBool = false;
 	D3DXVec3Cross(&temp, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f));
 	if(!dead)
 	{		
 		velocity.x -= (abs(temp.x) * velocity.x);
 		velocity.y -= (abs(temp.y) * velocity.y);
 		velocity.z -= (abs(temp.z) * velocity.z);
+
+		//D3DXVECTOR3 temp2;
+		//temp2 = (bBox.max - bBox.min) / 2.0f;
 		
 		if(left)
 		{	
 			D3DXVec3Cross(&temp, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis);
 			velocity -= moveScale * temp;
+			if (!Rotated && tempBool)
+			{
+				position.x += (temp.x) * (.9f);
+				position.y += (temp.y) * (.9f);
+				position.z += (temp.z) * (.9f);
+			}
 			left = false;
 			Rotated = true;
 		}
@@ -171,8 +192,14 @@ bool Player::Update(float gameTime, std::vector<BoundingBox>& bb)
 			
 			D3DXVec3Cross(&temp, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis);
 			velocity += moveScale * temp;
+			if (Rotated && tempBool)
+			{
+				position.x -= (temp.x) * (.9f);
+				position.y -= (temp.y) * (.9f);
+				position.z -= (temp.z) * (.9f);
+			}
 			right = false;
-			Rotated = false;;
+			Rotated = false;
 		}
 		if(jump)
 		{
@@ -183,9 +210,15 @@ bool Player::Update(float gameTime, std::vector<BoundingBox>& bb)
 			jump = false;
 		}
 	}
-	
-	return (ModelClass::Update(gameTime, bb));
-	
+
+	currentFrame = animationStack[0].keyFrames[animationTime].boneTransforms;
+	animationTime++;
+
+	if (animationTime > animationStack[0].keyFrames.size() - 1)
+		animationTime = 0;
+
+	tempBool = (ModelClass::Update(gameTime, bb));
+	return tempBool;
 }
 
 void Player::Jump()
