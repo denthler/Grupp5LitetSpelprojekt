@@ -12,7 +12,7 @@ public:
 	Player();
 	~Player();
 
-	bool Initialize(ID3D11Device*, D3DXVECTOR3);
+	bool Initialize(ID3D11Device*, D3DXVECTOR3, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, std::vector<AnimationStack>, ID3D11Buffer*, int);
 	bool Update(float, std::vector<BoundingBox>&);
 	//void Kill();
 	//void Revive();

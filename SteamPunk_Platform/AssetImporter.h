@@ -8,6 +8,20 @@
 
 #include <D3DX10math.h>
 
+struct skinCluster
+{
+	std::vector<int> index;
+	std::vector<float> weight;
+	D3DMATRIX bindPoseTransform;
+	D3DMATRIX geometricTransform;
+};
+
+struct KeyFrames
+{
+	float time;
+	std::vector<D3DMATRIX> boneTransforms;
+};
+
 struct FaceInfo
 {
 	std::vector<int> vertex;
@@ -24,6 +38,11 @@ struct MeshData
 
 	std::vector<D3DXVECTOR3> normals;
 	std::vector<D3DXVECTOR3> uvTangents;
+	std::string	textureMap;
+	std::string normalMap;
+
+	std::vector<skinCluster> clusters;
+	std::vector<KeyFrames> keyFrames;
 };
 
 class AssetImporter

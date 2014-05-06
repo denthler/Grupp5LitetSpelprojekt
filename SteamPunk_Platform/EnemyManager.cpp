@@ -1,14 +1,16 @@
 #include "EnemyManager.h"
 #include "FallingEnemy.h"
 
-EnemyManager::EnemyManager(D3DXMATRIX p, ID3D11Buffer* buf, int v, ModelClass::BoundingBox box)
+EnemyManager::EnemyManager(D3DXMATRIX p, ID3D11ShaderResourceView* tM, ID3D11ShaderResourceView* nM, std::vector<AnimationStack> aS, ID3D11Buffer* vB, int vC, ModelClass::BoundingBox box)
 {
 	maxEnemy = 1;
 	enemySpawnPoint = p;
-	vCount = v;
-	vBuffer = buf;
+	vCount = vC;
+	vBuffer = vB;
 	bBox = box;
-	
+	textureMap = tM;
+	normalMap = nM;
+	animationStack = aS;
 }
 
 EnemyManager::EnemyManager(const EnemyManager& other)
@@ -22,8 +24,7 @@ EnemyManager::~EnemyManager()
 
 void EnemyManager::SpawnEnemy(ID3D11Device* device)
 {
-
-	FallingEnemy* fEnemy = new FallingEnemy(device, enemySpawnPoint);
+	FallingEnemy* fEnemy = new FallingEnemy(device, enemySpawnPoint, textureMap, normalMap, animationStack, vBuffer, vCount);
 	fEnemy->bBox = bBox;
 	fEnemy->bBoxOriginal = bBox;
 	enemies.push_back(fEnemy);
@@ -38,6 +39,7 @@ void EnemyManager::Shutdown()
 	}
 	enemies.clear();
 }
+
 
 void EnemyManager::FlipGravityW()
 {
@@ -86,24 +88,27 @@ void EnemyManager::Update(std::vector<ModelClass::BoundingBox>& bBoxes, float ti
 
 }
 
-void EnemyManager::Draw(ID3D11DeviceContext* deviceContext, Render* render, D3DXMATRIX viewMatrix, ID3D11ShaderResourceView* texture, PointLightClass* lightStruct, ModelClass::Material mat)
+void EnemyManager::Draw(ID3D11DeviceContext* deviceContext, Render* render, D3DXMATRIX viewMatrix, PointLightClass* lightStruct)
 {
 	unsigned int stride;
 	unsigned int offset;
 
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	stride = sizeof(VertexTypeT);
+	stride = sizeof(VertexTypeAni);
 	offset = 0;
 	for (int i = 0; i < enemies.size(); i++)
 	{
 		if (render->InsideFrustum(enemies[i]->GetBoundingBox().min, enemies[i]->GetBoundingBox().max))
 		{
 			deviceContext->IASetVertexBuffers(0, 1, &vBuffer, &stride, &offset);
+
 			D3DXMATRIX world;
 			world = enemies[i]->GetWorldMatrix();
-			bool result = render->UpdateRender(deviceContext, world, viewMatrix, texture, lightStruct, mat);
-			render->Draw(deviceContext, vCount);
+
+			bool result = render->UpdateRender(deviceContext, enemies[i]->GetWorldMatrix(), viewMatrix, enemies[i]->GetTextureMap(), enemies[i]->GetNormalMap(), lightStruct, enemies[i]->GetMaterial(), enemies[i]->GetCurrentFrame());
+			render->Draw(deviceContext, vCount, 1);
+
 		}
 	}
 }

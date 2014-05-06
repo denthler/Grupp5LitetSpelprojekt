@@ -11,8 +11,8 @@ class FallingEnemy : public Enemy
 
 public:
 	//FallingEnemy();
-	FallingEnemy(ID3D11Device * device, D3DXMATRIX p) :
-		Enemy(device, p){}
+	FallingEnemy(ID3D11Device * device, D3DXMATRIX p, ID3D11ShaderResourceView* tM, ID3D11ShaderResourceView* nM, std::vector<AnimationStack> aS, ID3D11Buffer* vB, int vC) :
+		Enemy(device, p, tM, nM, aS, vB, vC){}
 	~FallingEnemy();
 
 	bool Update(float, std::vector<BoundingBox>&);

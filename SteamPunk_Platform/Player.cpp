@@ -22,10 +22,36 @@ void Player::Shutdown()
 	ModelClass::Shutdown();
 }
 
-bool Player::Initialize(ID3D11Device* device, D3DXVECTOR3 startPos)
+bool Player::Initialize(ID3D11Device* device, D3DXVECTOR3 startPos, ID3D11ShaderResourceView* tM, ID3D11ShaderResourceView* nM, std::vector<AnimationStack> aS, ID3D11Buffer* vB, int vC)
 {
 	position = startPos;
+
+	textureMap = tM;
+	if (textureMap)
+	{
+		mat.hasTexture = true;
+	}
+	else
+	{
+		mat.hasTexture = false;
+	}
+
+	normalMap = nM;
+	if (normalMap)
+	{
+		mat.hasTexture = true;
+	}
+	else
+	{
+		mat.hasTexture = false;
+	}
+
+	animationStack = aS;
+	m_vertexBuffer = vB;
+	vCount = vC;
+
 	StartPos = startPos;
+
 	return ModelClass::Initialize(device);
 }
 

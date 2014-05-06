@@ -11,8 +11,8 @@ class NonFallingEnemy : public Enemy
 
 public:
 	//NonFallingEnemy();
-	NonFallingEnemy(ID3D11Device * device, WCHAR * filename, D3DXMATRIX position) :
-		Enemy(device, position){}
+	NonFallingEnemy(ID3D11Device * device, D3DXMATRIX position, ID3D11ShaderResourceView* tM, ID3D11ShaderResourceView* nM, std::vector<AnimationStack> aS, ID3D11Buffer* vB, int vC) :
+		Enemy(device, position, tM, nM, aS, vB, vC){}
 	~NonFallingEnemy();
 
 	bool Update(float, std::vector<BoundingBox>&);

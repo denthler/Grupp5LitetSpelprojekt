@@ -24,12 +24,14 @@ void PlatformManager::CreateLevel(std::vector<Mesh>& meshes)
 		tempString = meshes[i].type;
 		std::string tempSubString = tempString.substr(0, 2);
 
-			buffers.push_back(meshes[i].m_vertexBuffer);
+		buffers.push_back(meshes[i].m_vertexBuffer);
+		textureMap.push_back(meshes[i].textureMap);
+		normalMap.push_back(meshes[i].normalMap);
 
-			//BBox tempBox = meshes[i].BoundingBox;
+		//BBox tempBox = meshes[i].BoundingBox;
 
-			meshStruct newMesh;
-			newMesh.vCount = meshes[i].vCount;
+		meshStruct newMesh;
+		newMesh.vCount = meshes[i].vCount;
 
 		if (tempSubString == "bg")
 		{
@@ -102,10 +104,11 @@ void PlatformManager::Update(D3DXVECTOR3 playerPosition, std::vector<ModelClass:
 	
 }
 
-void PlatformManager::Draw(ID3D11DeviceContext* deviceContext, Render* render, D3DXMATRIX viewMatrix, ID3D11ShaderResourceView* texture, PointLightClass* lightStruct, ModelClass::Material mat)
+void PlatformManager::Draw(ID3D11DeviceContext* deviceContext, Render* render, D3DXMATRIX viewMatrix, ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* normal, PointLightClass* lightStruct, ModelClass::Material mat)
 {
 	unsigned int stride;
 	unsigned int offset;
+	std::vector<D3DMATRIX> temp;
 
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -119,8 +122,31 @@ void PlatformManager::Draw(ID3D11DeviceContext* deviceContext, Render* render, D
 			if (render->InsideFrustum(objects[i].objectData[j]->getBoundingBox().min, objects[i].objectData[j]->getBoundingBox().max))
 			{
 				deviceContext->IASetVertexBuffers(0, 1, &buffers[objects[i].bufferIndices[j]], &stride, &offset);
-				bool result = render->UpdateRender(deviceContext, objects[i].objectData[j]->getWorld(), viewMatrix, texture, lightStruct, mat);
-				render->Draw(deviceContext, objects[i].vCount);
+
+				if (textureMap[objects[i].bufferIndices[j]])
+				{
+					texture = textureMap[objects[i].bufferIndices[j]];
+					mat.hasTexture = true;
+				}
+				else
+				{
+					texture = 0;
+					mat.hasTexture = false;
+				}
+
+				if (normalMap[objects[i].bufferIndices[j]])
+				{
+					normal = normalMap[objects[i].bufferIndices[j]];
+					mat.hasNormal = true;
+				}
+				else
+				{
+					normal = 0;
+					mat.hasNormal = false;
+				}
+
+				bool result = render->UpdateRender(deviceContext, objects[i].objectData[j]->getWorld(), viewMatrix, texture, normal, lightStruct, mat, temp);
+				render->Draw(deviceContext, objects[i].vCount, 0);
 			}
 		}
 	}	

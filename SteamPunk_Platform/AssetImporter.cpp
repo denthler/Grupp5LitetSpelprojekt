@@ -28,39 +28,44 @@ bool AssetImporter::LoadAsset(std::string asset)
 	}
 
 	std::string str;
+
+	currentMesh = new MeshData;
+	meshes.push_back(currentMesh);
 	while (!inFile.eof())
 	{
 		inFile >> str;
 
 		if (str == "mesh")
 		{
-			currentMesh = new MeshData;
 			std::string temp;
 			getline(inFile, temp);
-			meshes.push_back(currentMesh);
 		}
 		else if (str == "v")
 		{
 			D3DXVECTOR3 temp;
 			inFile >> temp.x >> temp.y >> temp.z;
+			temp.z *= -1.0f;
 			currentMesh->vertices.push_back(temp);
 		}
 		else if (str == "vn")
 		{
 			D3DXVECTOR3 temp;
 			inFile >> temp.x >> temp.y >> temp.z;
+			temp.z *= -1.0f;
 			currentMesh->normals.push_back(temp);
 		}
 		else if (str == "uv")
 		{
 			D3DXVECTOR2 temp;
 			inFile >> temp.x >> temp.y;
+			temp.y = 1.0f - temp.y;
 			currentMesh->uv.push_back(temp);
 		}
 		else if (str == "vt")
 		{
 			D3DXVECTOR3 temp;
 			inFile >> temp.x >> temp.y >> temp.z;
+			temp.z *= -1.0f;
 			currentMesh->uvTangents.push_back(temp);
 		}
 		else if (str == "f")
@@ -86,6 +91,61 @@ bool AssetImporter::LoadAsset(std::string asset)
 				}
 			}
 			currentMesh->faceIndices.push_back(newFace);
+		}
+		else if (str == "mattexturemap")
+		{
+			inFile >> currentMesh->textureMap;
+		}
+		else if (str == "matnormalmap")
+		{
+			inFile >> currentMesh->normalMap;
+		}
+		else if (str == "cluster")
+		{
+			skinCluster newCluster;
+
+			inFile >> str;
+			while (str != "clusterweight")
+			{
+				newCluster.index.push_back(atoi(str.c_str()));
+				inFile >> str;
+			}
+
+			inFile >> str;
+			while (str != "clusterbindpose")
+			{
+				newCluster.weight.push_back(atof(str.c_str()));
+				inFile >> str;
+			}
+
+			for (int y = 0; y < 4; y++)
+				for (int x = 0; x < 4; x++)
+					inFile >> newCluster.bindPoseTransform.m[y][x];
+
+			inFile >> str;
+			for (int y = 0; y < 4; y++)
+				for (int x = 0; x < 4; x++)
+					inFile >> newCluster.geometricTransform.m[y][x];
+
+			currentMesh->clusters.push_back(newCluster);
+		}
+		else if (str == "skey")
+		{
+			KeyFrames newKeyFrame;
+
+			inFile >> newKeyFrame.time;
+
+			inFile >> str;
+			for (int i = 0; i < currentMesh->clusters.size(); i++)
+			{
+				D3DMATRIX temp;
+				for (int y = 0; y < 4; y++)
+					for (int x = 0; x < 4; x++)
+						inFile >> temp.m[y][x];
+				newKeyFrame.boneTransforms.push_back(temp);
+			}
+
+			currentMesh->keyFrames.push_back(newKeyFrame);
 		}
 	}
 

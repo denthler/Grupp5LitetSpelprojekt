@@ -42,6 +42,7 @@ bool LevelImporter::LoadLevel(std::string level)
 				for (int x = 0; x < 4; x++)
 					inFile >> newTrans.m[y][x];
 
+			newTrans._41 *= -1.0f;
 			currentType->transforms.push_back(newTrans);
 		}
 	}

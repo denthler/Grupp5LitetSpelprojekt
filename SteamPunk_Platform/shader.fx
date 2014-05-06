@@ -6,16 +6,17 @@
 // GLOBALS //
 /////////////
 Texture2D shaderTexture;
+Texture2D normalMap;
 SamplerState SampleType;
 
 cbuffer gMaterial
 {
-	
 	float4 difColor;
 	float4 ambColor;
-	float3 pad;
-	bool hasTexture;
-	
+	//float3 pad;
+	int hasTexture;
+	int hasNormal;
+	int pad[2];
 };
 
 
@@ -30,7 +31,10 @@ cbuffer LightBuffer
 
 //Material gMaterial;
 
-
+cbuffer AnimationMatrixBuffer
+{
+	matrix BoneTransforms[30];
+};
 
 cbuffer MatrixBuffer
 {
@@ -45,24 +49,35 @@ cbuffer MatrixBuffer
 struct PixelInputType
 {
 	float4 position : SV_POSITION;
-	float2 tex : TEXCOORD0;
 	float3 normal : NORMAL;
+	float2 tex : TEXCOORD0;
+	float3 tangent : TANGENT;
 	float3 lightPos1 : TEXCOORD1;
 	
 };
 
-struct VertexInputType
+/*struct VertexInputType
 {
 	float3 position : POSITION;
 	float3 normal : NORMAL;
 	float2 tex : TEXCOORD0;	
 	float3 tangent : TANGENT;
+};*/
+
+struct VertexInputTypeAni
+{
+	float3 position : POSITION;
+	float3 normal : NORMAL;
+	float2 tex : TEXCOORD0;
+	float3 tangent : TANGENT;
+	float3 Weight : WEIGHT;
+	uint3 BoneIndex : BONEINDEX;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 // Vertex Shader
 ////////////////////////////////////////////////////////////////////////////////
-PixelInputType VS(VertexInputType input)
+PixelInputType VS(VertexInputTypeAni input)
 {
 	PixelInputType output;
 	float4 worldPosition;
@@ -74,13 +89,62 @@ PixelInputType VS(VertexInputType input)
 	output.tex = input.tex;
 
 	output.normal = mul(input.normal, (float3x3)worldMatrix);
-
 	output.normal = normalize(output.normal);
+
+	output.tangent = mul(input.tangent, (float3x3)worldMatrix);
 
 	worldPosition = mul(float4(input.position, 1.0f), (float4x4)worldMatrix);
 	
 	output.lightPos1.xyz = pos.xyz - worldPosition.xyz; 	
+	
+	return output;
+}
 
+////////////////////////////////////////////////////////////////////////////////
+// Vertex Shader Animation
+////////////////////////////////////////////////////////////////////////////////
+PixelInputType VSANI(VertexInputTypeAni input)
+{
+	PixelInputType output;
+	float4 worldPosition;
+
+	float weights[3] = { 0.0f, 0.0f, 0.0f };
+	weights[0] = input.Weight.x;
+	weights[1] = input.Weight.y;
+	weights[2] = input.Weight.z;
+
+	float3 posL = float3(0.0f, 0.0f, 0.0f);
+	float3 normalL = float3(0.0f, 0.0f, 0.0f);
+	float3 tangentL = float3(0.0f, 0.0f, 0.0f);
+
+	if (weights[0] == 0)
+	{
+		posL = input.position;
+		normalL = input.normal;
+		tangentL = input.tangent;
+	}	
+
+	for (int x = 0; x < 3; x++)
+	{
+		posL += weights[x] * mul(BoneTransforms[input.BoneIndex[x]], float4(input.position, 1.0f)).xyz;
+		normalL += weights[x] * mul(BoneTransforms[input.BoneIndex[x]], float4(input.normal, 0.0f)).xyz;
+		tangentL += weights[x] * mul(BoneTransforms[input.BoneIndex[x]], float4(input.tangent, 0.0f)).xyz;
+	}
+
+	output.position = mul(float4(posL, 1.0f), (float4x4)worldMatrix);
+	output.position = mul(output.position, viewMatrix);
+	output.position = mul(output.position, projectionMatrix);
+
+	output.tex = input.tex;
+
+	output.normal = mul(normalL, (float3x3)worldMatrix);
+	output.normal = normalize(output.normal);
+
+	output.tangent = mul(tangentL, (float3x3)worldMatrix);
+
+	worldPosition = mul(float4(input.position, 1.0f), (float4x4)worldMatrix);
+
+	output.lightPos1.xyz = pos.xyz - worldPosition.xyz;
 
 	return output;
 }
@@ -93,14 +157,28 @@ float4 PS(PixelInputType input) : SV_TARGET
 
 	float4 textureColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
 	float lightIntensity1;
-	float4 color = float4(0.0f, 0.0f, 0.0f, 1.0f);	
+	float4 color = float4(0.0f, 0.0f, 0.0f, 1.0f);
+	float3 bumpNormal;
 
 	//float3 uvw = float3(input.tex, input.PrimID%4);
 
-	if(hasTexture)
+	bumpNormal = input.normal;
+	if(hasTexture != 0)
 	{
 		textureColor = shaderTexture.Sample(SampleType, input.tex);
 	}
+	if(hasNormal != 0)
+	{
+		float3 normalMapSample = normalMap.Sample(SampleType, input.tex).rgb;
+		float3 normalT = 2.0f*normalMapSample - 1.0f;
+
+		float3 T = normalize(input.tangent - dot(input.tangent, bumpNormal)*bumpNormal);
+		float3 B = cross(bumpNormal, T);
+		float3x3 TBN = float3x3(T, B, bumpNormal);
+
+		bumpNormal = mul(normalT, TBN);
+	}
+
 	//textureColor = shaderTexture.Sample(SampleType, 	//input.tex);
 	float d = length(input.lightPos1);
 
@@ -117,7 +195,7 @@ float4 PS(PixelInputType input) : SV_TARGET
 	//?
 	//input.lightPos1 = -input.lightPos1;
 	
-	lightIntensity1 = saturate(dot(input.normal, 	input.lightPos1));
+	lightIntensity1 = saturate(dot(bumpNormal, input.lightPos1));
 
 	color += saturate(diffuse * textureColor); 
      // * difColor
@@ -147,8 +225,11 @@ technique11 ShaderTech
     pass P0
     {
         SetVertexShader( CompileShader( vs_5_0, VS() ) );
-		//SetGeometryShader( CompileShader( gs_5_0, GS() ));
-		SetGeometryShader( NULL );
         SetPixelShader( CompileShader( ps_5_0, PS() ) );
     }
+	pass P1
+	{
+		SetVertexShader(CompileShader(vs_5_0, VSANI()));
+		SetPixelShader(CompileShader(ps_5_0, PS()));
+	}
 }
