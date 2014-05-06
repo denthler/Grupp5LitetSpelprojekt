@@ -135,6 +135,7 @@
     <ClInclude Include="CogWheel.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="Button.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="effect.fx" />

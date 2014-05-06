@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Button.h"
 #include "Screen.h"
 #include <D3DX11async.h>
 #include <D3D11.h>
@@ -8,6 +9,7 @@
 
 class MenuScreen : public Screen
 {
+	Button startButton;
 	ID3D11Device * device;
 	ID3D11DeviceContext * deviceContext;
 	ID3D11Buffer* triangleVertBuffer;

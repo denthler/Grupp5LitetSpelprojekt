@@ -68,6 +68,8 @@ MenuScreen::MenuScreen(ID3D11Device* device, ID3D11DeviceContext * deviceContext
 	
 	this->device = device;
 	this->deviceContext = deviceContext;
+
+	
 }
 
 MenuScreen::~MenuScreen()
