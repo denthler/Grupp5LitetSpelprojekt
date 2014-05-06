@@ -9,7 +9,7 @@
 
 class Gear : public GameObject
 {
-
+	
 public:
 	Gear(D3DXMATRIX, ModelClass::BoundingBox, bool, ObjectType);
 	~Gear();
