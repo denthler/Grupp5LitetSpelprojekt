@@ -23,6 +23,8 @@ void Player::Shutdown()
 
 bool Player::Initialize(ID3D11Device* device, D3DXVECTOR3 startPos, ID3D11ShaderResourceView* tM, ID3D11ShaderResourceView* nM, std::vector<AnimationStack> aS, ID3D11Buffer* vB, int vC)
 {
+	ModelClass::Initialize(device);
+
 	position = startPos;
 
 	textureMap = tM;
@@ -38,20 +40,21 @@ bool Player::Initialize(ID3D11Device* device, D3DXVECTOR3 startPos, ID3D11Shader
 	normalMap = nM;
 	if (normalMap)
 	{
-		mat.hasTexture = true;
+		mat.hasNormal = true;
 	}
 	else
 	{
-		mat.hasTexture = false;
+		mat.hasNormal = false;
 	}
 
 	animationStack = aS;
 	m_vertexBuffer = vB;
 	vCount = vC;
+	animationTime = 0;
 
 	StartPos = startPos;
 
-	return ModelClass::Initialize(device);
+	return true;
 }
 
 void Player::Kill()
@@ -183,9 +186,14 @@ bool Player::Update(float gameTime, std::vector<BoundingBox>& bb)
 			jump = false;
 		}
 	}
-	
-	return (ModelClass::Update(gameTime, bb));
-	
+
+	currentFrame = animationStack[0].keyFrames[animationTime].boneTransforms;
+	animationTime++;
+
+	if (animationTime > animationStack[0].keyFrames.size() - 1)
+		animationTime = 0;
+
+	return (ModelClass::Update(gameTime, bb));	
 }
 
 void Player::Jump()

@@ -52,7 +52,7 @@ bool Enemy::Update(float gameTime, std::vector<BoundingBox>& bb)
 	D3DXVec3Cross(&right, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f));
 	if (OnGround)
 		velocity = right * moveScale;
-	
+
 	test = OnGround;
 	test2 = ModelClass::Update(gameTime, bb);
 
@@ -73,15 +73,15 @@ bool Enemy::Update(float gameTime, std::vector<BoundingBox>& bb)
 		{
 			Rotated = true;
 		}
-			
+
 		//velocity += right * (moveScale);
 		return true;
 	}
 
-	animationTime++;
 	currentFrame = animationStack[0].keyFrames[animationTime].boneTransforms;
+	animationTime++;
 
-	if (animationTime > 24)
+	if (animationTime > animationStack[0].keyFrames.size() - 1)
 		animationTime = 0;
 
 	return false;
