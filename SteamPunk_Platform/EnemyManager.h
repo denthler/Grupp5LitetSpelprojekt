@@ -22,6 +22,8 @@ public:
 	void Update(std::vector<ModelClass::BoundingBox>&, float, Player* playerPosition, ID3D11Device* device);
 	void Draw(ID3D11DeviceContext*, Render*, D3DXMATRIX, ID3D11ShaderResourceView*, PointLightClass*, ModelClass::Material);
 	void Shutdown();
+	void FlipGravityW();
+	void FlipGravityS();
 private:
 	void SpawnEnemy(ID3D11Device* device);
 	int maxEnemy;

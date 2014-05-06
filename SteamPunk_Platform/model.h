@@ -56,7 +56,7 @@ public:
 	virtual void Shutdown();
 	virtual void Apply(ID3D11DeviceContext*, ID3D11Buffer*);
 
-	void GetWorldMatrix(D3DXMATRIX&);
+	D3DXMATRIX GetWorldMatrix();
 	int GetIndexCount();
 
 	Material GetMaterial()
@@ -77,8 +77,8 @@ public:
 	ID3D11ShaderResourceView* GetTexture();
 
 	virtual bool Update(float, std::vector<ModelClass::BoundingBox>&);
-	virtual void FlipGravity(){ D3DXVec3Cross(&worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis); };
-	virtual void FlipGravityS(){ D3DXVec3Cross(&worldAxis, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f)); };
+	virtual void FlipGravity();// { D3DXVec3Cross(&worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis); };
+	virtual void FlipGravityS();// { D3DXVec3Cross(&worldAxis, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f)); };
 	BoundingBox bBox;
 	BoundingBox bBoxOriginal;
 protected:

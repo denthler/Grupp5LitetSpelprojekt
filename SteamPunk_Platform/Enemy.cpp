@@ -8,7 +8,7 @@ Enemy::Enemy(ID3D11Device * device, D3DXMATRIX p)
 	//ModelClass::position = position;
 	m_worldMatrix = p;
 	position = D3DXVECTOR3(p._41, p._42, p._43);
-	moveScale = -0.05f;
+	moveScale = -0.03f;
 }
 
 Enemy::~Enemy()
@@ -33,18 +33,18 @@ bool Enemy::Update(float gameTime, std::vector<BoundingBox>& bb)
 	{
 		moveScale *= -1.0f;
 		velocity = right * (moveScale);
-		velocity += (worldAxis * 0.0032f);
+		velocity += (worldAxis * 0.003f);
 	}
 	else if (test2)
 	{
 		moveScale *= -1.0f;
-		if (moveScale > 0.0f)
+		if (moveScale > 0.0f)// && OnGround)
 		{
-			Rotated = false;
+			Rotated = true;
 		}
 		else
 		{
-			Rotated = true;
+			Rotated = false;
 		}
 			
 		//velocity += right * (moveScale);

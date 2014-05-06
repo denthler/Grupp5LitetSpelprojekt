@@ -116,24 +116,24 @@ void WorldClass::HandleInput()
 	{
 		if(camera->IsNotFlipping())
 		{
-			if (player->IsOnGround())
-			{
+			//if (player->IsOnGround())
+			//{
 				camera->Flip();
 				player->FlipGravity();
-				enemy->FlipGravity();
-			}
+				eManager->FlipGravityW();
+			//}
 		}
 	}
 	if (input->CheckSingleKeyPress(DIK_S))
 	{
 		if(camera->IsNotFlipping())
 		{
-			if (player->IsOnGround())
-			{
+			//if (player->IsOnGround())
+			//{
 				camera->FlipS();
 				player->FlipGravityS();
-				enemy->FlipGravityS();
-			}
+				eManager->FlipGravityS();
+			//}
 		}
 	}
 }
@@ -192,25 +192,16 @@ void WorldClass::CleanUp()
 bool WorldClass::Update(float time, ID3D11Device* DContext)
 {
 	HandleInput();
-	camera->Update(player->GetPosition());
-	renderClass->UpdateFrustum(camera->GetView(), projection);
+	
 	std::vector<ModelClass::BoundingBox> tempBB;
-	//tempBB.push_back(model->bBox);
-	//tempBB.push_back(model2->bBox);
-	//tempBB.push_back(model3->bBox);
-	//player->Update(0.0f, tempBB); 
+	
 	pManager.Update(player->GetPosition(), tempBB);
-	//enemy->Update(time, tempBB);
+	
 	eManager->Update(tempBB, time, player, DContext);
 
-	//
-	//static float red = 0.0f;
-	//static float redCount = 0.01f;
-	//red += redCount;
-	//if ((red > 1.0f) || (red < 0.0f))
-	//	redCount *= -1.0f ;
-	//
 	player->Update(time, tempBB);
+	camera->Update(player->GetPosition());
+	renderClass->UpdateFrustum(camera->GetView(), projection);
 	pointLight->SetPosition(player->GetPosition().x, player->GetPosition().y, -50.0f);
 	//pointLight->SetDiffuseColor(red, 0.5f, 0.5f, 1.0f);
 

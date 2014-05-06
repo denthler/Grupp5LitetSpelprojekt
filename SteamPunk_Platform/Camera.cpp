@@ -38,7 +38,7 @@ void Camera::Update(D3DXVECTOR3 playerPosition)
 	else
 	{
 		viewMatrix._41 = (playerPosition.y) * currentUp.x;
-		viewMatrix._42 = ((-playerPosition.x) * currentUp.x);;// + (10.0f * currentUp.x);
+		viewMatrix._42 = ((-playerPosition.x) * currentUp.x);// + (10.0f * currentUp.x);
 	}
 	
 }
@@ -56,9 +56,11 @@ bool Camera::Initialize(float x, float y, float z, D3DXVECTOR3 up)
 {
 	D3DXVECTOR3 vec, dir;
 	vec = D3DXVECTOR3(x, y, z);
-	D3DXVec3Normalize(&dir, &(D3DXVECTOR3(vec.x, vec.y, 0.0f) - camPosition));
-	D3DXMatrixTranslation(&worldMatrix, x, y, z);
 	camPosition = vec;
+	//D3DXVec3Normalize(&dir, &(D3DXVECTOR3(vec.x, vec.y, 0.0f) - camPosition));
+	dir = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
+	D3DXMatrixTranslation(&worldMatrix, x, y, z);
+	
 	D3DXMatrixLookAtLH(&viewMatrix, &vec, &dir, &up);
 	return true;
 }

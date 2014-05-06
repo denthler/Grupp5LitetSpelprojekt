@@ -8,6 +8,7 @@ EnemyManager::EnemyManager(D3DXMATRIX p, ID3D11Buffer* buf, int v, ModelClass::B
 	vCount = v;
 	vBuffer = buf;
 	bBox = box;
+	
 }
 
 EnemyManager::EnemyManager(const EnemyManager& other)
@@ -24,6 +25,7 @@ void EnemyManager::SpawnEnemy(ID3D11Device* device)
 
 	FallingEnemy* fEnemy = new FallingEnemy(device, enemySpawnPoint);
 	fEnemy->bBox = bBox;
+	fEnemy->bBoxOriginal = bBox;
 	enemies.push_back(fEnemy);
 }
 
@@ -35,6 +37,22 @@ void EnemyManager::Shutdown()
 		vBuffer = 0;
 	}
 	enemies.clear();
+}
+
+void EnemyManager::FlipGravityW()
+{
+	for (int i = 0; i < enemies.size(); i++)
+	{
+		enemies[i]->FlipGravity();
+	}
+}
+
+void EnemyManager::FlipGravityS()
+{
+	for (int i = 0; i < enemies.size(); i++)
+	{
+		enemies[i]->FlipGravityS();
+	}
 }
 
 void EnemyManager::Update(std::vector<ModelClass::BoundingBox>& bBoxes, float time, Player* playerPosition, ID3D11Device* device)
@@ -83,7 +101,7 @@ void EnemyManager::Draw(ID3D11DeviceContext* deviceContext, Render* render, D3DX
 		{
 			deviceContext->IASetVertexBuffers(0, 1, &vBuffer, &stride, &offset);
 			D3DXMATRIX world;
-			enemies[i]->GetWorldMatrix(world);
+			world = enemies[i]->GetWorldMatrix();
 			bool result = render->UpdateRender(deviceContext, world, viewMatrix, texture, lightStruct, mat);
 			render->Draw(deviceContext, vCount);
 		}
