@@ -17,6 +17,7 @@ WorldClass::WorldClass(const WorldClass& other)
 
 WorldClass::~WorldClass()
 {
+
 }
 
 bool WorldClass::Initialize(ID3D11Device* DContext, HWND hwnd, D3DXMATRIX proj, HINSTANCE hInstance)
@@ -65,7 +66,8 @@ bool WorldClass::Initialize(ID3D11Device* DContext, HWND hwnd, D3DXMATRIX proj, 
 		return false;
 	}
 	
-	result = player->Initialize(DContext, D3DXVECTOR3(rManager.player.transforms[0]._41, rManager.player.transforms[0]._42 + 10, rManager.player.transforms[0]._43), 
+	D3DXVECTOR3 playerPos(rManager.player.transforms[0]._41, rManager.player.transforms[0]._42 + 10.0f, rManager.player.transforms[0]._43);
+	result = player->Initialize(DContext, playerPos, 
 		rManager.player.textureMap, rManager.player.normalMap, rManager.player.animationSets, rManager.player.m_vertexBuffer, rManager.player.vCount);
 	player->bBox = rManager.player.bBox[0];
 	player->bBoxOriginal = rManager.player.bBox[0];
@@ -114,24 +116,28 @@ void WorldClass::HandleInput()
 	{
 		if(camera->IsNotFlipping())
 		{
-			if (player->IsOnGround())
-			{
+			//if (player->IsOnGround())
+			//{
 				camera->Flip();
 				player->FlipGravity();
-				eManager->FlipGravity();
-			}
+				eManager->FlipGravityW();
+
+			
 		}
 	}
 	if (input->CheckSingleKeyPress(DIK_S))
 	{
 		if(camera->IsNotFlipping())
 		{
-			if (player->IsOnGround())
-			{
+			//if (player->IsOnGround())
+			//{
 				camera->FlipS();
 				player->FlipGravityS();
 				eManager->FlipGravityS();
-			}
+
+			//}
+
+			
 		}
 	}
 }
@@ -185,25 +191,16 @@ void WorldClass::CleanUp()
 bool WorldClass::Update(float time, ID3D11Device* DContext)
 {
 	HandleInput();
-	camera->Update(player->GetPosition());
-	renderClass->UpdateFrustum(camera->GetView(), projection);
+	
 	std::vector<ModelClass::BoundingBox> tempBB;
-	//tempBB.push_back(model->bBox);
-	//tempBB.push_back(model2->bBox);
-	//tempBB.push_back(model3->bBox);
-	//player->Update(0.0f, tempBB); 
+	
 	pManager.Update(player->GetPosition(), tempBB);
-	//enemy->Update(time, tempBB);
+	
 	eManager->Update(tempBB, time, player, DContext);
 
-	//
-	//static float red = 0.0f;
-	//static float redCount = 0.01f;
-	//red += redCount;
-	//if ((red > 1.0f) || (red < 0.0f))
-	//	redCount *= -1.0f ;
-	//
 	player->Update(time, tempBB);
+	camera->Update(player->GetPosition());
+	renderClass->UpdateFrustum(camera->GetView(), projection);
 	pointLight->SetPosition(player->GetPosition().x, player->GetPosition().y, -50.0f);
 	//pointLight->SetDiffuseColor(red, 0.5f, 0.5f, 1.0f);
 
