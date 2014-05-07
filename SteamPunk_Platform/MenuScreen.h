@@ -13,8 +13,13 @@ class MenuScreen : public Screen
 	ID3D11Device * device;
 	ID3D11DeviceContext * deviceContext;
 	ID3D11Buffer* triangleVertBuffer;
+	ID3D11Buffer* quadVertBuffer;
 	ID3D11VertexShader * VS;
 	ID3D11PixelShader * PS;
+	ID3D11VertexShader * textureVS;
+	ID3D11PixelShader * texturePS;
+	ID3D11ShaderResourceView * texture;
+	ID3D11SamplerState * samplerState;
 public:
 	MenuScreen(ID3D11Device* DContext, ID3D11DeviceContext * deviceContext, HWND hwnd, D3DXMATRIX proj, HINSTANCE hInstance);
 	~MenuScreen();

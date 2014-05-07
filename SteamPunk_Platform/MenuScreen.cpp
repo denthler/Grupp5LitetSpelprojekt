@@ -33,7 +33,6 @@ MenuScreen::MenuScreen(ID3D11Device* device, ID3D11DeviceContext * deviceContext
 	bufferDesc.MiscFlags = 0;
 	bufferDesc.StructureByteStride = 0;
 
-	triangleVertBuffer;
 	result = device->CreateBuffer(&bufferDesc, &vertexBufferData, &triangleVertBuffer);
 	UINT stride = sizeof(float) * 3;
 	UINT offset = 0;
@@ -70,7 +69,74 @@ MenuScreen::MenuScreen(ID3D11Device* device, ID3D11DeviceContext * deviceContext
 	this->deviceContext = deviceContext;
 
 	// Render a texture
-	ID3D11ShaderResourceView * texture;
+	ID3D10Blob * errorBlob;
+	ID3D10Blob * textureVSBuffer, * texturePSBuffer;
+	result = D3DX11CompileFromFile(L"texture.fx", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &textureVSBuffer, &errorBlob, 0);
+	result = D3DX11CompileFromFile(L"texture.fx", 0, 0, "PShader", "ps_5_0", 0, 0, 0, &texturePSBuffer, &errorBlob, 0);
+	if (FAILED(result))
+	{
+		if (errorBlob)
+		{
+			OutputDebugStringA((char *)errorBlob->GetBufferPointer());
+			errorBlob->Release();
+		}
+	}
+
+	result = device->CreateVertexShader(textureVSBuffer->GetBufferPointer(), textureVSBuffer->GetBufferSize(), NULL, &textureVS);
+	result = device->CreatePixelShader(texturePSBuffer->GetBufferPointer(), texturePSBuffer->GetBufferSize(), NULL, &texturePS);
+
+	deviceContext->VSSetShader(textureVS, 0, 0);
+	deviceContext->PSSetShader(texturePS, 0, 0);
+
+	float quadData[] =
+	{
+		0.75f, 0.75f, 0.0f,
+		0.0f, 1.0f,
+		0.75f, 1.0f, 0.0f,
+		0.0f, 0.0f,
+		1.0f, 0.75f, 0.0f,
+		1.0f, 1.0f,
+		1.0f, 1.0f, 0.0f,		
+		1.0f, 0.0f,
+	};
+
+	ZeroMemory(&vertexBufferData, sizeof(vertexBufferData));
+	vertexBufferData.pSysMem = quadData;
+
+	bufferDesc.ByteWidth = sizeof(float) * (3 + 2) * 4;
+	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bufferDesc.CPUAccessFlags = 0;
+	bufferDesc.MiscFlags = 0;
+	bufferDesc.StructureByteStride = 0;
+
+	result = device->CreateBuffer(&bufferDesc, &vertexBufferData, &quadVertBuffer);
+	stride = sizeof(float)* (3 + 2);
+	offset = 0;
+	deviceContext->IASetVertexBuffers(0, 1, &quadVertBuffer, &stride, &offset);
+
+	D3D11_INPUT_ELEMENT_DESC texturefxLayout[2];
+	texturefxLayout[0].SemanticName = "POSITION";
+	texturefxLayout[0].SemanticIndex = 0;
+	texturefxLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	texturefxLayout[0].InputSlot = 0;
+	texturefxLayout[0].AlignedByteOffset = 0;
+	texturefxLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	texturefxLayout[0].InstanceDataStepRate = 0;
+
+	texturefxLayout[1].SemanticName = "TEXCOORD";
+	texturefxLayout[1].SemanticIndex = 0;
+	texturefxLayout[1].Format = DXGI_FORMAT_R32G32_FLOAT;
+	texturefxLayout[1].InputSlot = 0;
+	texturefxLayout[1].AlignedByteOffset = 0;
+	texturefxLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	texturefxLayout[1].InstanceDataStepRate = 0;
+
+	result = device->CreateInputLayout(texturefxLayout, 2, textureVSBuffer->GetBufferPointer(), textureVSBuffer->GetBufferSize(), &vertLayout);
+
+	deviceContext->IASetInputLayout(vertLayout);
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+
 	result = D3DX11CreateShaderResourceViewFromFile(device, L"C:/Users/Martin/Desktop/LuryADO.png", NULL, NULL, &texture, NULL);
 
 	D3D11_SAMPLER_DESC samplerDesc;
@@ -83,8 +149,9 @@ MenuScreen::MenuScreen(ID3D11Device* device, ID3D11DeviceContext * deviceContext
 	samplerDesc.MinLOD = 0;
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-	ID3D11SamplerState * samplerState;
 	result = device->CreateSamplerState(&samplerDesc, &samplerState);
+	deviceContext->PSSetShaderResources(0, 1, &texture);
+	deviceContext->PSSetSamplers(0, 1, &samplerState);
 }
 
 MenuScreen::~MenuScreen()
@@ -99,6 +166,7 @@ void MenuScreen::Update()
 
 void MenuScreen::Draw()
 {
+	// Triangle
 	deviceContext->VSSetShader(VS, 0, 0);
 	deviceContext->PSSetShader(PS, 0, 0);
 	UINT stride = sizeof(float)* 3;
@@ -106,4 +174,15 @@ void MenuScreen::Draw()
 	deviceContext->IASetVertexBuffers(0, 1, &triangleVertBuffer, &stride, &offset);
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	deviceContext->Draw(3, 0);
+
+	// Cog texture
+	deviceContext->VSSetShader(textureVS, 0, 0);
+	deviceContext->PSSetShader(texturePS, 0, 0);
+	deviceContext->PSSetShaderResources(0, 1, &texture);
+	deviceContext->PSSetSamplers(0, 1, &samplerState);
+	stride = sizeof(float)* (3 + 2);
+	offset = 0;
+	deviceContext->IASetVertexBuffers(0, 1, &quadVertBuffer, &stride, &offset);
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+	deviceContext->Draw(4, 0);
 }
