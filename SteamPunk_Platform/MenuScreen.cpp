@@ -1,5 +1,6 @@
+#include <vector>
 #include "MenuScreen.h"
-static int cogs = 2;
+static int cogs = 3;
 MenuScreen::MenuScreen(ID3D11Device* device, ID3D11DeviceContext * deviceContext, HWND hwnd, D3DXMATRIX proj, HINSTANCE hInstance)
 {
 	// Triangle
@@ -78,30 +79,26 @@ MenuScreen::MenuScreen(ID3D11Device* device, ID3D11DeviceContext * deviceContext
 	deviceContext->VSSetShader(textureVS, 0, 0);
 	deviceContext->PSSetShader(texturePS, 0, 0);
 
-
-	float quadData[] =
+	std::vector<float> cogData;
+	// Each vertex requires 3 floats for position, and 2 floats for texcoordinates.
+	// Each cog consists of 4 vertices.
+	for (int i = 0; i < cogs; i++)
 	{
-		0.75f, 0.75f, 0.0f,
-		0.0f, 1.0f,
-		0.75f, 1.0f, 0.0f,
-		0.0f, 0.0f,
-		0.875f, 0.875f, 0.0f,
-		1.0f, 1.0f,		
-		0.875f, 1.0f, 0.0f,
-		1.0f, 0.0f,
-
-		0.875f, 0.875f, 0.0f,
-		0.0f, 1.0f,
-		0.875f, 1.0f, 0.0f,
-		0.0f, 0.0f,
-		1.0f, 0.875f, 0.0f,
-		1.0f, 1.0f,		
-		1.0f, 1.0f, 0.0f,
-		1.0f, 0.0f,
-	};
+		// Each cog texture is drawn next to each other vertically.
+		// The offset is 0.125 in screen cordinates.
+		float offset = i * 0.125;
+		cogData.push_back(0.875f - offset); cogData.push_back(0.875f); cogData.push_back(0.0f);
+		cogData.push_back(0.0f); cogData.push_back(1.0f);
+		cogData.push_back(0.875f - offset); cogData.push_back(1.0f); cogData.push_back(0.0f);
+		cogData.push_back(0.0f); cogData.push_back(0.0f);
+		cogData.push_back(1.0f - offset); cogData.push_back(0.875f); cogData.push_back(0.0f);
+		cogData.push_back(1.0f); cogData.push_back(1.0f);
+		cogData.push_back(1.0f - offset); cogData.push_back(1.0f); cogData.push_back(0.0f);
+		cogData.push_back(1.0f); cogData.push_back(0.0f);
+	}
 
 	ZeroMemory(&vertexBufferData, sizeof(vertexBufferData));
-	vertexBufferData.pSysMem = quadData;
+	vertexBufferData.pSysMem = cogData.data();
 
 	bufferDesc.ByteWidth = sizeof(float)* (3 + 2) * cogs * 4;
 	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
