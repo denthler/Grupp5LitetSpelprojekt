@@ -81,6 +81,7 @@
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="AssetImporter.h" />
+    <ClInclude Include="Button.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CogWheel.h" />
     <ClInclude Include="Enemy.h" />
@@ -129,6 +130,7 @@
   <ItemGroup>
     <None Include="effect.fx" />
     <None Include="shader.fx" />
+    <None Include="texture.fx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -60,6 +60,7 @@ public:
 		D3DXVECTOR3 min;
 		D3DXVECTOR3 max;
 	};
+
 	struct Material
 	{
 		D3DXVECTOR4 difColor;

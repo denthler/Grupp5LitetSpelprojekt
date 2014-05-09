@@ -135,10 +135,12 @@
     <ClInclude Include="CogWheel.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="Button.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="effect.fx" />
     <None Include="shader.fx" />
+    <None Include="texture.fx" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header">
