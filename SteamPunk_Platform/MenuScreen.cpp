@@ -47,7 +47,6 @@ MenuScreen::MenuScreen(ID3D11Device* device, ID3D11DeviceContext * deviceContext
 	layout.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	layout.InstanceDataStepRate = 0;
 	
-	ID3D11InputLayout* vertLayout;
 	result = device->CreateInputLayout(&layout, 1, VS_Buffer->GetBufferPointer(), VS_Buffer->GetBufferSize(), &vertLayout);
 
 	deviceContext->IASetInputLayout(vertLayout);
@@ -128,13 +127,12 @@ MenuScreen::MenuScreen(ID3D11Device* device, ID3D11DeviceContext * deviceContext
 	texturefxLayout[1].SemanticIndex = 0;
 	texturefxLayout[1].Format = DXGI_FORMAT_R32G32_FLOAT;
 	texturefxLayout[1].InputSlot = 0;
-	texturefxLayout[1].AlignedByteOffset = 0;
+	texturefxLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 	texturefxLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	texturefxLayout[1].InstanceDataStepRate = 0;
 
-	result = device->CreateInputLayout(texturefxLayout, 2, textureVSBuffer->GetBufferPointer(), textureVSBuffer->GetBufferSize(), &vertLayout);
-
-	deviceContext->IASetInputLayout(vertLayout);
+	result = device->CreateInputLayout(texturefxLayout, 2, textureVSBuffer->GetBufferPointer(), textureVSBuffer->GetBufferSize(), &quadLayout);
+	deviceContext->IASetInputLayout(quadLayout);
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
 	result = D3DX11CreateShaderResourceViewFromFile(device, L"C:/Users/Martin/Desktop/LuryADO.png", NULL, NULL, &texture, NULL);
@@ -171,6 +169,7 @@ void MenuScreen::Draw()
 	deviceContext->PSSetShader(PS, 0, 0);
 	UINT stride = sizeof(float)* 3;
 	UINT offset = 0;
+	deviceContext->IASetInputLayout(vertLayout);
 	deviceContext->IASetVertexBuffers(0, 1, &triangleVertBuffer, &stride, &offset);
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	deviceContext->Draw(3, 0);
@@ -182,6 +181,7 @@ void MenuScreen::Draw()
 	deviceContext->PSSetSamplers(0, 1, &samplerState);
 	stride = sizeof(float)* (3 + 2);
 	offset = 0;
+	deviceContext->IASetInputLayout(quadLayout);
 	deviceContext->IASetVertexBuffers(0, 1, &quadVertBuffer, &stride, &offset);
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 	deviceContext->Draw(4, 0);

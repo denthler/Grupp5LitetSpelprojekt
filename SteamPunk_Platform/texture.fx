@@ -29,9 +29,9 @@ pInput VShader(vInput input)
 
 float4 PShader(pInput input) : SV_TARGET
 {
-	float3 rgb = g_Texture.Sample(TextureSampler, input.texCoord);
-	return float4(rgb, 1.0f);
-	//return float4(1.0f, 0.5f, 0.5f, 1.0f);
+	//float3 rgb = g_Texture.Sample(TextureSampler, input.texCoord);
+	//return float4(rgb, 0.5f);
+	return g_Texture.Sample(TextureSampler, input.texCoord);
 }
 
 technique11 tech
