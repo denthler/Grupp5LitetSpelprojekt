@@ -78,10 +78,27 @@ bool Enemy::Update(float gameTime, std::vector<BoundingBox>& bb)
 		return true;
 	}
 
-	currentFrame = animationStack[0].keyFrames[animationTime].boneTransforms;
-	animationTime++;
+	if (!OnGround)
+	{
+		for (int i = 0; i < animationStack.size(); i++)
+		{
+			if (animationStack[i].name == "Fall")
+				currentAnimStack = i;
+		}
+	}		
+	else
+	{
+		for (int i = 0; i < animationStack.size(); i++)
+		{
+			if (animationStack[i].name == "Run")
+				currentAnimStack = i;
+		}
+	}
 
-	if (animationTime > animationStack[0].keyFrames.size() - 1)
+	currentFrame = animationStack[currentAnimStack].keyFrames[(int)animationTime].boneTransforms;
+	animationTime += gameTime;
+
+	if (animationTime > animationStack[currentAnimStack].keyFrames.size() - 1)
 		animationTime = 0;
 
 	return false;

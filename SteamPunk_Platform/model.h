@@ -121,7 +121,8 @@ protected:
 	int vCount;
 	std::vector<AnimationStack> animationStack;
 	std::vector<D3DMATRIX> currentFrame;
-	int animationTime;
+	float animationTime;
+	int currentAnimStack;
 	Material mat;
 
 	bool Rotated;
