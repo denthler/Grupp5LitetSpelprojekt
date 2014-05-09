@@ -1,5 +1,5 @@
 #include "MenuScreen.h"
-
+static int cogs = 2;
 MenuScreen::MenuScreen(ID3D11Device* device, ID3D11DeviceContext * deviceContext, HWND hwnd, D3DXMATRIX proj, HINSTANCE hInstance)
 {
 	// Triangle
@@ -78,14 +78,24 @@ MenuScreen::MenuScreen(ID3D11Device* device, ID3D11DeviceContext * deviceContext
 	deviceContext->VSSetShader(textureVS, 0, 0);
 	deviceContext->PSSetShader(texturePS, 0, 0);
 
+
 	float quadData[] =
 	{
 		0.75f, 0.75f, 0.0f,
 		0.0f, 1.0f,
 		0.75f, 1.0f, 0.0f,
 		0.0f, 0.0f,
-		1.0f, 0.75f, 0.0f,
-		1.0f, 1.0f,
+		0.875f, 0.875f, 0.0f,
+		1.0f, 1.0f,		
+		0.875f, 1.0f, 0.0f,
+		1.0f, 0.0f,
+
+		0.875f, 0.875f, 0.0f,
+		0.0f, 1.0f,
+		0.875f, 1.0f, 0.0f,
+		0.0f, 0.0f,
+		1.0f, 0.875f, 0.0f,
+		1.0f, 1.0f,		
 		1.0f, 1.0f, 0.0f,
 		1.0f, 0.0f,
 	};
@@ -93,7 +103,7 @@ MenuScreen::MenuScreen(ID3D11Device* device, ID3D11DeviceContext * deviceContext
 	ZeroMemory(&vertexBufferData, sizeof(vertexBufferData));
 	vertexBufferData.pSysMem = quadData;
 
-	bufferDesc.ByteWidth = sizeof(float)* (3 + 2) * 4;
+	bufferDesc.ByteWidth = sizeof(float)* (3 + 2) * cogs * 4;
 	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bufferDesc.CPUAccessFlags = 0;
@@ -195,7 +205,11 @@ void MenuScreen::Draw()
 	deviceContext->IASetInputLayout(quadLayout);
 	deviceContext->IASetVertexBuffers(0, 1, &quadVertBuffer, &stride, &offset);
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-	deviceContext->Draw(4, 0);
+	for (int i = 0; i < cogs; i++)
+	{
+		deviceContext->Draw(4, 4*i);
+	}
+	
 
 	// Reset blend state
 	deviceContext->OMSetBlendState(0, 0, 0xffffffff);
