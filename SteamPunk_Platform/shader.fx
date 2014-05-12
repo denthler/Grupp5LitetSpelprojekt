@@ -6,10 +6,9 @@
 // GLOBALS //
 /////////////
 Texture2D shaderTexture;
-Texture2D shadowTexture;
 Texture2D normalMap;
+Texture2D shadowMap;
 SamplerState SampleType;
-SamplerState SampleShadowType;
 
 cbuffer gMaterial
 {
@@ -21,17 +20,21 @@ cbuffer gMaterial
 	int pad[2];
 };
 
-cbuffer ShadowGen
-{
-	matrix shadowMat;
-};
 
-cbuffer LightBuffer
+/*cbuffer LightBuffer	/// PointLight
 {
 	float4 diffuse;
 	float4 pos;
 	float3 att;
 	float range;
+	float4 ambient;
+};*/
+
+cbuffer LightBuffer	/// DirectionalLight
+{
+	float4 diffuse;
+	float3 direction;
+	float pad1;
 	float4 ambient;
 };
 
@@ -47,6 +50,9 @@ cbuffer MatrixBuffer
 	matrix worldMatrix;
 	matrix viewMatrix;
 	matrix projectionMatrix;
+
+	matrix viewMatrixShadow;
+	matrix projectionMatrixShadow;
 };
 
 //////////////
@@ -58,8 +64,8 @@ struct PixelInputType
 	float3 normal : NORMAL;
 	float2 tex : TEXCOORD0;
 	float3 tangent : TANGENT;
-	float3 lightPos1 : TEXCOORD1;
-	float4 lightClipSpace : TEXCOORD2;
+	//float3 lightPos1 : TEXCOORD1;
+	float4 posLightView : POSLV;
 };
 
 /*struct VertexInputType
@@ -83,14 +89,6 @@ struct VertexInputTypeAni
 ////////////////////////////////////////////////////////////////////////////////
 // Vertex Shader
 ////////////////////////////////////////////////////////////////////////////////
-float4 pointShadowVS(float4 pos : POSITION) : SV_Position
-{
-	pos.w = 1.0f; 
-
-
-
-	return mul(pos, shadowMat);
-}
 PixelInputType VS(VertexInputTypeAni input)
 {
 	PixelInputType output;
@@ -109,10 +107,11 @@ PixelInputType VS(VertexInputTypeAni input)
 
 	worldPosition = mul(float4(input.position, 1.0f), (float4x4)worldMatrix);
 	
-	output.lightPos1.xyz = pos.xyz - worldPosition.xyz; 	
+	//output.lightPos1.xyz = pos.xyz - worldPosition.xyz; 
 
-	//output.lightClipSpace = mul(input.position, (float4x4)worldMatrix);
-	output.lightClipSpace = mul(float4(input.position, 1.0f), (float4x4)shadowMat);
+	output.posLightView = mul( float4(input.position, 1), worldMatrix );
+    output.posLightView = mul( output.posLightView, viewMatrixShadow );
+    output.posLightView = mul( output.posLightView, projectionMatrixShadow );
 
 	return output;
 }
@@ -161,10 +160,56 @@ PixelInputType VSANI(VertexInputTypeAni input)
 
 	worldPosition = mul(float4(posL, 1.0f), (float4x4)worldMatrix);
 
-	output.lightPos1.xyz = pos.xyz - worldPosition.xyz;
+	//output.lightPos1.xyz = pos.xyz - worldPosition.xyz;
 
-	//output.lightClipSpace = mul(input.position, (float4x4)worldMatrix);
-	output.lightClipSpace = mul(float4(posL, 1.0f), (float4x4)shadowMat);
+	output.posLightView = mul( float4(posL, 1), worldMatrix );
+    output.posLightView = mul( output.posLightView, viewMatrixShadow );
+    output.posLightView = mul( output.posLightView, projectionMatrixShadow );
+
+	return output;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Vertex Shader Shadow
+////////////////////////////////////////////////////////////////////////////////
+PixelInputType VSShadow(VertexInputTypeAni input)
+{
+	PixelInputType output;
+
+	output.position = mul(float4(input.position, 1.0f), (float4x4)worldMatrix);
+	output.position = mul(output.position, viewMatrix);
+	output.position = mul(output.position, projectionMatrix);
+
+	return output;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Vertex Shader Animation Shadow
+////////////////////////////////////////////////////////////////////////////////
+PixelInputType VSANIShadow(VertexInputTypeAni input)
+{
+	PixelInputType output;
+
+	float weights[3] = { 0.0f, 0.0f, 0.0f };
+	weights[0] = input.Weight.x;
+	weights[1] = input.Weight.y;
+	weights[2] = input.Weight.z;
+
+	float3 posL = float3(0.0f, 0.0f, 0.0f);
+
+	if (weights[0] <= 0)
+	{
+		posL = input.position;
+	}	
+
+	for (int x = 0; x < 3; x++)
+	{
+		posL += weights[x] * mul(BoneTransforms[input.BoneIndex[x]], float4(input.position, 1.0f)).xyz;
+	}
+
+	output.position = mul(float4(posL, 1.0f), (float4x4)worldMatrix);
+	output.position = mul(output.position, viewMatrix);
+	output.position = mul(output.position, projectionMatrix);
 
 	return output;
 }
@@ -180,13 +225,16 @@ float4 PS(PixelInputType input) : SV_TARGET
 	float4 color = float4(0.0f, 0.0f, 0.0f, 1.0f);
 	float3 bumpNormal;
 
-	//float3 uvw = float3(input.tex, input.PrimID%4);
+	/*float test = 1.0f - ((input.position.z / input.position.w) * 50);
+	if(test > 1.0f)
+		test = 1.0f;*/
 
-	bumpNormal = input.normal;
 	if(hasTexture != 0)
 	{
 		textureColor = shaderTexture.Sample(SampleType, input.tex);
 	}
+
+	bumpNormal = input.normal;
 	if(hasNormal != 0)
 	{
 		float3 normalMapSample = normalMap.Sample(SampleType, input.tex).rgb;
@@ -199,75 +247,42 @@ float4 PS(PixelInputType input) : SV_TARGET
 		bumpNormal = mul(normalT, TBN);
 	}
 
-	//textureColor = shaderTexture.Sample(SampleType, 	//input.tex);
-	float d = length(input.lightPos1);
+	//float d = length(input.lightPos1);
 
 	float4 finalAmbient = ambColor * ambient * 	textureColor;
-	
-	if(d > range)
+
+	/*if(d > range)
 	{ 
 		return finalAmbient; 
 		//return float4(1.0f, 1.0f, 1.0f, 1.0f);	
-	}
+	}*/
 
-	input.lightPos1 = normalize(input.lightPos1);
+	//input.lightPos1 = normalize(input.lightPos1);
+	
+	lightIntensity1 = saturate(dot(bumpNormal, -direction));
+	color += saturate(diffuse * textureColor); 	
+	color *= lightIntensity1; 
+	color = saturate(color + finalAmbient);	
 
-	//?
-	//input.lightPos1 = -input.lightPos1;
-	float2 projLight;
-	projLight.x = input.lightClipSpace.x / input.lightClipSpace.w / 2.0f + 0.5f;
-	projLight.y = -input.lightClipSpace.y / input.lightClipSpace.w / 2.0f + 0.5f;
+	input.posLightView.xy /= input.posLightView.w; 
+ 
+	float2 smTex = float2(0.5f*input.posLightView.x, -0.5f*input.posLightView.y) + 0.5f;
 
-	float lightDepth = 0.0f;
-	float depth = 1.0f;
+	input.posLightView.z /= input.posLightView.w;
 
-	if ((projLight.x <= 1.0f) && (projLight.x >= 0.0f) && (projLight.y <= 1.0f) && (projLight.y >= 0.0f))
+	float shadowCoeff = shadowMap.Sample(SampleType, smTex).r;
+
+	if(shadowCoeff + 0.00001f < input.posLightView.z)
 	{
-		if ((projLight.x == projLight.x) && (projLight.y == projLight.y))
-		{
-			depth = shadowTexture.Sample(SampleShadowType,
-				projLight).r;
-			//color = float4(depth, depth, depth, 1.0f);
-			lightDepth = input.lightClipSpace.z / input.lightClipSpace.w;
-			lightDepth -= 0.001f;
-		}
-	}
-
-	if (lightDepth < depth)
-	{
-
-		lightIntensity1 = saturate(dot(bumpNormal, input.lightPos1));
-
-		color += saturate(diffuse * textureColor);
-		// * difColor
-
-		color *= lightIntensity1;
-		color /= att.x + (att.y * d) + (att.z * (d*d));
-		color = saturate(color + finalAmbient);
-		//color = float4(1.0f, 0.0f, 0.0f, 1.0f);
+		shadowCoeff = 0.7f;
 	}
 	else
-	{
-		//color += saturate(diffuse * textureColor);
-		color = saturate(color + (finalAmbient * 0.5f));
-		//color = float4(1.0f, 0.0f, 0.0f, 1.0f);
-	}
-	
-	
-	//Test
-	//if((diffuse .x == 0.0f) && 
-	//(diffuse .y == 0.0f))
-	//color = shaderTexture.Sample(SampleType,input.tex);
+		shadowCoeff = 1;
 
-	//color = float4(0.0f, 0.0f, depth, 1.0f);
+	color *= shadowCoeff;
+
 	return color;
 }
-
-////////////////////////////////////////////////////////////////////////////////
-// Geometry Shader
-////////////////////////////////////////////////////////////////////////////////
-
-
 
 technique11 ShaderTech
 {
@@ -283,9 +298,12 @@ technique11 ShaderTech
 	}
 	pass P2
 	{
-		SetVertexShader(CompileShader(vs_5_0, pointShadowVS()));
-		SetGeometryShader(NULL);
+		SetVertexShader(CompileShader(vs_5_0, VSShadow()));
 		SetPixelShader(NULL);
-
+	}
+	pass P3
+	{
+		SetVertexShader(CompileShader(vs_5_0, VSANIShadow()));
+		SetPixelShader(NULL);
 	}
 }

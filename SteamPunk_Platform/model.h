@@ -60,6 +60,7 @@ public:
 		D3DXVECTOR3 min;
 		D3DXVECTOR3 max;
 	};
+
 	struct Material
 	{
 		D3DXVECTOR4 difColor;
@@ -121,7 +122,8 @@ protected:
 	int vCount;
 	std::vector<AnimationStack> animationStack;
 	std::vector<D3DMATRIX> currentFrame;
-	int animationTime;
+	float animationTime;
+	int currentAnimStack;
 	Material mat;
 
 	bool Rotated;

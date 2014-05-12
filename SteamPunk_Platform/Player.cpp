@@ -165,17 +165,17 @@ bool Player::Update(float gameTime, std::vector<BoundingBox>& bb)
 	gameTime *= 0.05f;
 	static bool tempBool = false;
 	D3DXVec3Cross(&temp, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f));
-	if(!dead)
-	{		
+	if (!dead)
+	{
 		velocity.x -= (abs(temp.x) * velocity.x);
 		velocity.y -= (abs(temp.y) * velocity.y);
 		velocity.z -= (abs(temp.z) * velocity.z);
 
 		//D3DXVECTOR3 temp2;
 		//temp2 = (bBox.max - bBox.min) / 2.0f;
-		
-		if(left)
-		{	
+
+		if (left)
+		{
 			D3DXVec3Cross(&temp, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis);
 			velocity -= moveScale * temp;
 			if (!Rotated)// && tempBool)
@@ -186,10 +186,10 @@ bool Player::Update(float gameTime, std::vector<BoundingBox>& bb)
 			}
 			left = false;
 			Rotated = true;
+			runAni = true;
 		}
-		if(right)
+		if (right)
 		{
-			
 			D3DXVec3Cross(&temp, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis);
 			velocity += moveScale * temp;
 			if (Rotated)// && tempBool)
@@ -200,22 +200,89 @@ bool Player::Update(float gameTime, std::vector<BoundingBox>& bb)
 			}
 			right = false;
 			Rotated = false;
+			runAni = true;
 		}
-		if(jump)
+		if (jump)
 		{
- 			if(OnGround)
-			{
+			if (OnGround)
+			{				
+				jumpAni = true;
+				animationTime = 0;
 				Jump();
 			}
 			jump = false;
 		}
+		if(D3DXVec3Length(&velocity) == 0.0f)
+			runAni = false;
+
+		if(!OnGround)
+			inAir = true;
+		if(OnGround && !landAni && inAir)
+		{
+			landAni = true;
+			animationTime = 0;
+			inAir = false;
+		}
+	}
+	
+	if (!OnGround && !jumpAni)
+	{
+		for (int i = 0; i < animationStack.size(); i++)
+		{
+			if (animationStack[i].name == "Fall")
+				currentAnimStack = i;
+		}
+	}		
+	else if (jumpAni)
+	{
+		for (int i = 0; i < animationStack.size(); i++)
+		{
+			if (animationStack[i].name == "Jump")
+				currentAnimStack = i;
+		}
+	}	
+	else if (landAni)
+	{
+		for (int i = 0; i < animationStack.size(); i++)
+		{
+			if (animationStack[i].name == "Land")
+				currentAnimStack = i;
+		}
+	}
+	else if (runAni)
+	{
+		for (int i = 0; i < animationStack.size(); i++)
+		{
+			if (animationStack[i].name == "Run")
+				currentAnimStack = i;
+		}
+	}	
+	else
+	{
+		for (int i = 0; i < animationStack.size(); i++)
+		{
+			if (animationStack[i].name == "Idle")
+				currentAnimStack = i;
+		}
 	}
 
-	currentFrame = animationStack[0].keyFrames[animationTime].boneTransforms;
-	animationTime++;
-
-	if (animationTime > animationStack[0].keyFrames.size() - 1)
+	if (animationTime > animationStack[currentAnimStack].keyFrames.size() - 1 && jumpAni)
+	{
+		jumpAni = false;
 		animationTime = 0;
+	}
+	else if (animationTime > animationStack[currentAnimStack].keyFrames.size() - 1 && landAni)
+	{		
+		landAni = false;
+		inAir = false;
+		OnGround = true;
+		animationTime = 0;
+	}
+	else if (animationTime > animationStack[currentAnimStack].keyFrames.size() - 1)
+		animationTime = 0;
+
+	currentFrame = animationStack[currentAnimStack].keyFrames[(int)animationTime].boneTransforms;
+	animationTime += gameTime;	
 
 	tempBool = (ModelClass::Update(gameTime, bb));
 	return tempBool;

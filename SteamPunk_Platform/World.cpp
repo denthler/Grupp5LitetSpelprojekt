@@ -5,7 +5,6 @@ WorldClass::WorldClass()
 	
 	camera = 0;
 	renderClass = 0;
-	pointLight = 0;
 	player = 0;
 	input = 0;
 	eManager = 0;
@@ -47,17 +46,6 @@ bool WorldClass::Initialize(ID3D11Device* DContext, HWND hwnd, D3DXMATRIX proj, 
 		return false;
 	}
 	camera->Initialize(0.0f, 10.0f, -10.0f, D3DXVECTOR3(0.0f, 1.0f, 0.0f));
-
-	pointLight = new PointLightClass();
-	if(!pointLight)
-	{
-		return false;
-	}
-	pointLight->SetDiffuseColor(0.5f, 0.5f, 0.5f, 1.0f);
-	pointLight->SetPosition(0.0f, 20.0f, 0.0f); 
-	pointLight->SetAmbientColor(0.4f, 0.4f, 0.4f, 1.0f);
-	pointLight->SetAttenuation(0.2f, 0.01f, 0.0f);
-	pointLight->SetRange(500.0f);
 
 	player = new Player();
 
@@ -172,11 +160,6 @@ void WorldClass::CleanUp()
 		delete player;
 		player = 0;
 	}
-	if(pointLight)
-	{
-		delete pointLight;
-		pointLight = 0; 
-	}
 	if(input)
 	{
 		input->Shutdown();
@@ -204,7 +187,8 @@ bool WorldClass::Update(float time, ID3D11Device* DContext)
 	player->Update(time, tempBB);
 	camera->Update(player->GetPosition());
 	renderClass->UpdateFrustum(camera->GetView(), projection);
-	pointLight->SetPosition(player->GetPosition().x, player->GetPosition().y + 5.0f, 0.0f);
+	renderClass->setLightPosition(player->GetPosition());
+
 	//pointLight->SetDiffuseColor(red, 0.5f, 0.5f, 1.0f);
 
 	return true;
@@ -212,7 +196,7 @@ bool WorldClass::Update(float time, ID3D11Device* DContext)
 
 void WorldClass::Draw(ID3D11DeviceContext* DContext)
 {
-	D3DXMATRIX viewMatrix, projectionMatrix, worldMatrix;
+	D3DXMATRIX viewMatrix;
 
 	bool result;
 
@@ -224,11 +208,24 @@ void WorldClass::Draw(ID3D11DeviceContext* DContext)
 
 	tempNor = 0;
 	tempTex = 0;
-	pManager.Draw(DContext, renderClass, viewMatrix, tempTex, tempNor, pointLight, material);
+	pManager.Draw(DContext, renderClass, viewMatrix, tempTex, tempNor, material);
 
 	player->Apply(DContext);
-	result = renderClass->UpdateRender(DContext, player->GetWorldMatrix(), viewMatrix, player->GetTextureMap(), player->GetNormalMap(), pointLight, player->GetMaterial(), player->GetCurrentFrame());
+	result = renderClass->UpdateRender(DContext, player->GetWorldMatrix(), viewMatrix, player->GetTextureMap(), player->GetNormalMap(), player->GetMaterial(), player->GetCurrentFrame());
 	renderClass->Draw(DContext, rManager.player.vCount, 1);
 
-	eManager->Draw(DContext, renderClass, viewMatrix, pointLight);
+	eManager->Draw(DContext, renderClass, viewMatrix);
+}
+
+void WorldClass::DrawShadow(ID3D11DeviceContext* DContext)
+{
+	bool result;
+
+	pManager.DrawShadow(DContext, renderClass);
+
+	player->Apply(DContext);
+	result = renderClass->UpdateRenderShadow(DContext, player->GetWorldMatrix(), player->GetCurrentFrame());
+	renderClass->Draw(DContext, rManager.player.vCount, 3);
+
+	//eManager->Draw(DContext, renderClass, viewMatrix, pointLight);
 }

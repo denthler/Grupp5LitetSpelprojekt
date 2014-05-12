@@ -14,6 +14,8 @@ Render::Render()
 	cbAniMatrix = 0;
 	shaderResourceView = 0;
 	normalMapShaderResourceView = 0;
+	shadowMapShaderResourceView = 0;
+	shadowMap = 0;
 	sampleState = 0;
 	lightConstantBuffer = 0;
 	cbMatrix = 0;
@@ -183,6 +185,7 @@ bool Render::Initialize(ID3D11Device* device, HWND hwnd, WCHAR* filename, D3DXMA
 	lightConstantBuffer = effect->GetConstantBufferByName("LightBuffer");
 	shaderResourceView = effect->GetVariableByName("shaderTexture")->AsShaderResource();
 	normalMapShaderResourceView = effect->GetVariableByName("normalMap")->AsShaderResource();
+	shadowMapShaderResourceView = effect->GetVariableByName("shadowMap")->AsShaderResource();
 	samplerVariable = effect->GetVariableByName("SampleType")->AsSampler();
 	Mat = effect->GetConstantBufferByName("gMaterial");
 
@@ -317,16 +320,16 @@ bool Render::Initialize(ID3D11Device* device, HWND hwnd, WCHAR* filename, D3DXMA
 	}
 
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;//D3D11_TEXTURE_ADDRESS_WRAP
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
 	samplerDesc.MipLODBias = 0.0f;
 	samplerDesc.MaxAnisotropy = 1;
 	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	samplerDesc.BorderColor[0] = 0;
-	samplerDesc.BorderColor[1] = 0;
-	samplerDesc.BorderColor[2] = 0;
-	samplerDesc.BorderColor[3] = 0;
+	samplerDesc.BorderColor[0] = 1;
+	samplerDesc.BorderColor[1] = 1;
+	samplerDesc.BorderColor[2] = 1;
+	samplerDesc.BorderColor[3] = 1;
 	samplerDesc.MinLOD = 0;
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
@@ -335,6 +338,39 @@ bool Render::Initialize(ID3D11Device* device, HWND hwnd, WCHAR* filename, D3DXMA
 	{
 		return false;
 	}
+
+	//ShadowMap
+	D3DXMatrixOrthoLH(&projectionMatrixShadow, 100.0f, 100.0f,1.0f ,400.0f );
+	D3DXMatrixTranspose(&projectionMatrixShadow, &projectionMatrixShadow);	
+
+	D3DXMatrixIdentity(&viewMatrixShadow);
+
+	D3DXVECTOR3 target(0.0f, 0.0f, 0.0f);
+	D3DXVECTOR3 cameraPos(50.0f, 80.0f, -50.0f);
+
+	D3DXVECTOR3 lightDirection = target - cameraPos;
+	D3DXVec3Normalize(&lightDirection, &lightDirection);
+	D3DXVECTOR3 right;
+	D3DXVECTOR3 up;
+
+	D3DXVec3Cross(&right ,&lightDirection ,&D3DXVECTOR3(0.0f, 1.0f, 0.0f));
+	D3DXVec3Cross(&up ,&right, &lightDirection);
+
+	D3DXMatrixLookAtLH(&viewMatrixShadow, &cameraPos, &target, &up);
+
+	/*viewMatrixShadow._22 = 0.0f;
+	viewMatrixShadow._23 = -1.0f;
+	viewMatrixShadow._32 = 1.0f;
+	viewMatrixShadow._33 = 0.0f;
+	viewMatrixShadow._43 = 100.0f;*/
+
+	D3DXMatrixTranspose(&viewMatrixShadow, &viewMatrixShadow);	
+
+	directionalLight = new DirectionalLightClass();
+
+	directionalLight->SetDirection(lightDirection.x, lightDirection.y, lightDirection.z); 
+	directionalLight->SetAmbientColor(0.4f, 0.4f, 0.4f, 1.0f);
+	directionalLight->SetDiffuseColor(0.7f, 0.7f, 0.7f, 1.0f);
 
 	return true;
 }
@@ -353,6 +389,10 @@ void Render::CleanShader()
 	if (normalMapShaderResourceView)
 	{
 		normalMapShaderResourceView = 0;
+	}
+	if (shadowMapShaderResourceView)
+	{
+		shadowMapShaderResourceView = 0;
 	}
 	if(lightBuffer)
 	{
@@ -412,7 +452,7 @@ void Render::Draw(ID3D11DeviceContext* deviceContext, int indexCount, int techni
 
 
 bool Render::UpdateRender(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix,
-	D3DXMATRIX viewMatrix, ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* normalMap, PointLightClass* lightStruct, ModelClass::Material mat, std::vector<D3DMATRIX> boneTransforms)
+	D3DXMATRIX viewMatrix, ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* normalMap, ModelClass::Material mat, std::vector<D3DMATRIX> boneTransforms)
 {
 
 	HRESULT result;
@@ -438,7 +478,12 @@ bool Render::UpdateRender(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMa
 
 	dataPtr->world = worldMatrix;
 	dataPtr->view = viewMatrix;
+	//dataPtr->view = viewMatrixShadow;
 	dataPtr->projection = projectionMatrix;
+	//dataPtr->projection = projectionMatrixShadow;
+
+	dataPtr->viewShadow = viewMatrixShadow;
+	dataPtr->projectionShadow = projectionMatrixShadow;
 
 	deviceContext->Unmap(cbMatrixBuffer, 0);
 
@@ -468,6 +513,7 @@ bool Render::UpdateRender(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMa
 
 	shaderResourceView->SetResource(texture);
 	normalMapShaderResourceView->SetResource(normalMap);
+	shadowMapShaderResourceView->SetResource(shadowMap);
 	
 	result = deviceContext->Map(lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if(FAILED(result))
@@ -477,11 +523,9 @@ bool Render::UpdateRender(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMa
 
 	dataPtr2 = (LightBufferType*)mappedResource.pData;
 
-	dataPtr2->ambientColor = lightStruct->GetAmbientColor();
-	dataPtr2->diffuseColor = lightStruct->GetDiffuseColor();
-	dataPtr2->lightAtt = lightStruct->GetAttenuation();
-	dataPtr2->lightPosition = lightStruct->GetPosition();
-	dataPtr2->range = lightStruct->GetRange();
+	dataPtr2->ambientColor = directionalLight->GetAmbientColor();
+	dataPtr2->diffuseColor = directionalLight->GetDiffuseColor();
+	dataPtr2->lightDirection = directionalLight->GetDirection();
 	
 	deviceContext->Unmap(lightBuffer, 0);
 
@@ -509,6 +553,68 @@ bool Render::UpdateRender(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMa
 	return true;
 }
 
+bool Render::UpdateRenderShadow(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, std::vector<D3DMATRIX> boneTransforms)
+{
+	HRESULT result;
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	MatrixBufferType* dataPtr;
+	LightBufferType* dataPtr2;
+	AnimationMatrixBufferType* dataPtr3;
+	unsigned int bufferNumber;
+		
+	D3DXMatrixTranspose(&worldMatrix, &worldMatrix);
+
+	result = deviceContext->Map(cbMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, 
+		&mappedResource);
+	if(FAILED(result))
+	{
+		return false;
+	}
+
+	dataPtr = (MatrixBufferType*)mappedResource.pData;
+
+	dataPtr->world = worldMatrix;
+	dataPtr->view = viewMatrixShadow;
+	dataPtr->projection = projectionMatrixShadow;
+
+	deviceContext->Unmap(cbMatrixBuffer, 0);
+
+	bufferNumber = 0;
+
+	cbMatrix->SetConstantBuffer(cbMatrixBuffer);
 
 
+	result = deviceContext->Map(cbAniMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0,
+		&mappedResource);
+	if (FAILED(result))
+	{
+		return false;
+	}
+	dataPtr3 = (AnimationMatrixBufferType*)mappedResource.pData;
 
+	for (int x = 0; x < boneTransforms.size(); x++)
+	{
+		dataPtr3->boneTransform[x] = boneTransforms[x];
+	}
+
+	deviceContext->Unmap(cbAniMatrixBuffer, 0);
+
+	bufferNumber = 2;
+	cbAniMatrix->SetConstantBuffer(cbAniMatrixBuffer);
+
+	return true;
+}
+
+void Render::setLightPosition(D3DXVECTOR3 playerPos)
+{
+	D3DXVECTOR4 newPos = D3DXVECTOR4(-playerPos.x - 50, -playerPos.y - 80.0f, playerPos.z + 40, 0.0f);
+
+	D3DXMatrixTranspose(&viewMatrixShadow, &viewMatrixShadow);	
+	D3DXVec4Transform(&newPos, &newPos, &viewMatrixShadow);
+
+	viewMatrixShadow._41 = newPos.x;
+	viewMatrixShadow._42 = newPos.y;
+	viewMatrixShadow._43 = newPos.z;
+
+	D3DXMatrixTranspose(&viewMatrixShadow, &viewMatrixShadow);	
+}

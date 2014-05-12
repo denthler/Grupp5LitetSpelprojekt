@@ -444,7 +444,7 @@ bool Application::InitializeD3D(int screenWidth, int screenHeight, bool vSync, b
 
 	rasterDesc.AntialiasedLineEnable = false;
 	//rasterDesc.CullMode = D3D11_CULL_BACK;
-	rasterDesc.CullMode = D3D11_CULL_BACK;
+	rasterDesc.CullMode = D3D11_CULL_NONE;
 	rasterDesc.DepthBias = 0;
 	rasterDesc.DepthBiasClamp = 0.0f;
 	rasterDesc.DepthClipEnable = true;
@@ -475,7 +475,6 @@ bool Application::InitializeD3D(int screenWidth, int screenHeight, bool vSync, b
 	//
 	if (!InitializeTimer())
 		return false;
-	//
 
 	return true;
 }
@@ -486,7 +485,6 @@ bool Application::UpdateStates(int screenWidth, int screenHeight)
 	HRESULT result;
 	ID3D11Texture2D* backBufferPtr;
 	D3D11_TEXTURE2D_DESC depthBufferDesc;
-	
 	float fieldOfView, screenAspect;
 
 	if(renderTargetView)
@@ -560,8 +558,6 @@ bool Application::UpdateStates(int screenWidth, int screenHeight)
 		return false;
 	}
 
-	this->D3DDeviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
-
 	viewport.Width = (float)screenWidth;
 	viewport.Height = (float)screenHeight;
 	viewport.MinDepth = 0.0f;
@@ -569,12 +565,48 @@ bool Application::UpdateStates(int screenWidth, int screenHeight)
 	viewport.TopLeftX = 0.0f;
 	viewport.TopLeftY = 0.0f;
 
-	D3DDeviceContext->RSSetViewports(1, &viewport);
-
 	fieldOfView = (float)D3DX_PI / 4.0f;
 	screenAspect = (float)screenWidth / (float)screenHeight;
 
 	D3DXMatrixPerspectiveFovLH(&projectionMatrix, fieldOfView, screenAspect, 0.1f, 10000.0f);
+
+	// Shadow Map
+	viewportShadow.TopLeftX = 0.0f;
+	viewportShadow.TopLeftY = 0.0f;
+	viewportShadow.Width = (float)(1024);
+	viewportShadow.Height = (float)(1024);
+	viewportShadow.MinDepth = 0.0f;
+	viewportShadow.MaxDepth = 1.0f;
+
+	D3D11_TEXTURE2D_DESC texDesc;
+	texDesc.Width = 1024;
+	texDesc.Height = 1024;
+	texDesc.MipLevels = 1;
+	texDesc.ArraySize = 1;
+	texDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+	texDesc.SampleDesc.Count = 1;
+	texDesc.SampleDesc.Quality = 0;
+	texDesc.Usage = D3D11_USAGE_DEFAULT;
+	texDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+	texDesc.CPUAccessFlags = 0;
+	texDesc.MiscFlags = 0;
+
+	ID3D11Texture2D* depthMap = 0;
+	D3DDevice->CreateTexture2D(&texDesc, 0, &depthMap);
+
+	D3D11_DEPTH_STENCIL_VIEW_DESC dsv;
+	dsv.Flags = 0;
+	dsv.Format = DXGI_FORMAT_D32_FLOAT;
+	dsv.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	dsv.Texture2D.MipSlice = 0;
+	D3DDevice->CreateDepthStencilView(depthMap, &dsv, &depthStencilViewShadow);
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC srv;
+	srv.Format = DXGI_FORMAT_R32_FLOAT;
+	srv.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	srv.Texture2D.MipLevels = 1;
+	srv.Texture2D.MostDetailedMip = 0;
+	D3DDevice->CreateShaderResourceView(depthMap, &srv, &shaderResourceViewShadow);
 
 	return true;
 }
@@ -588,15 +620,19 @@ void Application::Begin(float red, float green, float blue, float alpha)
 	color[2] = blue;
 	color[3] = alpha;
 
+	D3DDeviceContext->RSSetViewports(1, &viewport);
 	D3DDeviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
 
-	D3DDeviceContext->RSSetViewports(1, &viewport);
-
-	D3DDeviceContext->RSSetState(rasterState);
-
 	D3DDeviceContext->ClearRenderTargetView(renderTargetView, color);
+	D3DDeviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);	
+}
 
-	D3DDeviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+void Application::BeginShadow()
+{
+	D3DDeviceContext->RSSetViewports(1, &viewportShadow);
+	D3DDeviceContext->OMSetRenderTargets(0, 0, depthStencilViewShadow);
+
+	D3DDeviceContext->ClearDepthStencilView(depthStencilViewShadow, D3D11_CLEAR_DEPTH, 1.0f, 0);	
 }
 
 void Application::End(bool vSync)

@@ -20,7 +20,7 @@ public:
 	~EnemyManager();
 
 	void Update(std::vector<ModelClass::BoundingBox>&, float, Player* playerPosition, ID3D11Device* device);
-	void Draw(ID3D11DeviceContext*, Render*, D3DXMATRIX, PointLightClass*);
+	void Draw(ID3D11DeviceContext*, Render*, D3DXMATRIX);
 	void Shutdown();
 	void FlipGravityW();
 

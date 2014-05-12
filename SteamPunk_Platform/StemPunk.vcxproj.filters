@@ -67,7 +67,11 @@
     <ClCompile Include="CogWheel.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="Sound.cpp">
+=======
+    <ClCompile Include="DirectionalLight.cpp">
+>>>>>>> 29df1af40acaf53d353ab0eb28a565b05e2b8e6a
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
@@ -138,13 +142,19 @@
     <ClInclude Include="CogWheel.h">
       <Filter>Header</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="Sound.h">
+=======
+    <ClInclude Include="Button.h" />
+    <ClInclude Include="DirectionalLight.h">
+>>>>>>> 29df1af40acaf53d353ab0eb28a565b05e2b8e6a
       <Filter>Header</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="effect.fx" />
     <None Include="shader.fx" />
+    <None Include="texture.fx" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header">

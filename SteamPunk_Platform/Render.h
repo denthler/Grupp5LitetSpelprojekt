@@ -10,6 +10,7 @@
 #include <fstream>
 #include "d3dx11Effect.h"
 #include "PointLight.h"
+#include "DirectionalLight.h"
 #include "model.h"
 
 using namespace std;
@@ -29,6 +30,8 @@ private:
 		D3DMATRIX world;
 		D3DMATRIX view;
 		D3DMATRIX projection;
+		D3DMATRIX viewShadow;
+		D3DMATRIX projectionShadow;
 	};
 	
 	struct MaterialType
@@ -40,12 +43,20 @@ private:
 		int pad[2];
 	};
 	
-	struct LightBufferType
+	/*struct LightBufferType		/// PointLight
 	{
 		D3DXVECTOR4 diffuseColor;
 		D3DXVECTOR4 lightPosition;
 		D3DXVECTOR3 lightAtt;
 		float range;
+		D3DXVECTOR4 ambientColor;
+	};*/
+
+	struct LightBufferType		/// DirectionalLight
+	{
+		D3DXVECTOR4 diffuseColor;
+		D3DXVECTOR3 lightDirection;
+		float pad1;
 		D3DXVECTOR4 ambientColor;
 	};
 
@@ -57,11 +68,14 @@ public:
 	bool Initialize(ID3D11Device*, HWND, WCHAR*, D3DXMATRIX);
 	void Shutdown();
 	bool UpdateRender(ID3D11DeviceContext*,
-		D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, PointLightClass*, ModelClass::Material, std::vector<D3DMATRIX>);
+		D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, ModelClass::Material, std::vector<D3DMATRIX>);
+	bool UpdateRenderShadow(ID3D11DeviceContext*, D3DXMATRIX, std::vector<D3DMATRIX>);
 	void Draw(ID3D11DeviceContext*, int, int);
 	void CleanShader();
 	void UpdateFrustum(D3DXMATRIX view, D3DXMATRIX proj);
 	bool InsideFrustum(D3DXVECTOR3 min, D3DXVECTOR3 max);
+	void setShadowMap(ID3D11ShaderResourceView* sM){ shadowMap = sM; };
+	void setLightPosition(D3DXVECTOR3 playerPos);
 
 private:	
 	ID3DX11EffectConstantBuffer* cbMatrix;
@@ -82,6 +96,13 @@ private:
 	D3DXMATRIX projectionMatrix;
 	//Frustum
 	D3DXPLANE plane[6];
+
+	//ShadowMap
+	D3DXMATRIX viewMatrixShadow;
+	D3DXMATRIX projectionMatrixShadow;
+	ID3DX11EffectShaderResourceVariable* shadowMapShaderResourceView;
+	ID3D11ShaderResourceView* shadowMap;
+	DirectionalLightClass* directionalLight;
 };
 
 #endif 

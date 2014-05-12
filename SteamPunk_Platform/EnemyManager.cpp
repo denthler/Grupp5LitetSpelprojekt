@@ -88,7 +88,7 @@ void EnemyManager::Update(std::vector<ModelClass::BoundingBox>& bBoxes, float ti
 
 }
 
-void EnemyManager::Draw(ID3D11DeviceContext* deviceContext, Render* render, D3DXMATRIX viewMatrix, PointLightClass* lightStruct)
+void EnemyManager::Draw(ID3D11DeviceContext* deviceContext, Render* render, D3DXMATRIX viewMatrix)
 {
 	unsigned int stride;
 	unsigned int offset;
@@ -106,7 +106,7 @@ void EnemyManager::Draw(ID3D11DeviceContext* deviceContext, Render* render, D3DX
 			D3DXMATRIX world;
 			world = enemies[i]->GetWorldMatrix();
 
-			bool result = render->UpdateRender(deviceContext, enemies[i]->GetWorldMatrix(), viewMatrix, enemies[i]->GetTextureMap(), enemies[i]->GetNormalMap(), lightStruct, enemies[i]->GetMaterial(), enemies[i]->GetCurrentFrame());
+			bool result = render->UpdateRender(deviceContext, enemies[i]->GetWorldMatrix(), viewMatrix, enemies[i]->GetTextureMap(), enemies[i]->GetNormalMap(), enemies[i]->GetMaterial(), enemies[i]->GetCurrentFrame());
 			render->Draw(deviceContext, vCount, 1);
 
 		}

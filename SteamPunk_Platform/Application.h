@@ -47,6 +47,8 @@ public:
 	{
 		return hwnd;
 	}
+	ID3D11ShaderResourceView* GetShadowMap(){ return shaderResourceViewShadow; };
+
 	float GetElapsedTime();
 	bool Initialize(HINSTANCE hInstance, int, int);
 	bool InitializeD3D(int screenWidth, int screenHeight, bool vSync, bool Msaa);
@@ -54,6 +56,7 @@ public:
 	void CleanUp();
 	bool InitializeTimer();
 	void Begin(float red, float green, float blue, float alpha);
+	void BeginShadow();
 	void End(bool);
 	D3DXMATRIX GetProj()
 	{
@@ -89,8 +92,13 @@ private:
 	//
 	HWND hwnd;
 	WorldClass* m_World;
-	//bool Initialized;
-	
+
+	//ShadowMap
+	ID3D11DepthStencilView* depthStencilViewShadow;
+	ID3D11ShaderResourceView* shaderResourceViewShadow;
+	D3D11_VIEWPORT viewportShadow;
+
+	//bool Initialized;	
 	INT64 startT;
 	INT64 freq;
 	bool isHighPerformanceSupported;

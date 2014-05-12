@@ -5,6 +5,7 @@
 #define _ENEMY_H_
 
 #include "model.h"
+#include <string>
 
 class Enemy : public ModelClass
 {	

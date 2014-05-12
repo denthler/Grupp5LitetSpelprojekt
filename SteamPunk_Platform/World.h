@@ -9,7 +9,6 @@
 #include "Camera.h"
 #include "model.h"
 #include "Render.h"
-#include "PointLight.h"
 #include "Player.h"
 #include "input.h"
 #include "ResourceManager.h"
@@ -28,12 +27,12 @@ public:
 	void CleanUp();
 	bool Update(float, ID3D11Device*);
 	void Draw(ID3D11DeviceContext*);
+	void DrawShadow(ID3D11DeviceContext*);
 
+	Render* renderClass;
 private:
 	void HandleInput();
 	Camera* camera;
-	Render* renderClass;
-	PointLightClass* pointLight;
 	Player* player;
 	InputClass* input;
 	ResourceManager rManager;

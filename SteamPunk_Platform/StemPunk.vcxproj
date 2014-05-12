@@ -81,8 +81,10 @@
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="AssetImporter.h" />
+    <ClInclude Include="Button.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CogWheel.h" />
+    <ClInclude Include="DirectionalLight.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemyManager.h" />
     <ClInclude Include="FallingEnemy.h" />
@@ -108,6 +110,7 @@
     <ClCompile Include="AssetImporter.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CogWheel.cpp" />
+    <ClCompile Include="DirectionalLight.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="EnemyManager.cpp" />
     <ClCompile Include="FallingEnemy.cpp" />
@@ -131,6 +134,7 @@
   <ItemGroup>
     <None Include="effect.fx" />
     <None Include="shader.fx" />
+    <None Include="texture.fx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
