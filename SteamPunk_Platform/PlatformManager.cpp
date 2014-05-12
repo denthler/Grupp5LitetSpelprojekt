@@ -104,7 +104,7 @@ void PlatformManager::Update(D3DXVECTOR3 playerPosition, std::vector<ModelClass:
 	
 }
 
-void PlatformManager::Draw(ID3D11DeviceContext* deviceContext, Render* render, D3DXMATRIX viewMatrix, ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* normal, PointLightClass* lightStruct, ModelClass::Material mat)
+void PlatformManager::Draw(ID3D11DeviceContext* deviceContext, Render* render, D3DXMATRIX viewMatrix, ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* normal, ModelClass::Material mat)
 {
 	unsigned int stride;
 	unsigned int offset;
@@ -145,11 +145,35 @@ void PlatformManager::Draw(ID3D11DeviceContext* deviceContext, Render* render, D
 					mat.hasNormal = false;
 				}
 
-				bool result = render->UpdateRender(deviceContext, objects[i].objectData[j]->getWorld(), viewMatrix, texture, normal, lightStruct, mat, temp);
+				bool result = render->UpdateRender(deviceContext, objects[i].objectData[j]->getWorld(), viewMatrix, texture, normal, mat, temp);
 				render->Draw(deviceContext, objects[i].vCount, 0);
 			}
 		}
 	}	
 }
 
+void PlatformManager::DrawShadow(ID3D11DeviceContext* deviceContext, Render* render)
+{
+	unsigned int stride;
+	unsigned int offset;
+	std::vector<D3DMATRIX> temp;
+
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	stride = sizeof(VertexTypeT);
+	offset = 0;
+	for (int i = 0; i < objects.size(); i++)
+	{
+		for (int j = 0; j < objects[i].objectData.size(); j++)
+		{			
+			if (render->InsideFrustum(objects[i].objectData[j]->getBoundingBox().min, objects[i].objectData[j]->getBoundingBox().max))
+			{
+				deviceContext->IASetVertexBuffers(0, 1, &buffers[objects[i].bufferIndices[j]], &stride, &offset);
+
+				bool result = render->UpdateRenderShadow(deviceContext, objects[i].objectData[j]->getWorld(), temp);
+				render->Draw(deviceContext, objects[i].vCount, 2);
+			}
+		}
+	}	
+}
 

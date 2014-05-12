@@ -67,6 +67,9 @@
     <ClCompile Include="CogWheel.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="DirectionalLight.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -136,6 +139,9 @@
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="Button.h" />
+    <ClInclude Include="DirectionalLight.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="effect.fx" />

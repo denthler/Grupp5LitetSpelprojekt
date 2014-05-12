@@ -23,6 +23,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevious, LPSTR lpCmdLine, in
 		else
 		{			
 			world.Update(application.GetElapsedTime(), application.GetDevice());
+
+			application.BeginShadow();
+			world.DrawShadow(application.GetDeviceContext());
+			world.renderClass->setShadowMap(application.GetShadowMap());
+
 			application.Begin(1.0f, 0.0f, 0.0f, 1.0f);
 			world.Draw(application.GetDeviceContext());
 			menu.Draw();

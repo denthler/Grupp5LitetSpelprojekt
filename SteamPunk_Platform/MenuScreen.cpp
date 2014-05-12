@@ -135,7 +135,7 @@ MenuScreen::MenuScreen(ID3D11Device* device, ID3D11DeviceContext * deviceContext
 	deviceContext->IASetInputLayout(quadLayout);
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
-	result = D3DX11CreateShaderResourceViewFromFile(device, L"C:/Users/Martin/Desktop/LuryADO.png", NULL, NULL, &texture, NULL);
+	result = D3DX11CreateShaderResourceViewFromFile(device, L"Resources/Textures/rabbit_texture_.png", NULL, NULL, &texture, NULL);
 
 	D3D11_SAMPLER_DESC samplerDesc;
 	ZeroMemory(&samplerDesc, sizeof(samplerDesc));

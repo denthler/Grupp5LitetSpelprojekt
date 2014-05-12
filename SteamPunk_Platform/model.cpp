@@ -184,7 +184,7 @@ bool ModelClass::Initialize(ID3D11Device* device)
 {
 	bool result;
 
-	mat.ambColor = D3DXVECTOR4(0.0f, 0.0f, 0.0f, 1.0f);
+	mat.ambColor = D3DXVECTOR4(0.4f, 0.4f, 0.4f, 1.0f);
 	mat.difColor = D3DXVECTOR4(0.5f, 0.5f, 0.5f, 1.0f);
 	mat.hasTexture = false;
 	mat.hasNormal = false;

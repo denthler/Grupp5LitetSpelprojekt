@@ -34,7 +34,8 @@ public:
 	~PlatformManager();
 
 	void CreateLevel(std::vector<Mesh>&);
-	void Draw(ID3D11DeviceContext*, Render*, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, PointLightClass*, ModelClass::Material);
+	void Draw(ID3D11DeviceContext*, Render*, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, ModelClass::Material);
+	void DrawShadow(ID3D11DeviceContext*, Render*);
 	void Update(D3DXVECTOR3 playerPosition, std::vector<ModelClass::BoundingBox>& bb);
 	//Get Boundingboxes
 

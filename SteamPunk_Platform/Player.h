@@ -5,6 +5,7 @@
 #define _PLAYER_H_
 
 #include "model.h"
+#include <string>
 
 class Player : public ModelClass
 {
@@ -46,6 +47,9 @@ private:
 	D3DXVECTOR3 StartPos;
 	bool left, right, up, down, jump;
 	int numberOfCogs;
+
+	//Ani
+	bool jumpAni, runAni, landAni, inAir;
 };
 
 #endif
