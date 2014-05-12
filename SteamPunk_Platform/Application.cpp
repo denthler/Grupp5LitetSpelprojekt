@@ -14,6 +14,7 @@ Application::Application()
 	hwnd = 0;
 	swapChain = 0;
 	m4xMsaaQuality = 0;
+	
 	//Initialized = false;
 
 	Initialized = false;
@@ -274,6 +275,7 @@ void Application::CleanUp()
 		swapChain = 0;
 	}
 
+	//
 	if(m_World)
 	{
 		m_World->CleanUp();
@@ -442,12 +444,12 @@ bool Application::InitializeD3D(int screenWidth, int screenHeight, bool vSync, b
 
 	rasterDesc.AntialiasedLineEnable = false;
 	//rasterDesc.CullMode = D3D11_CULL_BACK;
-	rasterDesc.CullMode = D3D11_CULL_NONE;
+	rasterDesc.CullMode = D3D11_CULL_BACK;
 	rasterDesc.DepthBias = 0;
 	rasterDesc.DepthBiasClamp = 0.0f;
 	rasterDesc.DepthClipEnable = true;
 	rasterDesc.FillMode = D3D11_FILL_SOLID;
-	rasterDesc.FrontCounterClockwise = false;
+	rasterDesc.FrontCounterClockwise = true;
 	rasterDesc.MultisampleEnable = false;
 	rasterDesc.ScissorEnable = false;
 	rasterDesc.SlopeScaledDepthBias = 0.0f;
@@ -474,6 +476,7 @@ bool Application::InitializeD3D(int screenWidth, int screenHeight, bool vSync, b
 	if (!InitializeTimer())
 		return false;
 	//
+
 	return true;
 }
 
@@ -483,7 +486,7 @@ bool Application::UpdateStates(int screenWidth, int screenHeight)
 	HRESULT result;
 	ID3D11Texture2D* backBufferPtr;
 	D3D11_TEXTURE2D_DESC depthBufferDesc;
-	D3D11_VIEWPORT viewport;
+	
 	float fieldOfView, screenAspect;
 
 	if(renderTargetView)
@@ -585,6 +588,12 @@ void Application::Begin(float red, float green, float blue, float alpha)
 	color[2] = blue;
 	color[3] = alpha;
 
+	D3DDeviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+
+	D3DDeviceContext->RSSetViewports(1, &viewport);
+
+	D3DDeviceContext->RSSetState(rasterState);
+
 	D3DDeviceContext->ClearRenderTargetView(renderTargetView, color);
 
 	D3DDeviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
@@ -613,5 +622,4 @@ void Application::RemoveScreen(Screen * screen)
 	delete screen;
 	screens.remove(screen);
 }
-
 #pragma endregion

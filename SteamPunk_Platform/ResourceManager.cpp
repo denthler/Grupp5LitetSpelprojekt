@@ -241,27 +241,32 @@ void ResourceManager::CreateAnimatedMeshes(ID3D11Device* DContext, int index)
 		else
 			newMesh.normalMap = NULL;
 
-		newMesh.animationSets.resize(1);		// detta ska ändras så man kan ha fler animations sets
+		newMesh.animationSets.resize(aImporter.meshes[i]->animSets.size());
 
-		for (int j = 0; j < aImporter.meshes[i]->keyFrames.size(); j++)
+		for (int a = 0; a < aImporter.meshes[i]->animSets.size(); a++)
 		{
-			KeyFramesAni tempKeyFrame;
-			for (int x = 0; x < aImporter.meshes[i]->clusters.size(); x++)
+			newMesh.animationSets[a].name = aImporter.meshes[i]->animSets[a]->name;
+
+			for (int j = 0; j < aImporter.meshes[i]->animSets[a]->keyFrames.size(); j++)
 			{
-				D3DXMATRIX tempMatrix;
-				D3DXMATRIX bindPoseInverse = aImporter.meshes[i]->clusters[x].bindPoseTransform;
-				D3DXMATRIX geometricTransform = aImporter.meshes[i]->clusters[x].geometricTransform;
-				D3DXMATRIX boneT = aImporter.meshes[i]->keyFrames[j].boneTransforms[x];
+				KeyFramesAni tempKeyFrame;
+				for (int x = 0; x < aImporter.meshes[i]->clusters.size(); x++)
+				{
+					D3DXMATRIX tempMatrix;
+					D3DXMATRIX bindPoseInverse = aImporter.meshes[i]->clusters[x].bindPoseTransform;
+					D3DXMATRIX geometricTransform = aImporter.meshes[i]->clusters[x].geometricTransform;
+					D3DXMATRIX boneT = aImporter.meshes[i]->animSets[a]->keyFrames[j].boneTransforms[x];
 
-				float bindPoseDet = D3DXMatrixDeterminant(&bindPoseInverse);
+					float bindPoseDet = D3DXMatrixDeterminant(&bindPoseInverse);
 
-				D3DXMatrixInverse(&bindPoseInverse, &bindPoseDet, &bindPoseInverse);
-				D3DXMatrixMultiply(&tempMatrix, &bindPoseInverse, &geometricTransform);
-				D3DXMatrixMultiply(&tempMatrix, &tempMatrix, &boneT);
-				
-				tempKeyFrame.boneTransforms.push_back(tempMatrix);
+					D3DXMatrixInverse(&bindPoseInverse, &bindPoseDet, &bindPoseInverse);
+					D3DXMatrixMultiply(&tempMatrix, &bindPoseInverse, &geometricTransform);
+					D3DXMatrixMultiply(&tempMatrix, &tempMatrix, &boneT);
+
+					tempKeyFrame.boneTransforms.push_back(tempMatrix);
+				}
+				newMesh.animationSets[a].keyFrames.push_back(tempKeyFrame);
 			}
-			newMesh.animationSets[0].keyFrames.push_back(tempKeyFrame);
 		}
 
 		D3D11_BUFFER_DESC vBD;

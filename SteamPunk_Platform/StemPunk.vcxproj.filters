@@ -67,6 +67,9 @@
     <ClCompile Include="CogWheel.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Sound.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -133,6 +136,9 @@
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="CogWheel.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Sound.h">
       <Filter>Header</Filter>
     </ClInclude>
   </ItemGroup>

@@ -73,7 +73,7 @@ bool Camera::Initialize(float x, float y, float z, D3DXVECTOR3 up)
 	
 	//D3DXMatrixLookAtLH(&viewMatrix, &vec, &dir, &up);
 	D3DXVECTOR3 target(x, y, z);
-	D3DXVECTOR3 cameraPos(x, y, -50.0f);
+	D3DXVECTOR3 cameraPos(x, y, -30.0f);
 	D3DXMatrixTranslation(&worldMatrix, x, y, z);
 	D3DXMatrixLookAtLH(&viewMatrix, &cameraPos, &target, &up);
 	return true;

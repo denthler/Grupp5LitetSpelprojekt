@@ -129,6 +129,12 @@ bool AssetImporter::LoadAsset(std::string asset)
 
 			currentMesh->clusters.push_back(newCluster);
 		}
+		else if (str == "animationSet")
+		{
+			currentAnimSet = new AnimationSets;
+			inFile >> currentAnimSet->name;
+			currentMesh->animSets.push_back(currentAnimSet);
+		}
 		else if (str == "skey")
 		{
 			KeyFrames newKeyFrame;
@@ -145,7 +151,7 @@ bool AssetImporter::LoadAsset(std::string asset)
 				newKeyFrame.boneTransforms.push_back(temp);
 			}
 
-			currentMesh->keyFrames.push_back(newKeyFrame);
+			currentAnimSet->keyFrames.push_back(newKeyFrame);
 		}
 	}
 

@@ -58,7 +58,18 @@ void PlatformManager::CreateLevel(std::vector<Mesh>& meshes)
 				newMesh.objectData.push_back(newPlatform);
 			}
 		}
-
+		else if (tempSubString == "go")
+		{
+			for (int j = 0; j < meshes[i].transforms.size(); j++)
+			{
+				Gear* newGear = new Gear(meshes[i].transforms[j], meshes[i].bBox[j], false, GameObject::ObjectType::Gear);
+				//newPlatform.position = meshes[i].transforms[j];
+				//newPlatform.BoundingBox = meshes[i].BoundingBox;
+				//tempObjects.push_back(newPlatform); 
+				newMesh.bufferIndices.push_back(i);
+				newMesh.objectData.push_back(newGear);
+			}
+		}
 			objects.push_back(newMesh);
 		
 	}
@@ -87,7 +98,7 @@ void PlatformManager::Update(D3DXVECTOR3 playerPosition, std::vector<ModelClass:
 				case GameObject::ObjectType::Gear :
 				{
 					float length = D3DXVec3Length(&(playerPosition - objects[i].objectData[j]->GetPosition()));
-					if (length < 2.0f)
+					if (length < 1.0f)
 					{
 						objects[i].objectData.erase(objects[i].objectData.begin() + j);
 					}

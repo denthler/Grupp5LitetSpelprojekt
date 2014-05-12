@@ -71,7 +71,7 @@ public:
 	//void UpdateRender();
 	void AddScreen(Screen * screen);
 	void RemoveScreen(Screen * screen);
-	
+
 private:
 
 	//D3D11
@@ -85,6 +85,7 @@ private:
 	D3DXMATRIX projectionMatrix;
 	IDXGISwapChain* swapChain;
 	UINT m4xMsaaQuality;
+	D3D11_VIEWPORT viewport;
 	//
 	HWND hwnd;
 	WorldClass* m_World;

@@ -99,6 +99,7 @@
     <ClInclude Include="Render.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Screen.h" />
+    <ClInclude Include="Sound.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
@@ -123,6 +124,7 @@
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="Render.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
+    <ClCompile Include="Sound.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>

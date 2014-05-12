@@ -22,6 +22,12 @@ struct KeyFrames
 	std::vector<D3DMATRIX> boneTransforms;
 };
 
+struct AnimationSets
+{
+	std::string name;
+	std::vector<KeyFrames> keyFrames;
+};
+
 struct FaceInfo
 {
 	std::vector<int> vertex;
@@ -42,7 +48,7 @@ struct MeshData
 	std::string normalMap;
 
 	std::vector<skinCluster> clusters;
-	std::vector<KeyFrames> keyFrames;
+	std::vector<AnimationSets*> animSets;
 };
 
 class AssetImporter
@@ -56,6 +62,7 @@ public:
 private:
 	std::string					file_Path;
 	MeshData*					currentMesh;
+	AnimationSets*				currentAnimSet;
 };
 
 #endif

@@ -6,8 +6,10 @@
 // GLOBALS //
 /////////////
 Texture2D shaderTexture;
+Texture2D shadowTexture;
 Texture2D normalMap;
 SamplerState SampleType;
+SamplerState SampleShadowType;
 
 cbuffer gMaterial
 {
@@ -19,6 +21,10 @@ cbuffer gMaterial
 	int pad[2];
 };
 
+cbuffer ShadowGen
+{
+	matrix shadowMat;
+};
 
 cbuffer LightBuffer
 {
@@ -53,7 +59,7 @@ struct PixelInputType
 	float2 tex : TEXCOORD0;
 	float3 tangent : TANGENT;
 	float3 lightPos1 : TEXCOORD1;
-	
+	float4 lightClipSpace : TEXCOORD2;
 };
 
 /*struct VertexInputType
@@ -77,6 +83,14 @@ struct VertexInputTypeAni
 ////////////////////////////////////////////////////////////////////////////////
 // Vertex Shader
 ////////////////////////////////////////////////////////////////////////////////
+float4 pointShadowVS(float4 pos : POSITION) : SV_Position
+{
+	pos.w = 1.0f; 
+
+
+
+	return mul(pos, shadowMat);
+}
 PixelInputType VS(VertexInputTypeAni input)
 {
 	PixelInputType output;
@@ -96,7 +110,10 @@ PixelInputType VS(VertexInputTypeAni input)
 	worldPosition = mul(float4(input.position, 1.0f), (float4x4)worldMatrix);
 	
 	output.lightPos1.xyz = pos.xyz - worldPosition.xyz; 	
-	
+
+	//output.lightClipSpace = mul(input.position, (float4x4)worldMatrix);
+	output.lightClipSpace = mul(float4(input.position, 1.0f), (float4x4)shadowMat);
+
 	return output;
 }
 
@@ -142,9 +159,12 @@ PixelInputType VSANI(VertexInputTypeAni input)
 
 	output.tangent = mul(tangentL, (float3x3)worldMatrix);
 
-	worldPosition = mul(float4(input.position, 1.0f), (float4x4)worldMatrix);
+	worldPosition = mul(float4(posL, 1.0f), (float4x4)worldMatrix);
 
 	output.lightPos1.xyz = pos.xyz - worldPosition.xyz;
+
+	//output.lightClipSpace = mul(input.position, (float4x4)worldMatrix);
+	output.lightClipSpace = mul(float4(posL, 1.0f), (float4x4)shadowMat);
 
 	return output;
 }
@@ -183,7 +203,7 @@ float4 PS(PixelInputType input) : SV_TARGET
 	float d = length(input.lightPos1);
 
 	float4 finalAmbient = ambColor * ambient * 	textureColor;
-
+	
 	if(d > range)
 	{ 
 		return finalAmbient; 
@@ -194,23 +214,52 @@ float4 PS(PixelInputType input) : SV_TARGET
 
 	//?
 	//input.lightPos1 = -input.lightPos1;
-	
-	lightIntensity1 = saturate(dot(bumpNormal, input.lightPos1));
+	float2 projLight;
+	projLight.x = input.lightClipSpace.x / input.lightClipSpace.w / 2.0f + 0.5f;
+	projLight.y = -input.lightClipSpace.y / input.lightClipSpace.w / 2.0f + 0.5f;
 
-	color += saturate(diffuse * textureColor); 
-     // * difColor
-	
-	color *= lightIntensity1; 
-	color /= att.x + (att.y * d) + (att.z * (d*d));
+	float lightDepth = 0.0f;
+	float depth = 1.0f;
 
-	color = saturate(color + finalAmbient); 
+	if ((projLight.x <= 1.0f) && (projLight.x >= 0.0f) && (projLight.y <= 1.0f) && (projLight.y >= 0.0f))
+	{
+		if ((projLight.x == projLight.x) && (projLight.y == projLight.y))
+		{
+			depth = shadowTexture.Sample(SampleShadowType,
+				projLight).r;
+			//color = float4(depth, depth, depth, 1.0f);
+			lightDepth = input.lightClipSpace.z / input.lightClipSpace.w;
+			lightDepth -= 0.001f;
+		}
+	}
+
+	if (lightDepth < depth)
+	{
+
+		lightIntensity1 = saturate(dot(bumpNormal, input.lightPos1));
+
+		color += saturate(diffuse * textureColor);
+		// * difColor
+
+		color *= lightIntensity1;
+		color /= att.x + (att.y * d) + (att.z * (d*d));
+		color = saturate(color + finalAmbient);
+		//color = float4(1.0f, 0.0f, 0.0f, 1.0f);
+	}
+	else
+	{
+		//color += saturate(diffuse * textureColor);
+		color = saturate(color + (finalAmbient * 0.5f));
+		//color = float4(1.0f, 0.0f, 0.0f, 1.0f);
+	}
+	
 	
 	//Test
 	//if((diffuse .x == 0.0f) && 
 	//(diffuse .y == 0.0f))
 	//color = shaderTexture.Sample(SampleType,input.tex);
 
-
+	//color = float4(0.0f, 0.0f, depth, 1.0f);
 	return color;
 }
 
@@ -231,5 +280,12 @@ technique11 ShaderTech
 	{
 		SetVertexShader(CompileShader(vs_5_0, VSANI()));
 		SetPixelShader(CompileShader(ps_5_0, PS()));
+	}
+	pass P2
+	{
+		SetVertexShader(CompileShader(vs_5_0, pointShadowVS()));
+		SetGeometryShader(NULL);
+		SetPixelShader(NULL);
+
 	}
 }

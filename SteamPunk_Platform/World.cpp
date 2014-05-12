@@ -46,7 +46,7 @@ bool WorldClass::Initialize(ID3D11Device* DContext, HWND hwnd, D3DXMATRIX proj, 
 	{
 		return false;
 	}
-	camera->Initialize(0.0f, 10.0f, -50.0f, D3DXVECTOR3(0.0f, 1.0f, 0.0f));
+	camera->Initialize(0.0f, 10.0f, -10.0f, D3DXVECTOR3(0.0f, 1.0f, 0.0f));
 
 	pointLight = new PointLightClass();
 	if(!pointLight)
@@ -67,7 +67,9 @@ bool WorldClass::Initialize(ID3D11Device* DContext, HWND hwnd, D3DXMATRIX proj, 
 	}
 	
 	D3DXVECTOR3 playerPos(rManager.player.transforms[0]._41, rManager.player.transforms[0]._42 + 10.0f, rManager.player.transforms[0]._43);
+
 	//D3DXVECTOR3 playerPos(-4.0f, 8.0f, 0.0f);
+
 	result = player->Initialize(DContext, playerPos, 
 		rManager.player.textureMap, rManager.player.normalMap, rManager.player.animationSets, rManager.player.m_vertexBuffer, rManager.player.vCount);
 	player->bBox = rManager.player.bBox[0];
@@ -148,7 +150,7 @@ void WorldClass::Run(ID3D11DeviceContext* DContext, DWORD time)
 
 	//Update(time);
 
-	Draw(DContext);
+	//Draw(DContext);
 }
 
 void WorldClass::CleanUp()
@@ -202,7 +204,7 @@ bool WorldClass::Update(float time, ID3D11Device* DContext)
 	player->Update(time, tempBB);
 	camera->Update(player->GetPosition());
 	renderClass->UpdateFrustum(camera->GetView(), projection);
-	pointLight->SetPosition(player->GetPosition().x, player->GetPosition().y, -50.0f);
+	pointLight->SetPosition(player->GetPosition().x, player->GetPosition().y + 5.0f, 0.0f);
 	//pointLight->SetDiffuseColor(red, 0.5f, 0.5f, 1.0f);
 
 	return true;
@@ -219,14 +221,13 @@ void WorldClass::Draw(ID3D11DeviceContext* DContext)
 	Player::Material material = player->GetMaterial();
 	ID3D11ShaderResourceView* tempTex;
 	ID3D11ShaderResourceView* tempNor;
-	std::vector<D3DMATRIX> temp;
 
 	tempNor = 0;
 	tempTex = 0;
 	pManager.Draw(DContext, renderClass, viewMatrix, tempTex, tempNor, pointLight, material);
 
 	player->Apply(DContext);
-	result = renderClass->UpdateRender(DContext, player->GetWorldMatrix(), viewMatrix, player->GetTextureMap(), player->GetNormalMap(), pointLight, player->GetMaterial(), temp);
+	result = renderClass->UpdateRender(DContext, player->GetWorldMatrix(), viewMatrix, player->GetTextureMap(), player->GetNormalMap(), pointLight, player->GetMaterial(), player->GetCurrentFrame());
 	renderClass->Draw(DContext, rManager.player.vCount, 1);
 
 	eManager->Draw(DContext, renderClass, viewMatrix, pointLight);
