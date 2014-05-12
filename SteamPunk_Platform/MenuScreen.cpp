@@ -1,26 +1,27 @@
+#include <vector>
 #include "MenuScreen.h"
-
+static int cogs = 3;
 MenuScreen::MenuScreen(ID3D11Device* device, ID3D11DeviceContext * deviceContext, HWND hwnd, D3DXMATRIX proj, HINSTANCE hInstance)
-{	
-	// Drawing a simple triangle on the screen. 
+{
+	// Triangle
 	HRESULT result;
-	ID3D10Blob * VS_Buffer, * PS_Buffer;
+	ID3D10Blob * VS_Buffer, *PS_Buffer;
 	result = D3DX11CompileFromFile(L"effect.fx", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &VS_Buffer, 0, 0);
 	result = D3DX11CompileFromFile(L"effect.fx", 0, 0, "PShader", "ps_5_0", 0, 0, 0, &PS_Buffer, 0, 0);
 
 	result = device->CreateVertexShader(VS_Buffer->GetBufferPointer(), VS_Buffer->GetBufferSize(), NULL, &VS);
 	result = device->CreatePixelShader(PS_Buffer->GetBufferPointer(), PS_Buffer->GetBufferSize(), NULL, &PS);
-	
+
 	deviceContext->VSSetShader(VS, 0, 0);
 	deviceContext->PSSetShader(PS, 0, 0);
 
 	float triangleData[] =
 	{
 		-0.875f, 1.0f, 0.0f,
-		-1.0f,  0.75f, 0.0f,
+		-1.0f, 0.75f, 0.0f,
 		-0.75f, 0.75f, 0.0f
 	};
-	
+
 	D3D11_SUBRESOURCE_DATA vertexBufferData;
 	ZeroMemory(&vertexBufferData, sizeof(vertexBufferData));
 	vertexBufferData.pSysMem = triangleData;
@@ -34,7 +35,7 @@ MenuScreen::MenuScreen(ID3D11Device* device, ID3D11DeviceContext * deviceContext
 	bufferDesc.StructureByteStride = 0;
 
 	result = device->CreateBuffer(&bufferDesc, &vertexBufferData, &triangleVertBuffer);
-	UINT stride = sizeof(float) * 3;
+	UINT stride = sizeof(float)* 3;
 	UINT offset = 0;
 	deviceContext->IASetVertexBuffers(0, 1, &triangleVertBuffer, &stride, &offset);
 
@@ -46,7 +47,7 @@ MenuScreen::MenuScreen(ID3D11Device* device, ID3D11DeviceContext * deviceContext
 	layout.AlignedByteOffset = 0;
 	layout.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	layout.InstanceDataStepRate = 0;
-	
+
 	result = device->CreateInputLayout(&layout, 1, VS_Buffer->GetBufferPointer(), VS_Buffer->GetBufferSize(), &vertLayout);
 
 	deviceContext->IASetInputLayout(vertLayout);
@@ -63,23 +64,14 @@ MenuScreen::MenuScreen(ID3D11Device* device, ID3D11DeviceContext * deviceContext
 	viewport.Height = 640;
 
 	deviceContext->RSSetViewports(1, &viewport);
-	
+
 	this->device = device;
 	this->deviceContext = deviceContext;
 
 	// Render a texture
-	ID3D10Blob * errorBlob;
-	ID3D10Blob * textureVSBuffer, * texturePSBuffer;
-	result = D3DX11CompileFromFile(L"texture.fx", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &textureVSBuffer, &errorBlob, 0);
-	result = D3DX11CompileFromFile(L"texture.fx", 0, 0, "PShader", "ps_5_0", 0, 0, 0, &texturePSBuffer, &errorBlob, 0);
-	if (FAILED(result))
-	{
-		if (errorBlob)
-		{
-			OutputDebugStringA((char *)errorBlob->GetBufferPointer());
-			errorBlob->Release();
-		}
-	}
+	ID3D10Blob * textureVSBuffer, *texturePSBuffer;
+	result = D3DX11CompileFromFile(L"texture.fx", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &textureVSBuffer, NULL, 0);
+	result = D3DX11CompileFromFile(L"texture.fx", 0, 0, "PShader", "ps_5_0", 0, 0, 0, &texturePSBuffer, NULL, 0);
 
 	result = device->CreateVertexShader(textureVSBuffer->GetBufferPointer(), textureVSBuffer->GetBufferSize(), NULL, &textureVS);
 	result = device->CreatePixelShader(texturePSBuffer->GetBufferPointer(), texturePSBuffer->GetBufferSize(), NULL, &texturePS);
@@ -87,22 +79,28 @@ MenuScreen::MenuScreen(ID3D11Device* device, ID3D11DeviceContext * deviceContext
 	deviceContext->VSSetShader(textureVS, 0, 0);
 	deviceContext->PSSetShader(texturePS, 0, 0);
 
-	float quadData[] =
+	std::vector<float> cogData;
+	// Each vertex requires 3 floats for position, and 2 floats for texcoordinates.
+	// Each cog consists of 4 vertices.
+	for (int i = 0; i < cogs; i++)
 	{
-		0.75f, 0.75f, 0.0f,
-		0.0f, 1.0f,
-		0.75f, 1.0f, 0.0f,
-		0.0f, 0.0f,
-		1.0f, 0.75f, 0.0f,
-		1.0f, 1.0f,
-		1.0f, 1.0f, 0.0f,		
-		1.0f, 0.0f,
-	};
+		// Each cog texture is drawn next to each other vertically.
+		// The offset is 0.125 in screen cordinates.
+		float offset = i * 0.125;
+		cogData.push_back(0.875f - offset); cogData.push_back(0.875f); cogData.push_back(0.0f);
+		cogData.push_back(0.0f); cogData.push_back(1.0f);
+		cogData.push_back(0.875f - offset); cogData.push_back(1.0f); cogData.push_back(0.0f);
+		cogData.push_back(0.0f); cogData.push_back(0.0f);
+		cogData.push_back(1.0f - offset); cogData.push_back(0.875f); cogData.push_back(0.0f);
+		cogData.push_back(1.0f); cogData.push_back(1.0f);
+		cogData.push_back(1.0f - offset); cogData.push_back(1.0f); cogData.push_back(0.0f);
+		cogData.push_back(1.0f); cogData.push_back(0.0f);
+	}
 
 	ZeroMemory(&vertexBufferData, sizeof(vertexBufferData));
-	vertexBufferData.pSysMem = quadData;
+	vertexBufferData.pSysMem = cogData.data();
 
-	bufferDesc.ByteWidth = sizeof(float) * (3 + 2) * 4;
+	bufferDesc.ByteWidth = sizeof(float)* (3 + 2) * cogs * 4;
 	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bufferDesc.CPUAccessFlags = 0;
@@ -150,6 +148,24 @@ MenuScreen::MenuScreen(ID3D11Device* device, ID3D11DeviceContext * deviceContext
 	result = device->CreateSamplerState(&samplerDesc, &samplerState);
 	deviceContext->PSSetShaderResources(0, 1, &texture);
 	deviceContext->PSSetSamplers(0, 1, &samplerState);
+
+	D3D11_RENDER_TARGET_BLEND_DESC rtbd;
+	ZeroMemory(&rtbd, sizeof(rtbd));
+	rtbd.BlendEnable = true;
+	rtbd.SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	rtbd.DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	rtbd.BlendOp = D3D11_BLEND_OP_ADD;
+	rtbd.SrcBlendAlpha = D3D11_BLEND_INV_DEST_ALPHA;
+	rtbd.DestBlendAlpha = D3D11_BLEND_ONE;
+	rtbd.BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	rtbd.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	D3D11_BLEND_DESC blendDesc;
+	ZeroMemory(&blendDesc, sizeof(blendDesc));
+	blendDesc.AlphaToCoverageEnable = false;
+	blendDesc.RenderTarget[0] = rtbd;
+
+	device->CreateBlendState(&blendDesc, &blendState);
 }
 
 MenuScreen::~MenuScreen()
@@ -175,6 +191,8 @@ void MenuScreen::Draw()
 	deviceContext->Draw(3, 0);
 
 	// Cog texture
+	float blendFactor[] = { 0.75f, 0.75f, 0.75f, 1.0f };
+	deviceContext->OMSetBlendState(blendState, blendFactor, 0xffffffff);
 	deviceContext->VSSetShader(textureVS, 0, 0);
 	deviceContext->PSSetShader(texturePS, 0, 0);
 	deviceContext->PSSetShaderResources(0, 1, &texture);
@@ -184,5 +202,12 @@ void MenuScreen::Draw()
 	deviceContext->IASetInputLayout(quadLayout);
 	deviceContext->IASetVertexBuffers(0, 1, &quadVertBuffer, &stride, &offset);
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-	deviceContext->Draw(4, 0);
+	for (int i = 0; i < cogs; i++)
+	{
+		deviceContext->Draw(4, 4*i);
+	}
+	
+
+	// Reset blend state
+	deviceContext->OMSetBlendState(0, 0, 0xffffffff);
 }
