@@ -132,6 +132,7 @@ D3DXMATRIX ModelClass::GetWorldMatrix()
 
 void ModelClass::FlipGravity()
 {
+	/*
 	D3DXVECTOR3 temp;
 	temp = (bBox.max - bBox.min) / 2.0f;
 	D3DXVECTOR3 temp2;
@@ -148,12 +149,14 @@ void ModelClass::FlipGravity()
 		position.y += (temp.y * temp2.y) * (2.5f);
 		position.z += (temp.z * temp2.z) * (2.5f);
 	}
+	*/
 	D3DXVec3Cross(&worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis);
 
 }
 
 void ModelClass::FlipGravityS()
 {
+	/*
 	D3DXVECTOR3 temp;
 	temp = (bBox.max - bBox.min) / 2.0f;
 	D3DXVECTOR3 temp2;
@@ -165,11 +168,12 @@ void ModelClass::FlipGravityS()
 		position.z -= (temp.z * temp2.z) * (2.5f);
 	}
 	else
-	{
+	{ 
 		position.x += (temp.x * temp2.x) * (2.5f);
 		position.y += (temp.y * temp2.y) * (2.5f);
 		position.z += (temp.z * temp2.z) * (2.5f);
 	}
+	*/
 	D3DXVec3Cross(&worldAxis, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f));
 	/*
 		m_worldMatrix = rotMatrix;

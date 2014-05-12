@@ -20,6 +20,7 @@ cbuffer gMaterial
 	int pad[2];
 };
 
+
 /*cbuffer LightBuffer	/// PointLight
 {
 	float4 diffuse;
@@ -257,22 +258,11 @@ float4 PS(PixelInputType input) : SV_TARGET
 	}*/
 
 	//input.lightPos1 = normalize(input.lightPos1);
-
 	
 	lightIntensity1 = saturate(dot(bumpNormal, -direction));
-
-	color += saturate(diffuse * textureColor); 
-	
+	color += saturate(diffuse * textureColor); 	
 	color *= lightIntensity1; 
-	//color /= att.x + (att.y * d) + (att.z * (d*d));
-
-	color = saturate(color + finalAmbient); 
-	
-	//Test
-	//if((diffuse .x == 0.0f) && 
-	//(diffuse .y == 0.0f))
-	//color = shaderTexture.Sample(SampleType,input.tex);
-
+	color = saturate(color + finalAmbient);	
 
 	input.posLightView.xy /= input.posLightView.w; 
  
@@ -293,12 +283,6 @@ float4 PS(PixelInputType input) : SV_TARGET
 
 	return color;
 }
-
-////////////////////////////////////////////////////////////////////////////////
-// Geometry Shader
-////////////////////////////////////////////////////////////////////////////////
-
-
 
 technique11 ShaderTech
 {

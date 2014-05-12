@@ -22,7 +22,6 @@ Render::Render()
 	lightBuffer = 0;
 	Mat = 0;
 	materialBuffer = 0;
-	
 }
 
 Render::Render(const Render& other)

@@ -74,7 +74,7 @@ public:
 	//void UpdateRender();
 	void AddScreen(Screen * screen);
 	void RemoveScreen(Screen * screen);
-	
+
 private:
 
 	//D3D11

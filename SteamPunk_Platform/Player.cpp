@@ -178,7 +178,7 @@ bool Player::Update(float gameTime, std::vector<BoundingBox>& bb)
 		{
 			D3DXVec3Cross(&temp, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis);
 			velocity -= moveScale * temp;
-			if (!Rotated && tempBool)
+			if (!Rotated)// && tempBool)
 			{
 				position.x += (temp.x) * (.9f);
 				position.y += (temp.y) * (.9f);
@@ -192,7 +192,7 @@ bool Player::Update(float gameTime, std::vector<BoundingBox>& bb)
 		{
 			D3DXVec3Cross(&temp, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis);
 			velocity += moveScale * temp;
-			if (Rotated && tempBool)
+			if (Rotated)// && tempBool)
 			{
 				position.x -= (temp.x) * (.9f);
 				position.y -= (temp.y) * (.9f);

@@ -14,6 +14,7 @@ Application::Application()
 	hwnd = 0;
 	swapChain = 0;
 	m4xMsaaQuality = 0;
+	
 	//Initialized = false;
 
 	Initialized = false;
@@ -274,6 +275,7 @@ void Application::CleanUp()
 		swapChain = 0;
 	}
 
+	//
 	if(m_World)
 	{
 		m_World->CleanUp();
@@ -447,7 +449,7 @@ bool Application::InitializeD3D(int screenWidth, int screenHeight, bool vSync, b
 	rasterDesc.DepthBiasClamp = 0.0f;
 	rasterDesc.DepthClipEnable = true;
 	rasterDesc.FillMode = D3D11_FILL_SOLID;
-	rasterDesc.FrontCounterClockwise = false;
+	rasterDesc.FrontCounterClockwise = true;
 	rasterDesc.MultisampleEnable = false;
 	rasterDesc.ScissorEnable = false;
 	rasterDesc.SlopeScaledDepthBias = 0.0f;
@@ -474,8 +476,6 @@ bool Application::InitializeD3D(int screenWidth, int screenHeight, bool vSync, b
 	if (!InitializeTimer())
 		return false;
 
-
-	
 	return true;
 }
 
@@ -658,5 +658,4 @@ void Application::RemoveScreen(Screen * screen)
 	delete screen;
 	screens.remove(screen);
 }
-
 #pragma endregion

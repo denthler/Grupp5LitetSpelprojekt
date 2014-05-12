@@ -11,6 +11,7 @@
 #include "ResourceManager.h"
 #include "GameObject.h"
 #include "Platform.h"
+#include "CogWheel.h"
 
 /*
 struct GameObject

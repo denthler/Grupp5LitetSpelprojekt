@@ -45,7 +45,7 @@ bool WorldClass::Initialize(ID3D11Device* DContext, HWND hwnd, D3DXMATRIX proj, 
 	{
 		return false;
 	}
-	camera->Initialize(0.0f, 10.0f, -50.0f, D3DXVECTOR3(0.0f, 1.0f, 0.0f));
+	camera->Initialize(0.0f, 10.0f, -10.0f, D3DXVECTOR3(0.0f, 1.0f, 0.0f));
 
 	player = new Player();
 
@@ -55,6 +55,9 @@ bool WorldClass::Initialize(ID3D11Device* DContext, HWND hwnd, D3DXMATRIX proj, 
 	}
 	
 	D3DXVECTOR3 playerPos(rManager.player.transforms[0]._41, rManager.player.transforms[0]._42 + 10.0f, rManager.player.transforms[0]._43);
+
+	//D3DXVECTOR3 playerPos(-4.0f, 8.0f, 0.0f);
+
 	result = player->Initialize(DContext, playerPos, 
 		rManager.player.textureMap, rManager.player.normalMap, rManager.player.animationSets, rManager.player.m_vertexBuffer, rManager.player.vCount);
 	player->bBox = rManager.player.bBox[0];
@@ -135,7 +138,7 @@ void WorldClass::Run(ID3D11DeviceContext* DContext, DWORD time)
 
 	//Update(time);
 
-	Draw(DContext);
+	//Draw(DContext);
 }
 
 void WorldClass::CleanUp()
@@ -185,6 +188,7 @@ bool WorldClass::Update(float time, ID3D11Device* DContext)
 	camera->Update(player->GetPosition());
 	renderClass->UpdateFrustum(camera->GetView(), projection);
 	renderClass->setLightPosition(player->GetPosition());
+
 	//pointLight->SetDiffuseColor(red, 0.5f, 0.5f, 1.0f);
 
 	return true;
