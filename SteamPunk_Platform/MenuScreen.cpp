@@ -1,6 +1,7 @@
 #include <vector>
 #include "MenuScreen.h"
-static int cogs = 3;
+static int cogsFound = 1;
+static int cogsTotal = 3;
 MenuScreen::MenuScreen(ID3D11Device* device, ID3D11DeviceContext * deviceContext, HWND hwnd, D3DXMATRIX proj, HINSTANCE hInstance)
 {
 	// Triangle
@@ -82,7 +83,7 @@ MenuScreen::MenuScreen(ID3D11Device* device, ID3D11DeviceContext * deviceContext
 	std::vector<float> cogData;
 	// Each vertex requires 3 floats for position, and 2 floats for texcoordinates.
 	// Each cog consists of 4 vertices.
-	for (int i = 0; i < cogs; i++)
+	for (int i = 0; i < cogsTotal; i++)
 	{
 		// Each cog texture is drawn next to each other vertically.
 		// The offset is 0.125 in screen cordinates.
@@ -100,7 +101,7 @@ MenuScreen::MenuScreen(ID3D11Device* device, ID3D11DeviceContext * deviceContext
 	ZeroMemory(&vertexBufferData, sizeof(vertexBufferData));
 	vertexBufferData.pSysMem = cogData.data();
 
-	bufferDesc.ByteWidth = sizeof(float)* (3 + 2) * cogs * 4;
+	bufferDesc.ByteWidth = sizeof(float)* (3 + 2) * cogsTotal * 4;
 	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bufferDesc.CPUAccessFlags = 0;
@@ -133,7 +134,8 @@ MenuScreen::MenuScreen(ID3D11Device* device, ID3D11DeviceContext * deviceContext
 	deviceContext->IASetInputLayout(quadLayout);
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
-	result = D3DX11CreateShaderResourceViewFromFile(device, L"Resources/Textures/LuryADO.png", NULL, NULL, &texture, NULL);
+	result = D3DX11CreateShaderResourceViewFromFile(device, L"Resources/Textures/cog_full.png", NULL, NULL, &cog_fullTexture, NULL);
+	result = D3DX11CreateShaderResourceViewFromFile(device, L"Resources/Textures/cog_empty.png", NULL, NULL, &cog_emptyTexture, NULL);
 
 	D3D11_SAMPLER_DESC samplerDesc;
 	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
@@ -146,7 +148,7 @@ MenuScreen::MenuScreen(ID3D11Device* device, ID3D11DeviceContext * deviceContext
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	result = device->CreateSamplerState(&samplerDesc, &samplerState);
-	deviceContext->PSSetShaderResources(0, 1, &texture);
+	deviceContext->PSSetShaderResources(0, 1, &cog_fullTexture);
 	deviceContext->PSSetSamplers(0, 1, &samplerState);
 
 	D3D11_RENDER_TARGET_BLEND_DESC rtbd;
@@ -190,23 +192,29 @@ void MenuScreen::Draw()
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	deviceContext->Draw(3, 0);
 
-	// Cog texture
+	// Cog cog_fullTexture
 	float blendFactor[] = { 0.75f, 0.75f, 0.75f, 1.0f };
 	deviceContext->OMSetBlendState(blendState, blendFactor, 0xffffffff);
 	deviceContext->VSSetShader(textureVS, 0, 0);
 	deviceContext->PSSetShader(texturePS, 0, 0);
-	deviceContext->PSSetShaderResources(0, 1, &texture);
+	deviceContext->PSSetShaderResources(0, 1, &cog_fullTexture);
 	deviceContext->PSSetSamplers(0, 1, &samplerState);
 	stride = sizeof(float)* (3 + 2);
 	offset = 0;
 	deviceContext->IASetInputLayout(quadLayout);
 	deviceContext->IASetVertexBuffers(0, 1, &quadVertBuffer, &stride, &offset);
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-	for (int i = 0; i < cogs; i++)
+
+	int i;
+	for (i = 0; i < cogsFound; i++)
 	{
-		deviceContext->Draw(4, 4*i);
+		deviceContext->Draw(4, 4 * i);
 	}
-	
+	deviceContext->PSSetShaderResources(0, 1, &cog_emptyTexture);
+	for (; i < cogsTotal; i++)
+	{
+		deviceContext->Draw(4, 4 * i);
+	}
 
 	// Reset blend state
 	deviceContext->OMSetBlendState(0, 0, 0xffffffff);
