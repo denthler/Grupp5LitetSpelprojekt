@@ -223,5 +223,5 @@ void WorldClass::DrawShadow(ID3D11DeviceContext* DContext)
 	result = renderClass->UpdateRenderShadow(DContext, player->GetWorldMatrix(), player->GetCurrentFrame());
 	renderClass->Draw(DContext, rManager.player.vCount, 3);
 
-	//eManager->Draw(DContext, renderClass, viewMatrix, pointLight);
+	eManager->DrawShadow(DContext, renderClass);
 }

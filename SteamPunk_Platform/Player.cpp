@@ -257,7 +257,7 @@ bool Player::Update(float gameTime, std::vector<BoundingBox>& bb)
 				currentAnimStack = i;
 		}
 	}	
-	else
+	else if (OnGround)
 	{
 		for (int i = 0; i < animationStack.size(); i++)
 		{
