@@ -2,12 +2,12 @@
 
 WorldClass::WorldClass()
 {
-	
 	camera = 0;
 	renderClass = 0;
 	player = 0;
 	input = 0;
 	eManager = 0;
+	hud = 0;
 }
 
 WorldClass::WorldClass(const WorldClass& other)
@@ -19,13 +19,13 @@ WorldClass::~WorldClass()
 
 }
 
-bool WorldClass::Initialize(ID3D11Device* DContext, HWND hwnd, D3DXMATRIX proj, HINSTANCE hInstance)
+bool WorldClass::Initialize(ID3D11Device* device, ID3D11DeviceContext * deviceContext, HWND hwnd, D3DXMATRIX proj, HINSTANCE hInstance)
 {
 	bool result;
 
 	projection = proj;
 
-	rManager.LoadLevel("Level1.SPL", DContext);
+	rManager.LoadLevel("Level1.SPL", device);
 	pManager.CreateLevel(rManager.meshes);
 
 	renderClass = new Render();
@@ -34,7 +34,7 @@ bool WorldClass::Initialize(ID3D11Device* DContext, HWND hwnd, D3DXMATRIX proj, 
 		return false;
 	}
 
-	result = renderClass->Initialize(DContext, hwnd, L"shader.fx", proj);
+	result = renderClass->Initialize(device, hwnd, L"shader.fx", proj);
 	if(!result)
 	{
 		return false;
@@ -58,7 +58,7 @@ bool WorldClass::Initialize(ID3D11Device* DContext, HWND hwnd, D3DXMATRIX proj, 
 
 	//D3DXVECTOR3 playerPos(-4.0f, 8.0f, 0.0f);
 
-	result = player->Initialize(DContext, playerPos, 
+	result = player->Initialize(device, playerPos, 
 		rManager.player.textureMap, rManager.player.normalMap, rManager.player.animationSets, rManager.player.m_vertexBuffer, rManager.player.vCount);
 	player->bBox = rManager.player.bBox[0];
 	player->bBoxOriginal = rManager.player.bBox[0];
@@ -84,6 +84,7 @@ bool WorldClass::Initialize(ID3D11Device* DContext, HWND hwnd, D3DXMATRIX proj, 
 		rManager.enemys[0].textureMap, rManager.enemys[0].normalMap, rManager.enemys[0].animationSets,
 		rManager.enemys[0].m_vertexBuffer, rManager.enemys[0].vCount, rManager.enemys[0].bBox[0]);
 
+	hud = new HUD(device, deviceContext, hwnd, proj, hInstance, &pManager);
 
 	return true;
 }
@@ -172,6 +173,12 @@ void WorldClass::CleanUp()
 		delete eManager;
 		eManager = 0;
 	}
+
+	if (hud)
+	{
+		delete hud;
+		hud = 0;
+	}
 }
 
 bool WorldClass::Update(float time, ID3D11Device* DContext)
@@ -190,7 +197,7 @@ bool WorldClass::Update(float time, ID3D11Device* DContext)
 	renderClass->setLightPosition(player->GetPosition());
 
 	//pointLight->SetDiffuseColor(red, 0.5f, 0.5f, 1.0f);
-
+	hud->Update();
 	return true;
 }
 
@@ -215,6 +222,7 @@ void WorldClass::Draw(ID3D11DeviceContext* DContext)
 	renderClass->Draw(DContext, rManager.player.vCount, 1);
 
 	eManager->Draw(DContext, renderClass, viewMatrix);
+	hud->Draw();
 }
 
 void WorldClass::DrawShadow(ID3D11DeviceContext* DContext)

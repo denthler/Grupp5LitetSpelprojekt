@@ -1,6 +1,5 @@
 #ifndef _WORLD_H_
 #define _WORLD_H_
-
 //////////////
 // INCLUDES //
 //////////////
@@ -14,6 +13,7 @@
 #include "ResourceManager.h"
 #include "PlatformManager.h"
 #include "EnemyManager.h"
+#include "HUD.h"
 
 class WorldClass
 {
@@ -22,7 +22,7 @@ public:
 	WorldClass(const WorldClass&);
 	~WorldClass();
 
-	bool Initialize(ID3D11Device*, HWND, D3DXMATRIX, HINSTANCE);
+	bool Initialize(ID3D11Device*, ID3D11DeviceContext *, HWND, D3DXMATRIX, HINSTANCE);
 	void Run(ID3D11DeviceContext*, DWORD);
 	void CleanUp();
 	bool Update(float, ID3D11Device*);
@@ -39,7 +39,7 @@ private:
 	PlatformManager pManager;
 	D3DXMATRIX projection;
 	EnemyManager* eManager;
-
+	HUD * hud;
 };
 
 #endif

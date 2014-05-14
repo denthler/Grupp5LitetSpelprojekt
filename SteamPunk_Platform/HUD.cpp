@@ -1,8 +1,7 @@
 #include <vector>
-#include "MenuScreen.h"
-static int cogsFound = 1;
-static int cogsTotal = 3;
-MenuScreen::MenuScreen(ID3D11Device* device, ID3D11DeviceContext * deviceContext, HWND hwnd, D3DXMATRIX proj, HINSTANCE hInstance)
+#include "HUD.h"
+
+HUD::HUD(ID3D11Device* device, ID3D11DeviceContext * deviceContext, HWND hwnd, D3DXMATRIX proj, HINSTANCE hInstance, PlatformManager * platformManager)
 {
 	// Triangle
 	HRESULT result;
@@ -83,7 +82,7 @@ MenuScreen::MenuScreen(ID3D11Device* device, ID3D11DeviceContext * deviceContext
 	std::vector<float> cogData;
 	// Each vertex requires 3 floats for position, and 2 floats for texcoordinates.
 	// Each cog consists of 4 vertices.
-	for (int i = 0; i < cogsTotal; i++)
+	for (int i = 0; i < platformManager->gearsTotal; i++)
 	{
 		// Each cog texture is drawn next to each other vertically.
 		// The offset is 0.125 in screen cordinates.
@@ -101,7 +100,7 @@ MenuScreen::MenuScreen(ID3D11Device* device, ID3D11DeviceContext * deviceContext
 	ZeroMemory(&vertexBufferData, sizeof(vertexBufferData));
 	vertexBufferData.pSysMem = cogData.data();
 
-	bufferDesc.ByteWidth = sizeof(float)* (3 + 2) * cogsTotal * 4;
+	bufferDesc.ByteWidth = sizeof(float)* (3 + 2) * platformManager->gearsTotal * 4;
 	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bufferDesc.CPUAccessFlags = 0;
@@ -168,19 +167,20 @@ MenuScreen::MenuScreen(ID3D11Device* device, ID3D11DeviceContext * deviceContext
 	blendDesc.RenderTarget[0] = rtbd;
 
 	device->CreateBlendState(&blendDesc, &blendState);
+	this->platformManager = platformManager;
 }
 
-MenuScreen::~MenuScreen()
+HUD::~HUD()
 {
 
 }
 
-void MenuScreen::Update()
+void HUD::Update()
 {
 	
 }
 
-void MenuScreen::Draw()
+void HUD::Draw()
 {
 	// Triangle
 	deviceContext->VSSetShader(VS, 0, 0);
@@ -206,16 +206,16 @@ void MenuScreen::Draw()
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
 	int i;
-	for (i = 0; i < cogsFound; i++)
+	for (i = 0; i < platformManager->gearsFound; i++)
 	{
 		deviceContext->Draw(4, 4 * i);
 	}
 	deviceContext->PSSetShaderResources(0, 1, &cog_emptyTexture);
-	for (; i < cogsTotal; i++)
+	for (; i < platformManager->gearsTotal; i++)
 	{
 		deviceContext->Draw(4, 4 * i);
 	}
-
+	
 	// Reset blend state
 	deviceContext->OMSetBlendState(0, 0, 0xffffffff);
 }

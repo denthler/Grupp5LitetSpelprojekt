@@ -1,5 +1,5 @@
 #pragma once
-
+#include "PlatformManager.h"
 #include "Button.h"
 #include "Screen.h"
 #include <D3DX11async.h>
@@ -7,7 +7,7 @@
 #include <D3DX10math.h>
 #include <WinDef.h>
 
-class MenuScreen : public Screen
+class HUD : public Screen
 {
 	Button startButton;
 	ID3D11Device * device;
@@ -22,9 +22,10 @@ class MenuScreen : public Screen
 	ID3D11SamplerState * samplerState;
 	ID3D11InputLayout* vertLayout, * quadLayout;
 	ID3D11BlendState * blendState;
+	PlatformManager * platformManager;
 public:
-	MenuScreen(ID3D11Device* DContext, ID3D11DeviceContext * deviceContext, HWND hwnd, D3DXMATRIX proj, HINSTANCE hInstance);
-	~MenuScreen();
+	HUD(ID3D11Device* device, ID3D11DeviceContext * deviceContext, HWND hwnd, D3DXMATRIX proj, HINSTANCE hInstance, PlatformManager * platformManager);
+	~HUD();
 
 	void Update();
 	void Draw();

@@ -2,7 +2,8 @@
 
 PlatformManager::PlatformManager()
 {
-
+	gearsFound = 0; 
+	gearsTotal = 0;
 }
 
 PlatformManager::~PlatformManager()
@@ -68,6 +69,7 @@ void PlatformManager::CreateLevel(std::vector<Mesh>& meshes)
 				//tempObjects.push_back(newPlatform); 
 				newMesh.bufferIndices.push_back(i);
 				newMesh.objectData.push_back(newGear);
+				gearsTotal++;
 			}
 		}
 			objects.push_back(newMesh);
@@ -101,6 +103,7 @@ void PlatformManager::Update(D3DXVECTOR3 playerPosition, std::vector<ModelClass:
 					if (length < 1.0f)
 					{
 						objects[i].objectData.erase(objects[i].objectData.begin() + j);
+						gearsFound++;
 					}
 					else
 						objects[i].objectData[j]->Update();
@@ -188,3 +191,18 @@ void PlatformManager::DrawShadow(ID3D11DeviceContext* deviceContext, Render* ren
 	}	
 }
 
+int PlatformManager::GetGearCount()
+{
+	int count = 0;
+	for (int i = 0; i < objects.size(); i++)
+	{
+		for (int j = 0; j < objects[i].objectData.size(); j++)
+		{
+			if (objects[i].objectData[j]->GetType() == GameObject::ObjectType::Gear)
+			{
+				count++;
+			}
+		}
+	}
+	return count;
+}
