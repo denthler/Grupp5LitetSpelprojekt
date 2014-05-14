@@ -87,14 +87,16 @@ HUD::HUD(ID3D11Device* device, ID3D11DeviceContext * deviceContext, HWND hwnd, D
 		// Each cog texture is drawn next to each other vertically.
 		// The offset is 0.125 in screen cordinates.
 		float offset = i * 0.125;
-		cogData.push_back(0.875f - offset); cogData.push_back(0.875f); cogData.push_back(0.0f);
+		cogData.push_back(-1.0f + offset); cogData.push_back(0.875f); cogData.push_back(0.0f);
 		cogData.push_back(0.0f); cogData.push_back(1.0f);
-		cogData.push_back(0.875f - offset); cogData.push_back(1.0f); cogData.push_back(0.0f);
+		cogData.push_back(-1.0f + offset); cogData.push_back(1.0f); cogData.push_back(0.0f);
 		cogData.push_back(0.0f); cogData.push_back(0.0f);
-		cogData.push_back(1.0f - offset); cogData.push_back(0.875f); cogData.push_back(0.0f);
+		cogData.push_back(-0.875f + offset); cogData.push_back(0.875f); cogData.push_back(0.0f);
 		cogData.push_back(1.0f); cogData.push_back(1.0f);
-		cogData.push_back(1.0f - offset); cogData.push_back(1.0f); cogData.push_back(0.0f);
+
+		cogData.push_back(-0.875f + offset); cogData.push_back(1.0f); cogData.push_back(0.0f);
 		cogData.push_back(1.0f); cogData.push_back(0.0f);
+
 	}
 
 	ZeroMemory(&vertexBufferData, sizeof(vertexBufferData));
