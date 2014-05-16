@@ -2,12 +2,12 @@
 
 WorldClass::WorldClass()
 {
-	
 	camera = 0;
 	renderClass = 0;
 	player = 0;
 	input = 0;
 	eManager = 0;
+	hud = 0;
 }
 
 WorldClass::WorldClass(const WorldClass& other)
@@ -19,7 +19,7 @@ WorldClass::~WorldClass()
 
 }
 
-bool WorldClass::Initialize(ID3D11Device* DContext, HWND hwnd, D3DXMATRIX proj, HINSTANCE hInstance)
+bool WorldClass::Initialize(ID3D11Device* device, ID3D11DeviceContext * deviceContext, HWND hwnd, D3DXMATRIX proj, HINSTANCE hInstance)
 {
 	bool result;
 
@@ -31,7 +31,7 @@ bool WorldClass::Initialize(ID3D11Device* DContext, HWND hwnd, D3DXMATRIX proj, 
 		return false;
 	}
 
-	result = renderClass->Initialize(DContext, hwnd, L"shader.fx", proj);
+	result = renderClass->Initialize(device, hwnd, L"shader.fx", proj);
 	if(!result)
 	{
 		return false;
@@ -64,8 +64,13 @@ bool WorldClass::Initialize(ID3D11Device* DContext, HWND hwnd, D3DXMATRIX proj, 
 		return false;
 	}
 
-	NewLevel(DContext, "Level1");
+	context = deviceContext;
+	hwn = hwnd;
+	pro = proj;
+	hInst = hInstance;
 
+	NewLevel(device, "Level1");
+	
 	return true;
 }
 
@@ -153,22 +158,30 @@ void WorldClass::CleanUp()
 		delete eManager;
 		eManager = 0;
 	}
+
+	if (hud)
+	{
+		delete hud;
+		hud = 0;
+	}
 }
 
-void WorldClass::NewLevel(ID3D11Device* DContext, std::string level)
+void WorldClass::NewLevel(ID3D11Device* device, std::string level)
 {
 	level += ".SPL";
 
-	rManager.LoadLevel(level, DContext);
+	rManager.LoadLevel(level, device);
 	pManager.CreateLevel(rManager.meshes);
 
 	D3DXVECTOR3 playerPos(rManager.player.transforms[0]._41, rManager.player.transforms[0]._42 + 10.0f, rManager.player.transforms[0]._43);
-	player->Initialize(DContext, playerPos, rManager.player.textureMap, rManager.player.normalMap, rManager.player.animationSets, rManager.player.m_vertexBuffer, rManager.player.vCount);
+	player->Initialize(device, playerPos, rManager.player.textureMap, rManager.player.normalMap, rManager.player.animationSets, rManager.player.m_vertexBuffer, rManager.player.vCount);
 	player->bBox = rManager.player.bBox[0];
 	player->bBoxOriginal = rManager.player.bBox[0];
 
 	eManager = new EnemyManager(rManager.enemys[0].transforms[0], rManager.enemys[0].textureMap, rManager.enemys[0].normalMap, 
 		rManager.enemys[0].animationSets, rManager.enemys[0].m_vertexBuffer, rManager.enemys[0].vCount, rManager.enemys[0].bBox[0]);
+
+	hud = new HUD(device, context, hwn, pro, hInst, &pManager);
 }
 
 bool WorldClass::Update(float time, ID3D11Device* DContext)
@@ -190,7 +203,7 @@ bool WorldClass::Update(float time, ID3D11Device* DContext)
 		NewLevel(DContext, "Level2");
 
 	//pointLight->SetDiffuseColor(red, 0.5f, 0.5f, 1.0f);
-
+	hud->Update();
 	return true;
 }
 
@@ -215,6 +228,7 @@ void WorldClass::Draw(ID3D11DeviceContext* DContext)
 	renderClass->Draw(DContext, rManager.player.vCount, 1);
 
 	eManager->Draw(DContext, renderClass, viewMatrix);
+	hud->Draw();
 }
 
 void WorldClass::DrawShadow(ID3D11DeviceContext* DContext)

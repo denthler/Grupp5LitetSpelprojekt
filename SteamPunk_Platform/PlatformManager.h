@@ -40,6 +40,9 @@ public:
 	void DrawShadow(ID3D11DeviceContext*, Render*);
 	void Update(D3DXVECTOR3 playerPosition, std::vector<ModelClass::BoundingBox>& bb);
 	//Get Boundingboxes
+	int gearsFound;
+	int gearsTotal;
+	int GetGearCount();
 
 	bool endLevel;
 
