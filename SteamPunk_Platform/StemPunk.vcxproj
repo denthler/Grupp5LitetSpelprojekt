@@ -81,6 +81,7 @@
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="AssetImporter.h" />
+    <ClInclude Include="BBoxRender.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CogWheel.h" />
@@ -109,6 +110,7 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="AssetImporter.cpp" />
+    <ClCompile Include="BBoxRender.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CogWheel.cpp" />
     <ClCompile Include="DirectionalLight.cpp" />
