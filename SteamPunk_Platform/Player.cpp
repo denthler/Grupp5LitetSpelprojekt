@@ -162,7 +162,7 @@ D3DXMATRIX Player::GetWorldMatrix()
 bool Player::Update(float gameTime, std::vector<BoundingBox>& bb)
 {
 	D3DXVECTOR3 temp;
-	gameTime *= 0.05f;
+	gameTime *= (1.0f / gameTime);
 	static bool tempBool = false;
 	D3DXVec3Cross(&temp, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f));
 	if (!dead)

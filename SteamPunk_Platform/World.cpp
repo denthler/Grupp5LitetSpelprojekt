@@ -25,9 +25,6 @@ bool WorldClass::Initialize(ID3D11Device* DContext, HWND hwnd, D3DXMATRIX proj, 
 
 	projection = proj;
 
-	rManager.LoadLevel("Level1.SPL", DContext);
-	pManager.CreateLevel(rManager.meshes);
-
 	renderClass = new Render();
 	if(!renderClass)
 	{
@@ -53,19 +50,6 @@ bool WorldClass::Initialize(ID3D11Device* DContext, HWND hwnd, D3DXMATRIX proj, 
 	{
 		return false;
 	}
-	
-	D3DXVECTOR3 playerPos(rManager.player.transforms[0]._41, rManager.player.transforms[0]._42 + 10.0f, rManager.player.transforms[0]._43);
-
-	//D3DXVECTOR3 playerPos(-4.0f, 8.0f, 0.0f);
-
-	result = player->Initialize(DContext, playerPos, 
-		rManager.player.textureMap, rManager.player.normalMap, rManager.player.animationSets, rManager.player.m_vertexBuffer, rManager.player.vCount);
-	player->bBox = rManager.player.bBox[0];
-	player->bBoxOriginal = rManager.player.bBox[0];
-	if(!result)
-	{
-		return false;
-	}
 
 	input = new InputClass();
 
@@ -80,10 +64,7 @@ bool WorldClass::Initialize(ID3D11Device* DContext, HWND hwnd, D3DXMATRIX proj, 
 		return false;
 	}
 
-	eManager = new EnemyManager(rManager.enemys[0].transforms[0],
-		rManager.enemys[0].textureMap, rManager.enemys[0].normalMap, rManager.enemys[0].animationSets,
-		rManager.enemys[0].m_vertexBuffer, rManager.enemys[0].vCount, rManager.enemys[0].bBox[0]);
-
+	NewLevel(DContext, "Level1");
 
 	return true;
 }
@@ -174,6 +155,22 @@ void WorldClass::CleanUp()
 	}
 }
 
+void WorldClass::NewLevel(ID3D11Device* DContext, std::string level)
+{
+	level += ".SPL";
+
+	rManager.LoadLevel(level, DContext);
+	pManager.CreateLevel(rManager.meshes);
+
+	D3DXVECTOR3 playerPos(rManager.player.transforms[0]._41, rManager.player.transforms[0]._42 + 10.0f, rManager.player.transforms[0]._43);
+	player->Initialize(DContext, playerPos, rManager.player.textureMap, rManager.player.normalMap, rManager.player.animationSets, rManager.player.m_vertexBuffer, rManager.player.vCount);
+	player->bBox = rManager.player.bBox[0];
+	player->bBoxOriginal = rManager.player.bBox[0];
+
+	eManager = new EnemyManager(rManager.enemys[0].transforms[0], rManager.enemys[0].textureMap, rManager.enemys[0].normalMap, 
+		rManager.enemys[0].animationSets, rManager.enemys[0].m_vertexBuffer, rManager.enemys[0].vCount, rManager.enemys[0].bBox[0]);
+}
+
 bool WorldClass::Update(float time, ID3D11Device* DContext)
 {
 	HandleInput();
@@ -188,6 +185,9 @@ bool WorldClass::Update(float time, ID3D11Device* DContext)
 	camera->Update(player->GetPosition());
 	renderClass->UpdateFrustum(camera->GetView(), projection);
 	renderClass->setLightPosition(player->GetPosition());
+
+	if(pManager.endLevel)
+		NewLevel(DContext, "Level2");
 
 	//pointLight->SetDiffuseColor(red, 0.5f, 0.5f, 1.0f);
 

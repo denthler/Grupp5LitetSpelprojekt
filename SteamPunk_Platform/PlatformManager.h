@@ -12,6 +12,7 @@
 #include "GameObject.h"
 #include "Platform.h"
 #include "CogWheel.h"
+#include "Door.h"
 
 /*
 struct GameObject
@@ -39,6 +40,8 @@ public:
 	void DrawShadow(ID3D11DeviceContext*, Render*);
 	void Update(D3DXVECTOR3 playerPosition, std::vector<ModelClass::BoundingBox>& bb);
 	//Get Boundingboxes
+
+	bool endLevel;
 
 private:
 	void OrganizeLevel(std::vector<GameObject>&);

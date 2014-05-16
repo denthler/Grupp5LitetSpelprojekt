@@ -32,6 +32,8 @@ public:
 	Render* renderClass;
 private:
 	void HandleInput();
+	void NewLevel(ID3D11Device*, std::string);
+
 	Camera* camera;
 	Player* player;
 	InputClass* input;

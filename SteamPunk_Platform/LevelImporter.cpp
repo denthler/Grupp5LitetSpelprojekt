@@ -2,7 +2,7 @@
 
 LevelImporter::LevelImporter()
 {
-	file_Path = "Resources/Levels/";
+	
 }
 
 LevelImporter::~LevelImporter()
@@ -12,6 +12,9 @@ LevelImporter::~LevelImporter()
 
 bool LevelImporter::LoadLevel(std::string level)
 {
+	types.clear();
+
+	file_Path = "Resources/Levels/";
 	std::ifstream inFile;
 	file_Path += level;
 	

@@ -12,20 +12,47 @@ ResourceManager::~ResourceManager()
 
 bool ResourceManager::LoadLevel(std::string level, ID3D11Device* DContext)
 {
-	lImporter.LoadLevel(level);
+	lImporter.LoadLevel(level);		// if false ladda sista banan.
+
+	DeleteUnusedMeshes();
 
 	for (int i = 0; i < lImporter.types.size(); i++)
 	{
-		aImporter.LoadAsset(lImporter.types[i]->type);
+		bool loaded = false;
 
-		std::string type = lImporter.types[i]->type;
-		std::string tempSubString = type.substr(0, 2);
+		for (int t = 0; t < types.size(); t++)
+		{
+			if(types[t] == lImporter.types[i]->type)
+			{
+				loaded = true;
+			}
+		}
 
-		if (tempSubString != "p_" && tempSubString != "e_")
-			CreateStaticMeshes(DContext, i);
+		if(!loaded)
+		{
+			types.push_back(lImporter.types[i]->type);
+			aImporter.LoadAsset(lImporter.types[i]->type);
+
+			std::string type = lImporter.types[i]->type;
+			std::string tempSubString = type.substr(0, 2);
+
+			if (tempSubString != "p_" && tempSubString != "e_")
+				CreateStaticMeshes(DContext, i);
+			else
+				CreateAnimatedMeshes(DContext, i);
+		}
 		else
-			CreateAnimatedMeshes(DContext, i);
+		{
+			std::string type = lImporter.types[i]->type;
+			std::string tempSubString = type.substr(0, 2);
+
+			if (tempSubString != "p_" && tempSubString != "e_")
+				UpdateTransformsAndBBoxStatic(i);
+			else
+				UpdateTransformsAndBBoxAnimation(i);
+		}
 	}
+
 	return true;
 }
 
@@ -65,6 +92,8 @@ void ResourceManager::CreateStaticMeshes(ID3D11Device* DContext, int index)
 			bBox.max.z = max(bBox.max.z, tempVertices[j].position.z);
 			bBox.min.z = min(bBox.min.z, tempVertices[j].position.z);
 		}
+
+		newMesh.originalBBox = bBox;
 			
 		ModelClass::BoundingBox tempBox;
 		for (int j = 0; j < lImporter.types[index]->transforms.size(); j++)
@@ -284,5 +313,103 @@ void ResourceManager::CreateAnimatedMeshes(ID3D11Device* DContext, int index)
 			player = newMesh;
 		else if (tempSubString == "e_")
 			enemys.push_back(newMesh);
+	}
+}
+
+void ResourceManager::UpdateTransformsAndBBoxStatic(int index)
+{
+	for(int i = 0; i < meshes.size(); i++)
+	{
+		if(meshes[i].type == lImporter.types[index]->type)
+		{
+			meshes[i].transforms.clear();
+			meshes[i].bBox.clear();
+
+			ModelClass::BoundingBox tempBox;
+			for (int j = 0; j < lImporter.types[index]->transforms.size(); j++)
+			{
+				meshes[i].transforms.push_back(lImporter.types[index]->transforms[j]);
+				D3DXVECTOR4 tempVec;
+				D3DXVec3Transform(&tempVec, &meshes[i].originalBBox.max, &meshes[i].transforms[j]);
+				tempBox.max.x = tempVec.x;
+				tempBox.max.y = tempVec.y;
+				tempBox.max.z = tempVec.z;
+				D3DXVec3Transform(&tempVec, &meshes[i].originalBBox.min, &meshes[i].transforms[j]);
+				tempBox.min.x = tempVec.x;
+				tempBox.min.y = tempVec.y;
+				tempBox.min.z = tempVec.z;
+
+				if ((tempBox.min.x > tempBox.max.x))
+				{
+					tempBox.min.x = tempBox.max.x;
+					tempBox.max.x = tempVec.x;
+				}
+				if ((tempBox.min.y > tempBox.max.y))
+				{
+					tempBox.min.y = tempBox.max.y;
+					tempBox.max.y = tempVec.y;
+				}
+				if ((tempBox.min.z > tempBox.max.z))
+				{
+					tempBox.min.z = tempBox.max.z;
+					tempBox.max.z = tempVec.z;
+				}
+
+				meshes[i].bBox.push_back(tempBox);
+			}	
+		}
+	}
+}
+
+void ResourceManager::UpdateTransformsAndBBoxAnimation(int index)
+{
+	std::string tempSubString = lImporter.types[index]->type.substr(0, 2);
+
+	if (tempSubString == "p_")
+	{
+		for (int j = 0; j < lImporter.types[index]->transforms.size(); j++)
+		{
+			player.transforms.clear();
+			player.transforms.push_back(lImporter.types[index]->transforms[j]);
+		}		
+	}	
+	else if (tempSubString == "e_")
+	{
+		for(int e = 0; e < enemys.size(); e++)
+			for (int j = 0; j < lImporter.types[index]->transforms.size(); j++)
+			{
+				enemys[e].transforms.clear();
+				enemys[e].transforms.push_back(lImporter.types[index]->transforms[j]);
+			}		
+	}
+}
+
+void ResourceManager::DeleteUnusedMeshes()
+{
+	for (int t = 0; t < types.size(); t++)
+	{
+		bool del = true;
+
+		for (int i = 0; i < lImporter.types.size(); i++)
+		{
+			if(types[t] == lImporter.types[i]->type)
+			{
+				del = false;
+			}
+		}
+
+		if(del)
+		{
+			for (int i = 0; i < meshes.size(); i++)
+			{
+				if(types[t] == meshes[i].type)
+				{
+					meshes.erase(meshes.begin() + i);
+				}
+			}
+			
+			types.erase(types.begin() + t);
+			t--;
+		}
 	}
 }

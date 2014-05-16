@@ -1,16 +1,37 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <ClCompile Include="Application.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="AssetImporter.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="CogWheel.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectionalLight.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyManager.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
     <ClCompile Include="FallingEnemy.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="GameObject.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="input.cpp">
+    <ClCompile Include="LevelImporter.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="LevelImporter.cpp">
+    <ClCompile Include="input.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Main.cpp">
@@ -43,112 +64,97 @@
     <ClCompile Include="ResourceManager.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Sound.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
     <ClCompile Include="Texture.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="World.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Enemy.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="AssetImporter.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Application.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="EnemyManager.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="CogWheel.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-<<<<<<< HEAD
-    <ClCompile Include="Sound.cpp">
-=======
-    <ClCompile Include="DirectionalLight.cpp">
->>>>>>> 29df1af40acaf53d353ab0eb28a565b05e2b8e6a
+    <ClCompile Include="Door.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Application.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="AssetImporter.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Header</Filter>
-    </ClInclude>
     <ClInclude Include="Enemy.h">
-      <Filter>Header</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="EnemyManager.h">
-      <Filter>Header</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="FallingEnemy.h">
-      <Filter>Header</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="GameObject.h">
-      <Filter>Header</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="input.h">
-      <Filter>Header</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="LevelImporter.h">
-      <Filter>Header</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="MenuScreen.h">
-      <Filter>Header</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="model.h">
-      <Filter>Header</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="NonFallingEnemy.h">
-      <Filter>Header</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Platform.h">
-      <Filter>Header</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="PlatformManager.h">
-      <Filter>Header</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">
-      <Filter>Header</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="PointLight.h">
-      <Filter>Header</Filter>
+    <ClInclude Include="DirectionalLight.h">
+      <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Render.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourceManager.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Screen.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="World.h">
-      <Filter>Header</Filter>
+    <ClInclude Include="Camera.h">
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="CogWheel.h">
-      <Filter>Header</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
-<<<<<<< HEAD
+    <ClInclude Include="Button.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="AssetImporter.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Application.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="PointLight.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Render.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Screen.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
     <ClInclude Include="Sound.h">
-=======
-    <ClInclude Include="Button.h" />
-    <ClInclude Include="DirectionalLight.h">
->>>>>>> 29df1af40acaf53d353ab0eb28a565b05e2b8e6a
-      <Filter>Header</Filter>
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="World.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Door.h">
+      <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -157,11 +163,11 @@
     <None Include="texture.fx" />
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Header">
-      <UniqueIdentifier>{87ac9811-5238-4dd9-9913-3795e930784d}</UniqueIdentifier>
+    <Filter Include="Headers">
+      <UniqueIdentifier>{39f6c052-67bf-449b-ac6d-f0beebb4467f}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source">
-      <UniqueIdentifier>{d6d97bb0-7ff2-4fd2-8520-838dbd19eb52}</UniqueIdentifier>
+      <UniqueIdentifier>{362dacc2-3494-4f5e-962c-bdb1cb3c6ea2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

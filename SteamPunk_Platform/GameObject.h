@@ -13,7 +13,8 @@ public:
 	{
 		Background = 1,
 		Platform = 2,
-		Gear = 4
+		Gear = 4,
+		Door = 8
 	};
 
 	GameObject(D3DXMATRIX, ModelClass::BoundingBox, bool, ObjectType);

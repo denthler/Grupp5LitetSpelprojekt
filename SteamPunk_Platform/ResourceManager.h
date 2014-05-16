@@ -30,6 +30,7 @@ struct Mesh
 	ID3D11Buffer* m_vertexBuffer;
 	std::vector<D3DXMATRIX> transforms;
 	std::vector<ModelClass::BoundingBox> bBox;
+	ModelClass::BoundingBox originalBBox;
 
 	ID3D11ShaderResourceView* textureMap;
 	ID3D11ShaderResourceView* normalMap;
@@ -47,12 +48,17 @@ public:
 private:
 	void						CreateStaticMeshes(ID3D11Device* DContext, int index);
 	void						CreateAnimatedMeshes(ID3D11Device* DContext, int index);
+	void						UpdateTransformsAndBBoxStatic(int index);
+	void						UpdateTransformsAndBBoxAnimation(int index);
+
+	void						DeleteUnusedMeshes();
 
 public:
 	Mesh						player;
 	std::vector<Mesh>			enemys;
 	std::vector<Mesh>			meshes;
 private:
+	std::vector<std::string>    types;
 	LevelImporter				lImporter;
 	AssetImporter				aImporter;
 	TextureClass				texture;

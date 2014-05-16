@@ -99,7 +99,7 @@ void EnemyManager::Draw(ID3D11DeviceContext* deviceContext, Render* render, D3DX
 	offset = 0;
 	for (int i = 0; i < enemies.size(); i++)
 	{
-		if (render->InsideFrustum(enemies[i]->GetBoundingBox().min, enemies[i]->GetBoundingBox().max))
+		if (render->InsideFrustum(enemies[i]->GetBoundingBox().min + enemies[i]->GetPosition(), enemies[i]->GetBoundingBox().max + enemies[i]->GetPosition()))
 		{
 			deviceContext->IASetVertexBuffers(0, 1, &vBuffer, &stride, &offset);
 
@@ -121,7 +121,7 @@ void EnemyManager::DrawShadow(ID3D11DeviceContext* deviceContext, Render* render
 	offset = 0;
 	for (int i = 0; i < enemies.size(); i++)
 	{
-		if (render->InsideFrustum(enemies[i]->GetBoundingBox().min, enemies[i]->GetBoundingBox().max))
+		if (render->InsideFrustum(enemies[i]->GetBoundingBox().min + enemies[i]->GetPosition(), enemies[i]->GetBoundingBox().max + enemies[i]->GetPosition()))
 		{
 			deviceContext->IASetVertexBuffers(0, 1, &vBuffer, &stride, &offset);
 
