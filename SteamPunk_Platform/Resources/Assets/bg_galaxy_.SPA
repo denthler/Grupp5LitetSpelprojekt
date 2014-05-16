@@ -1,0 +1,40 @@
+material lambert1
+matdiffuse 0 0 0 1
+matspecular 0 0 0 1
+matambient 0 0 0 1
+mattransp 0 0 0 1
+mattexturemap bg_galaxy_2_.png
+camera perspShape
+viewmatrix 0.788011 0 0.615661 0 0.128003 0.978148 -0.163837 0 -0.602208 0.207912 0.770791 0 -24.311 14.7301 28.0393 1
+hfov 0.950022
+vfov 0.660595
+nearplane 0.1
+farplane 10000
+aspect 1.5
+meshes 1
+mesh pPlaneShape1
+usemat lambert1
+vertices 4
+v 17.8502 21.0472 0
+v -17.8502 21.0472 0
+v 17.8502 -21.0472 0
+v -17.8502 -21.0472 0
+normals 4
+vn 0 0 1
+vn 0 0 1
+vn 0 0 1
+vn 0 0 1
+uvs 4
+uv 0 0
+uv 1 0
+uv 0 1
+uv 1 1
+tangents 6
+vt -1 0 0
+vt -1 0 0
+vt -1 0 0
+vt -1 0 0
+vt -1 0 0
+vt -1 0 0
+f 0/0/0/0 1/1/1/1 2/2/2/2 
+f 2/2/2/3 1/1/1/4 3/3/3/5 

@@ -14,6 +14,7 @@
 #include "PlatformManager.h"
 #include "EnemyManager.h"
 #include "HUD.h"
+#include <sstream>
 
 class WorldClass
 {
@@ -43,6 +44,7 @@ private:
 	EnemyManager* eManager;
 	HUD * hud;
 
+	int currentLevel;
 	ID3D11DeviceContext* context;
 	HWND hwn;
 	D3DXMATRIX pro;

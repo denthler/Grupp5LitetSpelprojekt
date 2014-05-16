@@ -23,6 +23,8 @@ bool WorldClass::Initialize(ID3D11Device* device, ID3D11DeviceContext * deviceCo
 {
 	bool result;
 
+	currentLevel = 1;
+
 	projection = proj;
 
 	renderClass = new Render();
@@ -69,7 +71,13 @@ bool WorldClass::Initialize(ID3D11Device* device, ID3D11DeviceContext * deviceCo
 	pro = proj;
 	hInst = hInstance;
 
-	NewLevel(device, "Level1");
+	currentLevel;
+
+	stringstream ss;
+	ss << "Level";
+	ss << currentLevel;
+
+	NewLevel(device, ss.str());
 	
 	return true;
 }
@@ -199,8 +207,15 @@ bool WorldClass::Update(float time, ID3D11Device* DContext)
 	renderClass->UpdateFrustum(camera->GetView(), projection);
 	renderClass->setLightPosition(player->GetPosition());
 
-	if(pManager.endLevel)
-		NewLevel(DContext, "Level2");
+	if (pManager.endLevel)
+	{
+		currentLevel++;
+		stringstream ss;
+		ss << "Level";
+		ss << currentLevel;
+
+		NewLevel(DContext, ss.str());
+	}		
 
 	//pointLight->SetDiffuseColor(red, 0.5f, 0.5f, 1.0f);
 	hud->Update();
