@@ -129,7 +129,7 @@ void PlatformManager::Update(D3DXVECTOR3 playerPosition, std::vector<ModelClass:
 				case GameObject::ObjectType::Door :
 				{
 					float length = D3DXVec3Length(&(playerPosition - objects[i].objectData[j]->GetPosition()));
-					if (length < 1.0f)
+					if (length < 1.0f && gearsFound == gearsTotal)
 					{
 						endLevel = true;
 					}

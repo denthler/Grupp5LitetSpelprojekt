@@ -23,9 +23,9 @@ public:
 	void Draw(ID3D11DeviceContext*, Render*, D3DXMATRIX);
 	void DrawShadow(ID3D11DeviceContext*, Render*);
 	void Shutdown();
-	void FlipGravityW();
+	void FlipGravityW(std::vector<ModelClass::BoundingBox>& bb, D3DXVECTOR3);
 
-	void FlipGravityS();
+	void FlipGravityS(std::vector<ModelClass::BoundingBox>& bb, D3DXVECTOR3);
 private:
 	void SpawnEnemy(ID3D11Device* device);
 	int maxEnemy;

@@ -32,7 +32,9 @@ public:
 
 	Render* renderClass;
 private:
-	void HandleInput();
+
+	void HandleInput(std::vector<ModelClass::BoundingBox>& tempBB);
+	//void HandleInput();
 	void NewLevel(ID3D11Device*, std::string);
 
 	Camera* camera;

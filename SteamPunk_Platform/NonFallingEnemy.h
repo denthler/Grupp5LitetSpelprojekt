@@ -16,8 +16,8 @@ public:
 	~NonFallingEnemy();
 
 	bool Update(float, std::vector<BoundingBox>&);
-	void FlipGravity();
-	void FlipGravityS();
+	bool FlipGravity(std::vector<BoundingBox>& bb, D3DXVECTOR3 wAxis);
+	bool FlipGravityS(std::vector<BoundingBox>& bb, D3DXVECTOR3 wAxis);
 
 };
 #endif

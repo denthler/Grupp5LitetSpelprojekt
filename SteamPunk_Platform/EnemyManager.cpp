@@ -41,19 +41,19 @@ void EnemyManager::Shutdown()
 }
 
 
-void EnemyManager::FlipGravityW()
+void EnemyManager::FlipGravityW(std::vector<ModelClass::BoundingBox>& bb, D3DXVECTOR3 wAxis)
 {
 	for (int i = 0; i < enemies.size(); i++)
 	{
-		enemies[i]->FlipGravity();
+		enemies[i]->FlipGravity(bb, wAxis);
 	}
 }
 
-void EnemyManager::FlipGravityS()
+void EnemyManager::FlipGravityS(std::vector<ModelClass::BoundingBox>& bb, D3DXVECTOR3 wAxis)
 {
 	for (int i = 0; i < enemies.size(); i++)
 	{
-		enemies[i]->FlipGravityS();
+		enemies[i]->FlipGravityS(bb, wAxis);
 	}
 }
 
@@ -99,7 +99,11 @@ void EnemyManager::Draw(ID3D11DeviceContext* deviceContext, Render* render, D3DX
 	offset = 0;
 	for (int i = 0; i < enemies.size(); i++)
 	{
+
+		//if (render->InsideFrustum(enemies[i]->GetBoundingBox().min , enemies[i]->GetBoundingBox().max))
+
 		if (render->InsideFrustum(enemies[i]->GetBoundingBox().min + enemies[i]->GetPosition(), enemies[i]->GetBoundingBox().max + enemies[i]->GetPosition()))
+
 		{
 			deviceContext->IASetVertexBuffers(0, 1, &vBuffer, &stride, &offset);
 
