@@ -99,15 +99,38 @@ void EnemyManager::Draw(ID3D11DeviceContext* deviceContext, Render* render, D3DX
 	offset = 0;
 	for (int i = 0; i < enemies.size(); i++)
 	{
-		if (render->InsideFrustum(enemies[i]->GetBoundingBox().min , enemies[i]->GetBoundingBox().max))
+
+		//if (render->InsideFrustum(enemies[i]->GetBoundingBox().min , enemies[i]->GetBoundingBox().max))
+
+		if (render->InsideFrustum(enemies[i]->GetBoundingBox().min + enemies[i]->GetPosition(), enemies[i]->GetBoundingBox().max + enemies[i]->GetPosition()))
+
 		{
 			deviceContext->IASetVertexBuffers(0, 1, &vBuffer, &stride, &offset);
 
-			D3DXMATRIX world;
-			world = enemies[i]->GetWorldMatrix();
-
 			bool result = render->UpdateRender(deviceContext, enemies[i]->GetWorldMatrix(), viewMatrix, enemies[i]->GetTextureMap(), enemies[i]->GetNormalMap(), enemies[i]->GetMaterial(), enemies[i]->GetCurrentFrame());
 			render->Draw(deviceContext, vCount, 1);
+
+		}
+	}
+}
+
+void EnemyManager::DrawShadow(ID3D11DeviceContext* deviceContext, Render* render)
+{
+	unsigned int stride;
+	unsigned int offset;
+
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	stride = sizeof(VertexTypeAni);
+	offset = 0;
+	for (int i = 0; i < enemies.size(); i++)
+	{
+		if (render->InsideFrustum(enemies[i]->GetBoundingBox().min + enemies[i]->GetPosition(), enemies[i]->GetBoundingBox().max + enemies[i]->GetPosition()))
+		{
+			deviceContext->IASetVertexBuffers(0, 1, &vBuffer, &stride, &offset);
+
+			bool result = render->UpdateRenderShadow(deviceContext, enemies[i]->GetWorldMatrix(), enemies[i]->GetCurrentFrame());
+			render->Draw(deviceContext, vCount, 3);
 
 		}
 	}

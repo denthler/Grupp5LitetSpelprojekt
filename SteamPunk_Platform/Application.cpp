@@ -59,14 +59,13 @@ bool Application::InitializeTimer()
 	{
 		isHighPerformanceSupported = true;
 	}
-	ticksPerM = (float)(freq / 1000);
+	ticksPerM = 1.0f / (float)freq;
 	return true;
 }
 
 float Application::GetElapsedTime()
 {
 	INT64 current = 0.;
-	float difference;
 	if (isHighPerformanceSupported)
 	{
 		QueryPerformanceCounter((LARGE_INTEGER*)&current);
@@ -76,8 +75,7 @@ float Application::GetElapsedTime()
 		current = startT;
 	}
 
-	difference = (float)(current - startT);
-	frameTime = difference / ticksPerM;
+	frameTime = (current - startT) * ticksPerM;
 	
 	startT = current;
 	return frameTime;

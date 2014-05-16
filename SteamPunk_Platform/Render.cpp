@@ -340,7 +340,7 @@ bool Render::Initialize(ID3D11Device* device, HWND hwnd, WCHAR* filename, D3DXMA
 	}
 
 	//ShadowMap
-	D3DXMatrixOrthoLH(&projectionMatrixShadow, 100.0f, 100.0f,1.0f ,400.0f );
+	D3DXMatrixOrthoLH(&projectionMatrixShadow, 100.0f, 100.0f,1.0f ,500.0f );
 	D3DXMatrixTranspose(&projectionMatrixShadow, &projectionMatrixShadow);	
 
 	D3DXMatrixIdentity(&viewMatrixShadow);

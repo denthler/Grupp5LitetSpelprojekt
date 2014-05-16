@@ -2,7 +2,7 @@
 
 PlatformManager::PlatformManager()
 {
-
+	
 }
 
 PlatformManager::~PlatformManager()
@@ -17,7 +17,15 @@ PlatformManager::PlatformManager(const PlatformManager& other)
 
 void PlatformManager::CreateLevel(std::vector<Mesh>& meshes)
 {
+	endLevel = false;
 	std::string tempString;
+
+	objects.clear();
+	buffers.clear();
+	textureMap.clear();
+	normalMap.clear();
+	gearsFound = 0;
+	gearsTotal = 0;
 
 	for (int i = 0; i < meshes.size(); i++)
 	{
@@ -60,24 +68,34 @@ void PlatformManager::CreateLevel(std::vector<Mesh>& meshes)
 		}
 		else if (tempSubString == "go")
 		{
-			for (int j = 0; j < meshes[i].transforms.size(); j++)
-			{
-				Gear* newGear = new Gear(meshes[i].transforms[j], meshes[i].bBox[j], false, GameObject::ObjectType::Gear);
-				//newPlatform.position = meshes[i].transforms[j];
-				//newPlatform.BoundingBox = meshes[i].BoundingBox;
-				//tempObjects.push_back(newPlatform); 
-				newMesh.bufferIndices.push_back(i);
-				newMesh.objectData.push_back(newGear);
-			}
+			tempSubString = meshes[i].type;
+			tempSubString = tempSubString.substr(0, 4);
+
+			if (tempSubString == "go_c")
+				for (int j = 0; j < meshes[i].transforms.size(); j++)
+				{
+					Gear* newGear = new Gear(meshes[i].transforms[j], meshes[i].bBox[j], false, GameObject::ObjectType::Gear);
+					//newPlatform.position = meshes[i].transforms[j];
+					//newPlatform.BoundingBox = meshes[i].BoundingBox;
+					//tempObjects.push_back(newPlatform); 
+					newMesh.bufferIndices.push_back(i);
+					newMesh.objectData.push_back(newGear);
+					gearsTotal++;
+				}
+			else if (tempSubString == "go_d")
+				for (int j = 0; j < meshes[i].transforms.size(); j++)
+				{
+					Door* newDoor = new Door(meshes[i].transforms[j], meshes[i].bBox[j], false, GameObject::ObjectType::Door);
+					newMesh.bufferIndices.push_back(i);
+					newMesh.objectData.push_back(newDoor);
+				}
 		}
-			objects.push_back(newMesh);
-		
+		objects.push_back(newMesh);		
 	}
 }
 
 void PlatformManager::Update(D3DXVECTOR3 playerPosition, std::vector<ModelClass::BoundingBox>& bb)
 {
-
 	//std::vector<BoundingBox> bb;
 	for (int i = 0; i < objects.size(); i++)
 	{
@@ -101,9 +119,20 @@ void PlatformManager::Update(D3DXVECTOR3 playerPosition, std::vector<ModelClass:
 					if (length < 1.0f)
 					{
 						objects[i].objectData.erase(objects[i].objectData.begin() + j);
+						gearsFound++;
 					}
 					else
 						objects[i].objectData[j]->Update();
+
+					break;
+				}
+				case GameObject::ObjectType::Door :
+				{
+					float length = D3DXVec3Length(&(playerPosition - objects[i].objectData[j]->GetPosition()));
+					if (length < 1.0f && gearsFound == gearsTotal)
+					{
+						endLevel = true;
+					}
 
 					break;
 				}
@@ -188,3 +217,18 @@ void PlatformManager::DrawShadow(ID3D11DeviceContext* deviceContext, Render* ren
 	}	
 }
 
+int PlatformManager::GetGearCount()
+{
+	int count = 0;
+	for (int i = 0; i < objects.size(); i++)
+	{
+		for (int j = 0; j < objects[i].objectData.size(); j++)
+		{
+			if (objects[i].objectData[j]->GetType() == GameObject::ObjectType::Gear)
+			{
+				count++;
+			}
+		}
+	}
+	return count;
+}

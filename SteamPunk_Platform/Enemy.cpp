@@ -109,7 +109,7 @@ bool Enemy::FlipGravityS(std::vector<BoundingBox>& bb, D3DXVECTOR3 wAxis)
 
 bool Enemy::Update(float gameTime, std::vector<BoundingBox>& bb)
 {
-	gameTime *= 0.05f;
+	gameTime *= (1.0f / gameTime);
 	static bool test = false;
 	bool test2;
 	D3DXVECTOR3 right;
