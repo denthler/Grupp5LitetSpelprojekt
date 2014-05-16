@@ -88,7 +88,7 @@ bool WorldClass::Initialize(ID3D11Device* DContext, HWND hwnd, D3DXMATRIX proj, 
 	return true;
 }
 
-void WorldClass::HandleInput()
+void WorldClass::HandleInput(std::vector<ModelClass::BoundingBox>& tempBB)
 {
 	input->Update();
 	if (input->CheckSingleKeyPress(DIK_SPACE))
@@ -109,9 +109,9 @@ void WorldClass::HandleInput()
 		{
 			//if (player->IsOnGround())
 			//{
-				camera->Flip();
-				player->FlipGravity();
-				eManager->FlipGravityW();
+				if(player->FlipGravity(tempBB))
+					camera->Flip();
+				eManager->FlipGravityW(tempBB, player->GetAxis());
 
 			
 		}
@@ -122,9 +122,9 @@ void WorldClass::HandleInput()
 		{
 			//if (player->IsOnGround())
 			//{
-				camera->FlipS();
-				player->FlipGravityS();
-				eManager->FlipGravityS();
+				if(player->FlipGravityS(tempBB))
+					camera->FlipS();
+				eManager->FlipGravityS(tempBB, player->GetAxis());
 
 			//}
 
@@ -176,12 +176,13 @@ void WorldClass::CleanUp()
 
 bool WorldClass::Update(float time, ID3D11Device* DContext)
 {
-	HandleInput();
-	
+	//HandleInput();
 	std::vector<ModelClass::BoundingBox> tempBB;
 	
 	pManager.Update(player->GetPosition(), tempBB);
 	
+	HandleInput(tempBB);
+
 	eManager->Update(tempBB, time, player, DContext);
 
 	player->Update(time, tempBB);

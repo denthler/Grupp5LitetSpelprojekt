@@ -27,6 +27,10 @@ public:
 	{
 		return OnGround;
 	}
+	D3DXVECTOR3 GetAxis()
+	{
+		return worldAxis;
+	}
 	D3DXMATRIX GetWorldMatrix();
 
 	void SetLeft(){left = true;}

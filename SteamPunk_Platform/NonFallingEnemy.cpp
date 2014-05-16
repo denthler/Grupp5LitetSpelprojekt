@@ -5,14 +5,14 @@ NonFallingEnemy::~NonFallingEnemy()
 
 }
 
-void NonFallingEnemy::FlipGravity()
+bool NonFallingEnemy::FlipGravity(std::vector<BoundingBox>& bb, D3DXVECTOR3 wAxis)
 {
-
+	return true;
 }
 
-void NonFallingEnemy::FlipGravityS()
+bool NonFallingEnemy::FlipGravityS(std::vector<BoundingBox>& bb, D3DXVECTOR3 wAxis)
 {
-
+	return true;
 }
 
 bool NonFallingEnemy::Update(float gameTime, std::vector<BoundingBox>& bb)

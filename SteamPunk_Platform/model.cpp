@@ -14,6 +14,7 @@ ModelClass::ModelClass()
 	velocity = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	OnGround = false;
 	Rotated = false;
+	FallDamage = false;
 }
 
 ModelClass::ModelClass(const ModelClass& other)
@@ -130,8 +131,9 @@ D3DXMATRIX ModelClass::GetWorldMatrix()
 	return m_worldMatrix;
 }
 
-void ModelClass::FlipGravity()
+bool ModelClass::FlipGravity(std::vector<BoundingBox>& bb)
 {
+	FallDamage = false;
 	/*
 	D3DXVECTOR3 temp;
 	temp = (bBox.max - bBox.min) / 2.0f;
@@ -150,12 +152,39 @@ void ModelClass::FlipGravity()
 		position.z += (temp.z * temp2.z) * (2.5f);
 	}
 	*/
+	D3DXVECTOR3 tempWorldAxis;
+	tempWorldAxis = worldAxis;
 	D3DXVec3Cross(&worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis);
-
+	GetWorldMatrix();
+	/*
+	if (HorizontalCollisionTest(D3DXVECTOR3(0.0f, 0.0f, 0.0f), bb, 0.0f))
+	{
+		worldAxis = tempWorldAxis;
+	}
+	*/
+	D3DXVECTOR3 tempMax = bBox.max;
+	D3DXVECTOR3 tempMin = bBox.min;
+	tempMax = position + tempMax;
+	tempMin = position + tempMin;
+	for (int j = 0; j < bb.size(); j++)
+	{
+		if (tempMax.x > bb[j].min.x &&
+			tempMin.x < bb[j].max.x &&
+			tempMax.y > bb[j].min.y &&
+			tempMin.y < bb[j].max.y &&
+			tempMax.z > bb[j].min.z &&
+			tempMin.z < bb[j].max.z)
+		{
+			worldAxis = tempWorldAxis;
+			return false;
+		}
+	}
+	return true;
 }
 
-void ModelClass::FlipGravityS()
+bool ModelClass::FlipGravityS(std::vector<BoundingBox>& bb)
 {
+	FallDamage = false;
 	/*
 	D3DXVECTOR3 temp;
 	temp = (bBox.max - bBox.min) / 2.0f;
@@ -174,14 +203,34 @@ void ModelClass::FlipGravityS()
 		position.z += (temp.z * temp2.z) * (2.5f);
 	}
 	*/
+	D3DXVECTOR3 tempWorldAxis;
+	tempWorldAxis = worldAxis;
 	D3DXVec3Cross(&worldAxis, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f));
+	GetWorldMatrix();
 	/*
-		m_worldMatrix = rotMatrix;
-		return m_worldMatrix;
+	if (HorizontalCollisionTest(D3DXVECTOR3(0.0f, 0.0f, 0.0f), bb, 0.0f))
+	{
+		worldAxis = tempWorldAxis;
 	}
-
-	return m_worldMatrix;
 	*/
+	D3DXVECTOR3 tempMax = bBox.max;
+	D3DXVECTOR3 tempMin = bBox.min;
+	tempMax = position + tempMax;
+	tempMin = position + tempMin;
+	for (int j = 0; j < bb.size(); j++)
+	{
+		if (tempMax.x > bb[j].min.x &&
+			tempMin.x < bb[j].max.x &&
+			tempMax.y > bb[j].min.y &&
+			tempMin.y < bb[j].max.y &&
+			tempMax.z > bb[j].min.z &&
+			tempMin.z < bb[j].max.z)
+		{
+			worldAxis = tempWorldAxis;
+			return false;
+		}
+	}
+	return true;
 }
 
 bool ModelClass::Initialize(ID3D11Device* device)
@@ -243,6 +292,8 @@ bool ModelClass::Update(float time, std::vector<BoundingBox>& bb)
 
 	velocity += gravity * worldAxis;
 
+	if (D3DXVec3Length(&velocity) > 1.5f)
+		FallDamage = true;
 	D3DXVECTOR3 moveAmount = velocity; //* gameTime;
 
 	if ((temp.x) > 0.0f || (temp.y) > 0.0f || (temp.z) > 0.0f)

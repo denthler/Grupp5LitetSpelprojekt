@@ -104,13 +104,14 @@ public:
 	}
 
 	virtual bool Update(float, std::vector<ModelClass::BoundingBox>&);
-	virtual void FlipGravity();// { D3DXVec3Cross(&worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis); };
-	virtual void FlipGravityS();// { D3DXVec3Cross(&worldAxis, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f)); };
+	virtual bool FlipGravity(std::vector<BoundingBox>& bb);// { D3DXVec3Cross(&worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis); };
+	virtual bool FlipGravityS(std::vector<BoundingBox>& bb);// { D3DXVec3Cross(&worldAxis, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f)); };
 	BoundingBox bBox;
 	BoundingBox bBoxOriginal;
 protected:
 	D3DXVECTOR3 position;
 	D3DXVECTOR3 velocity;
+	bool FallDamage;
 	float gravity;
 	D3DXVECTOR3 worldAxis;
 	float moveScale;

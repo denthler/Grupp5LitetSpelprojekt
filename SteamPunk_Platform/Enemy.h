@@ -12,6 +12,7 @@ class Enemy : public ModelClass
 	//D3DXVECTOR3 position;
 
 	Enemy(); // Hide the default constructor, it's not needed.
+	D3DXVECTOR3 prevPos;// = position;
 public:
 	Enemy(ID3D11Device * device, D3DXMATRIX position, ID3D11ShaderResourceView* tM, ID3D11ShaderResourceView* nM, std::vector<AnimationStack> aS, ID3D11Buffer* vB, int vC);
 	~Enemy();
@@ -25,8 +26,8 @@ public:
 	//};
 
 	//D3DXVECTOR3 worldUp;
-	//void FlipWorldRight(){ D3DXVec3Cross(&worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis); }
-	//void FlipWorldLeft(){ D3DXVec3Cross(&worldAxis, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f)); }
+	virtual bool FlipGravity(std::vector<BoundingBox>& bb, D3DXVECTOR3);// { D3DXVec3Cross(&worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis); }
+	virtual bool FlipGravityS(std::vector<BoundingBox>& bb, D3DXVECTOR3);// { D3DXVec3Cross(&worldAxis, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f)); }
 };
 
 #endif

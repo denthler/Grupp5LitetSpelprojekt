@@ -36,11 +36,75 @@ Enemy::Enemy(ID3D11Device * device, D3DXMATRIX p, ID3D11ShaderResourceView* tM, 
 	m_worldMatrix = p;
 	position = D3DXVECTOR3(p._41, p._42, p._43);
 	moveScale = -0.03f;
+	prevPos = position;
 }
 
 Enemy::~Enemy()
 {
 
+}
+
+bool Enemy::FlipGravity(std::vector<BoundingBox>& bb, D3DXVECTOR3 wAxis)
+{
+	//D3DXVec3Cross(&worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis);
+	worldAxis = wAxis;
+	D3DXVECTOR3 right;
+	D3DXVec3Cross(&right, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f));
+	position += right * 2.0f;
+	prevPos = position;
+	GetWorldMatrix();
+
+	D3DXVECTOR3 tempMax = bBox.max;
+	D3DXVECTOR3 tempMin = bBox.min;
+	tempMax = position + tempMax;
+	tempMin = position + tempMin;
+	for (int j = 0; j < bb.size(); j++)
+	{
+		if (tempMax.x > bb[j].min.x &&
+			tempMin.x < bb[j].max.x &&
+			tempMax.y > bb[j].min.y &&
+			tempMin.y < bb[j].max.y &&
+			tempMax.z > bb[j].min.z &&
+			tempMin.z < bb[j].max.z)
+		{
+			position -= right * 4.0f;
+			prevPos = position;
+		}
+	}
+	return true;
+}
+
+bool Enemy::FlipGravityS(std::vector<BoundingBox>& bb, D3DXVECTOR3 wAxis)
+{
+
+	//D3DXVECTOR3 tempWorldAxis;
+	//tempWorldAxis = worldAxis;
+	//D3DXVec3Cross(&worldAxis, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f));
+	worldAxis = wAxis;
+	D3DXVECTOR3 right;
+	D3DXVec3Cross(&right, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f));
+	position -= right * 2.0f;
+	prevPos = position;
+	GetWorldMatrix();
+	
+	D3DXVECTOR3 tempMax = bBox.max;
+	D3DXVECTOR3 tempMin = bBox.min;
+	tempMax = position + tempMax;
+	tempMin = position + tempMin;
+	for (int j = 0; j < bb.size(); j++)
+	{
+		if (tempMax.x > bb[j].min.x &&
+			tempMin.x < bb[j].max.x &&
+			tempMax.y > bb[j].min.y &&
+			tempMin.y < bb[j].max.y &&
+			tempMax.z > bb[j].min.z &&
+			tempMin.z < bb[j].max.z)
+		{
+			position += right * 4.0f;
+			prevPos = position;
+		}
+	}
+	return true;
 }
 
 bool Enemy::Update(float gameTime, std::vector<BoundingBox>& bb)
@@ -49,6 +113,7 @@ bool Enemy::Update(float gameTime, std::vector<BoundingBox>& bb)
 	static bool test = false;
 	bool test2;
 	D3DXVECTOR3 right;
+	
 	D3DXVec3Cross(&right, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f));
 	if (OnGround)
 		velocity = right * moveScale;
@@ -58,24 +123,26 @@ bool Enemy::Update(float gameTime, std::vector<BoundingBox>& bb)
 
 	if (!(OnGround) && (test))
 	{
+		position = prevPos;
 		moveScale *= -1.0f;
 		velocity = right * (moveScale);
-		velocity += (worldAxis * 0.003f);
+		//velocity += (worldAxis * 0.0028f);
 	}
 	else if (test2)
 	{
 		moveScale *= -1.0f;
-		if (moveScale > 0.0f)// && OnGround)
-		{
-			Rotated = true;
-		}
-		else
-		{
-			Rotated = false;
-		}
-
 		//velocity += right * (moveScale);
 		return true;
+	}
+	else
+		prevPos = position;
+	if (moveScale > 0)// && OnGround)
+	{
+		Rotated = false;
+	}
+	else
+	{
+		Rotated = true;
 	}
 
 	if (!OnGround)

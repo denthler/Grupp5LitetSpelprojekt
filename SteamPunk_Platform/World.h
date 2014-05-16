@@ -31,7 +31,7 @@ public:
 
 	Render* renderClass;
 private:
-	void HandleInput();
+	void HandleInput(std::vector<ModelClass::BoundingBox>& tempBB);
 	Camera* camera;
 	Player* player;
 	InputClass* input;
