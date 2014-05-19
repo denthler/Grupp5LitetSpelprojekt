@@ -231,6 +231,7 @@
     <None Include="effect.fx" />
     <None Include="shader.fx" />
     <None Include="texture.fx" />
+    <None Include="simpleShader.fx" />
   </ItemGroup>
 <<<<<<< HEAD
 =======

@@ -20,15 +20,6 @@ pInput VShader(vInput input)
 	pInput output;
 	output.position = float4(input, 1.0f);
 	return output;
-	/*
-	pInput output;
-	
-	output.position = mul(float4(input.position, 1.0f), world);
-	output.position = mul(output.position, view);
-	output.position = mul(output.position, projection);
-
-	return output;
-	*/
 }
 
 float4 PShader(pInput input) : SV_TARGET
