@@ -1,6 +1,63 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+<<<<<<< HEAD
+    <ClCompile Include="Application.cpp" />
+    <ClCompile Include="AssetImporter.cpp" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CogWheel.cpp" />
+    <ClCompile Include="DirectionalLight.cpp" />
+    <ClCompile Include="Door.cpp" />
+    <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="EnemyManager.cpp" />
+    <ClCompile Include="FallingEnemy.cpp" />
+    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="input.cpp" />
+    <ClCompile Include="LevelImporter.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="HUD.cpp" />
+    <ClCompile Include="model.cpp" />
+    <ClCompile Include="NonFallingEnemy.cpp" />
+    <ClCompile Include="Platform.cpp" />
+    <ClCompile Include="PlatformManager.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PointLight.cpp" />
+    <ClCompile Include="Render.cpp" />
+    <ClCompile Include="ResourceManager.cpp" />
+    <ClCompile Include="Sound.cpp" />
+    <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="World.cpp" />
+    <ClCompile Include="SoundManager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Application.h" />
+    <ClInclude Include="AssetImporter.h" />
+    <ClInclude Include="Button.h" />
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="CogWheel.h" />
+    <ClInclude Include="DirectionalLight.h" />
+    <ClInclude Include="Door.h" />
+    <ClInclude Include="Enemy.h" />
+    <ClInclude Include="EnemyManager.h" />
+    <ClInclude Include="FallingEnemy.h" />
+    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="input.h" />
+    <ClInclude Include="LevelImporter.h" />
+    <ClInclude Include="HUD.h" />
+    <ClInclude Include="model.h" />
+    <ClInclude Include="NonFallingEnemy.h" />
+    <ClInclude Include="Platform.h" />
+    <ClInclude Include="PlatformManager.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="PointLight.h" />
+    <ClInclude Include="Render.h" />
+    <ClInclude Include="ResourceManager.h" />
+    <ClInclude Include="Screen.h" />
+    <ClInclude Include="Sound.h" />
+    <ClInclude Include="Texture.h" />
+    <ClInclude Include="World.h" />
+    <ClInclude Include="SoundManager.h" />
+=======
     <ClCompile Include="Application.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -168,12 +225,16 @@
     <ClInclude Include="Menu.h">
       <Filter>Header</Filter>
     </ClInclude>
+>>>>>>> 121a72851c49bbc6103903cf34e5176261490a36
   </ItemGroup>
   <ItemGroup>
     <None Include="effect.fx" />
     <None Include="shader.fx" />
     <None Include="texture.fx" />
+    <None Include="simpleShader.fx" />
   </ItemGroup>
+<<<<<<< HEAD
+=======
   <ItemGroup>
     <Filter Include="Source">
       <UniqueIdentifier>{0b22e63b-01a4-4a7b-9373-9ba3780344bb}</UniqueIdentifier>
@@ -182,4 +243,5 @@
       <UniqueIdentifier>{fd4134cf-d430-4b75-81c7-ba0e0f1dac76}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+>>>>>>> 121a72851c49bbc6103903cf34e5176261490a36
 </Project>

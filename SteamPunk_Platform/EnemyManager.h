@@ -7,6 +7,7 @@
 #include "Enemy.h"
 #include <vector>
 #include "Render.h"
+#include "ResourceManager.h"
 //Temp
 #include "Player.h"
 //
@@ -15,7 +16,8 @@ class EnemyManager
 {
 
 public:
-	EnemyManager(D3DXMATRIX, ID3D11ShaderResourceView* tM, ID3D11ShaderResourceView* nM, std::vector<AnimationStack> aS, ID3D11Buffer* vB, int vC, ModelClass::BoundingBox);
+	EnemyManager(std::vector<D3DXMATRIX>, std::vector<int>, ID3D11ShaderResourceView* tM, ID3D11ShaderResourceView* nM, std::vector<AnimationStack> aS, ID3D11Buffer* vB, int vC, ModelClass::BoundingBox);
+	EnemyManager(std::vector<Mesh> m);
 	EnemyManager(const EnemyManager&);
 	~EnemyManager();
 
@@ -27,18 +29,19 @@ public:
 
 	void FlipGravityS(std::vector<ModelClass::BoundingBox>& bb, D3DXVECTOR3);
 private:
-	void SpawnEnemy(ID3D11Device* device);
+	void SpawnEnemy(ID3D11Device* device, int);
 	int maxEnemy;
 
-	D3DXMATRIX enemySpawnPoint;
+	std::vector<D3DXMATRIX> enemySpawnPoint;
+	std::vector<int> enemyType;
 	std::vector<Enemy*> enemies;
-	ID3D11Buffer* vBuffer;
-	int vCount;
-	ModelClass::BoundingBox bBox;
+	std::vector<ID3D11Buffer*> vBuffer;
+	std::vector<int> vCount;
+	std::vector<ModelClass::BoundingBox> bBox;
 
-	ID3D11ShaderResourceView* textureMap;
-	ID3D11ShaderResourceView* normalMap;
-	std::vector<AnimationStack> animationStack;
+	std::vector<ID3D11ShaderResourceView*> textureMap;
+	std::vector<ID3D11ShaderResourceView*> normalMap;
+	std::vector<std::vector<AnimationStack>> animationStack;
 	ModelClass::Material mat;
 };
 

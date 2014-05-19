@@ -388,6 +388,11 @@ bool ModelClass::VerticalCollisionTest(D3DXVECTOR3& amount, std::vector<ModelCla
 			tempMax.z > bb[j].min.z &&
 			tempMin.z < bb[j].max.z)
 		{
+			if (bb[j].type.c_str()[0] == 'k')
+			{
+				dead = true;
+				return true;
+			}
 			if ((abs(worldAxis.x) * amount.x) != 0.0f)
 			{
 				result = true;

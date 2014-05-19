@@ -60,7 +60,10 @@ bool Player::Initialize(ID3D11Device* device, D3DXVECTOR3 startPos, ID3D11Shader
 
 void Player::Kill()
 {
+	worldAxis = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	GetWorldMatrix();
 	position = StartPos;
+	dead = true;
 }
 
 void Player::AddCog()
@@ -233,7 +236,11 @@ bool Player::Update(float gameTime, std::vector<BoundingBox>& bb)
 			}
 		}
 	}
-	
+	else
+	{
+		Kill();
+		//dead = false;
+	}
 	if (!OnGround && !jumpAni)
 	{
 		for (int i = 0; i < animationStack.size(); i++)

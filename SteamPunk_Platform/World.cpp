@@ -227,8 +227,28 @@ void WorldClass::NewLevel(ID3D11Device* device, std::string level)
 
 	if (currentLevel != 0)
 	{
-		eManager = new EnemyManager(rManager.enemys/*enemies D:<*/[0].transforms[0], rManager.enemys[0].textureMap, rManager.enemys[0].normalMap,
-		rManager.enemys[0].animationSets, rManager.enemys[0].m_vertexBuffer, rManager.enemys[0].vCount, rManager.enemys[0].bBox[0]);
+		//std::vector<int> tempType;
+		/*
+		for (int c = 0; c < rManager.enemys.size(); c++)
+		{
+			if (rManager.enemys[c].type.c_str() == )
+		}
+		*/
+		/*
+		tempType.push_back(0);
+		tempType.push_back(1);
+		tempType.push_back(0);
+		tempType.push_back(1);
+		tempType.push_back(0);
+		tempType.push_back(1);
+		tempType.push_back(0);
+		tempType.push_back(1);
+		tempType.push_back(0);
+		tempType.push_back(1);
+		*/
+		//eManager = new EnemyManager(rManager.enemys[0].transforms, tempType, rManager.enemys[0].textureMap, rManager.enemys[0].normalMap,
+		eManager = new EnemyManager(rManager.enemys);
+		//rManager.enemys[0].animationSets, rManager.enemys[0].m_vertexBuffer, rManager.enemys[0].vCount, rManager.enemys[0].bBox[0]);
 	}		
 
 	hud = new HUD(device, context, hwn, pro, hInst, &pManager);
@@ -261,8 +281,13 @@ bool WorldClass::Update(float time, ID3D11Device* DContext)
 		HandleInput(tempBB);
 
 		eManager->Update(tempBB, time, player, DContext);
-
+		if (player->IsDead())
+		{
+			camera->Reset();
+			player->Revive();
+		}
 		player->Update(time, tempBB);
+		
 		camera->Update(player->GetPosition());
 		renderClass->UpdateFrustum(camera->GetView(), projection);
 		renderClass->setLightPosition(player->GetPosition());
