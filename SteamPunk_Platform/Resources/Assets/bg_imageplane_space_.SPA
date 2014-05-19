@@ -1,0 +1,45 @@
+material lambert1
+matdiffuse 0.5 0.5 0.5 1
+matspecular 0 0 0 1
+matambient 0 0 0 1
+mattransp 0 0 0 1
+material imageplane:initialShadingGroup1
+matdiffuse 0 0 0 1
+matspecular 0 0 0 1
+matambient 0 0 0 1
+mattransp 0 0 0 1
+mattexturemap lvl3-4.png
+camera perspShape
+viewmatrix 0.994151 -6.93889e-018 0.107999 0 0.0307428 0.958629 -0.282992 0 -0.103531 0.284657 0.953022 0 -64.0728 423.857 996.939 1
+hfov 0.950022
+vfov 0.660595
+nearplane 0.1
+farplane 10000
+aspect 1.5
+meshes 1
+mesh bg_imageplane_Shape
+usemat imageplane:initialShadingGroup1
+vertices 4
+v -343.237 -241.804 -1
+v 343.237 -241.804 -1
+v -343.237 241.804 -1
+v 343.237 241.804 -1
+normals 4
+vn 0.45477 0.762924 0.45949
+vn 0.45477 0.762924 0.45949
+vn 0.45477 0.762924 0.45949
+vn 0.45477 0.762924 0.45949
+uvs 4
+uv 0.997143 0.149163
+uv 0.001127 0.149163
+uv 0.001127 0.850837
+uv 0.997143 0.850837
+tangents 6
+vt -0.890609 0.389571 0.234629
+vt -0.890609 0.389571 0.234629
+vt -0.890609 0.389571 0.234629
+vt -0.890609 0.389571 0.234629
+vt -0.890609 0.389571 0.234629
+vt -0.890609 0.389571 0.234629
+f 0/0/0/0 1/1/1/1 2/2/3/2 
+f 2/2/3/3 1/1/1/4 3/3/2/5 

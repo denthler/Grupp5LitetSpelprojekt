@@ -32,6 +32,10 @@ public:
 		return worldAxis;
 	}
 	D3DXMATRIX GetWorldMatrix();
+	void Revive()
+	{
+		dead = false;
+	}
 
 	void SetLeft(){left = true;}
 	void SetRight(){right = true;}

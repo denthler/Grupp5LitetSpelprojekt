@@ -81,6 +81,7 @@
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="AssetImporter.h" />
+    <ClInclude Include="BBoxRender.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CogWheel.h" />
@@ -93,6 +94,7 @@
     <ClInclude Include="input.h" />
     <ClInclude Include="LevelImporter.h" />
     <ClInclude Include="HUD.h" />
+    <ClInclude Include="Menu.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="NonFallingEnemy.h" />
     <ClInclude Include="Platform.h" />
@@ -110,6 +112,7 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="AssetImporter.cpp" />
+    <ClCompile Include="BBoxRender.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CogWheel.cpp" />
     <ClCompile Include="DirectionalLight.cpp" />
@@ -122,6 +125,7 @@
     <ClCompile Include="LevelImporter.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="HUD.cpp" />
+    <ClCompile Include="Menu.cpp" />
     <ClCompile Include="model.cpp" />
     <ClCompile Include="NonFallingEnemy.cpp" />
     <ClCompile Include="Platform.cpp" />

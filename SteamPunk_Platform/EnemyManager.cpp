@@ -1,8 +1,10 @@
 #include "EnemyManager.h"
 #include "FallingEnemy.h"
+#include "NonFallingEnemy.h"
 
-EnemyManager::EnemyManager(D3DXMATRIX p, ID3D11ShaderResourceView* tM, ID3D11ShaderResourceView* nM, std::vector<AnimationStack> aS, ID3D11Buffer* vB, int vC, ModelClass::BoundingBox box)
+EnemyManager::EnemyManager(std::vector<D3DXMATRIX> p, std::vector<int> type, ID3D11ShaderResourceView* tM, ID3D11ShaderResourceView* nM, std::vector<AnimationStack> aS, ID3D11Buffer* vB, int vC, ModelClass::BoundingBox box)
 {
+	/*
 	maxEnemy = 1;
 	enemySpawnPoint = p;
 	vCount = vC;
@@ -10,7 +12,34 @@ EnemyManager::EnemyManager(D3DXMATRIX p, ID3D11ShaderResourceView* tM, ID3D11Sha
 	bBox = box;
 	textureMap = tM;
 	normalMap = nM;
+	enemyType = type;
 	animationStack = aS;
+	*/
+}
+EnemyManager::EnemyManager(std::vector<Mesh> m)
+{
+	enemySpawnPoint = m[0].transforms;
+	for (int i = 0; i < m.size(); i++)
+	{
+		vCount.push_back(m[i].vCount);
+		vBuffer.push_back(m[i].m_vertexBuffer);
+		bBox.push_back(m[i].bBox[0]);
+		textureMap.push_back(m[i].textureMap);
+		normalMap.push_back(m[i].normalMap);
+		animationStack.push_back(m[i].animationSets);
+		
+	}
+	maxEnemy = 1;
+	enemyType.push_back(0);
+	enemyType.push_back(1);
+	enemyType.push_back(0);
+	enemyType.push_back(1);
+	enemyType.push_back(0);
+	enemyType.push_back(1);
+	enemyType.push_back(0);
+	enemyType.push_back(1);
+	enemyType.push_back(0);
+	enemyType.push_back(1);
 }
 
 EnemyManager::EnemyManager(const EnemyManager& other)
@@ -22,20 +51,33 @@ EnemyManager::~EnemyManager()
 
 }
 
-void EnemyManager::SpawnEnemy(ID3D11Device* device)
+void EnemyManager::SpawnEnemy(ID3D11Device* device, int t)
 {
-	FallingEnemy* fEnemy = new FallingEnemy(device, enemySpawnPoint, textureMap, normalMap, animationStack, vBuffer, vCount);
-	fEnemy->bBox = bBox;
-	fEnemy->bBoxOriginal = bBox;
-	enemies.push_back(fEnemy);
+	if (enemyType[t] == 0)
+	{
+		FallingEnemy* fEnemy = new FallingEnemy(device, enemySpawnPoint[t], textureMap[0], normalMap[0], animationStack[0], vBuffer[0], vCount[0]);
+		fEnemy->bBox = bBox[0];
+		fEnemy->bBoxOriginal = bBox[0];
+		enemies.push_back(fEnemy);
+	}
+	else
+	{
+		NonFallingEnemy* fEnemy = new NonFallingEnemy(device, enemySpawnPoint[t], textureMap[1], normalMap[1], animationStack[1], vBuffer[1], vCount[1]);
+		fEnemy->bBox = bBox[0];
+		fEnemy->bBoxOriginal = bBox[0];
+		enemies.push_back(fEnemy);
+	}
 }
 
 void EnemyManager::Shutdown()
-{
-	if (vBuffer)
+{	
+	for (int i = 0; i < vBuffer.size(); i++)
 	{
-		vBuffer->Release();
-		vBuffer = 0;
+		if (vBuffer[i])
+		{
+			vBuffer[i]->Release();
+			vBuffer[i] = 0;
+		}
 	}
 	enemies.clear();
 }
@@ -63,23 +105,27 @@ void EnemyManager::Update(std::vector<ModelClass::BoundingBox>& bBoxes, float ti
 	{
 		//return;
 	}
-	D3DXVECTOR3 enemyPoint = D3DXVECTOR3(enemySpawnPoint._41, enemySpawnPoint._42, enemySpawnPoint._43);
-	float length;
-	length = D3DXVec3Length(&(playerPosition->GetPosition() - enemyPoint));
-	if ((length < 40.0f) && (enemies.size() < maxEnemy))
-		SpawnEnemy(device);
-	for (int i = 0; i < enemies.size(); i++)
+	for (int c = 0; c < enemySpawnPoint.size(); c++)
 	{
-		length = D3DXVec3Length(&(playerPosition->GetPosition() - enemies[i]->GetPosition()));
-		if (length > 30.0f)
+
+		D3DXVECTOR3 enemyPoint = D3DXVECTOR3(enemySpawnPoint[c]._41, enemySpawnPoint[c]._42, enemySpawnPoint[c]._43);
+		float length;
+		length = D3DXVec3Length(&(playerPosition->GetPosition() - enemyPoint));
+		if ((length < 50.0f) && (enemies.size() < maxEnemy))
+			SpawnEnemy(device, c);
+		for (int i = 0; i < enemies.size(); i++)
 		{
-			enemies.erase(enemies.begin() + i);
+			length = D3DXVec3Length(&(playerPosition->GetPosition() - enemies[i]->GetPosition()));
+			if (length > 40.0f)
+			{
+				enemies.erase(enemies.begin() + i);
+			}
+			else if (length < 2.5f)
+			{
+				playerPosition->Kill();
+			}
+
 		}
-		else if (length < 2.5f)
-		{
-			playerPosition->Kill();
-		}
-		
 	}
 	for (int i = 0; i < enemies.size(); i++)
 	{
@@ -105,10 +151,11 @@ void EnemyManager::Draw(ID3D11DeviceContext* deviceContext, Render* render, D3DX
 		if (render->InsideFrustum(enemies[i]->GetBoundingBox().min + enemies[i]->GetPosition(), enemies[i]->GetBoundingBox().max + enemies[i]->GetPosition()))
 
 		{
-			deviceContext->IASetVertexBuffers(0, 1, &vBuffer, &stride, &offset);
+			ID3D11Buffer* temp = enemies[i]->GetVertBuffer();
+			deviceContext->IASetVertexBuffers(0, 1, &temp, &stride, &offset);
 
 			bool result = render->UpdateRender(deviceContext, enemies[i]->GetWorldMatrix(), viewMatrix, enemies[i]->GetTextureMap(), enemies[i]->GetNormalMap(), enemies[i]->GetMaterial(), enemies[i]->GetCurrentFrame());
-			render->Draw(deviceContext, vCount, 1);
+			render->Draw(deviceContext, enemies[i]->GetVertexCount(), 1);
 
 		}
 	}
@@ -127,10 +174,11 @@ void EnemyManager::DrawShadow(ID3D11DeviceContext* deviceContext, Render* render
 	{
 		if (render->InsideFrustum(enemies[i]->GetBoundingBox().min + enemies[i]->GetPosition(), enemies[i]->GetBoundingBox().max + enemies[i]->GetPosition()))
 		{
-			deviceContext->IASetVertexBuffers(0, 1, &vBuffer, &stride, &offset);
+			ID3D11Buffer* temp = enemies[i]->GetVertBuffer();
+			deviceContext->IASetVertexBuffers(0, 1, &temp, &stride, &offset);
 
 			bool result = render->UpdateRenderShadow(deviceContext, enemies[i]->GetWorldMatrix(), enemies[i]->GetCurrentFrame());
-			render->Draw(deviceContext, vCount, 3);
+			render->Draw(deviceContext, enemies[i]->GetVertexCount(), 3);
 
 		}
 	}

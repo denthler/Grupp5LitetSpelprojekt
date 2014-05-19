@@ -12,7 +12,10 @@ ResourceManager::~ResourceManager()
 
 bool ResourceManager::LoadLevel(std::string level, ID3D11Device* DContext)
 {
-	lImporter.LoadLevel(level);		// if false ladda sista banan.
+	if (!lImporter.LoadLevel(level))
+	{
+		lImporter.LoadLevel("LevelEnd.SPL");
+	}
 
 	DeleteUnusedMeshes();
 

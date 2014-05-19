@@ -8,6 +8,7 @@ Render::Render()
 	effect = 0;
 	eTech = 0;
 	samplerVariable = 0;
+	samplerVariableShadow = 0;
 	cbAniMatrixBuffer = 0;
 	cbMatrixBuffer = 0;
 	cbMatrix = 0;
@@ -17,6 +18,7 @@ Render::Render()
 	shadowMapShaderResourceView = 0;
 	shadowMap = 0;
 	sampleState = 0;
+	sampleStateShadow = 0;
 	lightConstantBuffer = 0;
 	cbMatrix = 0;
 	lightBuffer = 0;
@@ -187,6 +189,7 @@ bool Render::Initialize(ID3D11Device* device, HWND hwnd, WCHAR* filename, D3DXMA
 	normalMapShaderResourceView = effect->GetVariableByName("normalMap")->AsShaderResource();
 	shadowMapShaderResourceView = effect->GetVariableByName("shadowMap")->AsShaderResource();
 	samplerVariable = effect->GetVariableByName("SampleType")->AsSampler();
+	samplerVariableShadow = effect->GetVariableByName("SampleTypeShadow")->AsSampler();
 	Mat = effect->GetConstantBufferByName("gMaterial");
 
 	vertexLayout[0].SemanticName = "POSITION";
@@ -333,7 +336,7 @@ bool Render::Initialize(ID3D11Device* device, HWND hwnd, WCHAR* filename, D3DXMA
 	samplerDesc.MinLOD = 0;
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-	result = device->CreateSamplerState(&samplerDesc, &sampleState);
+	result = device->CreateSamplerState(&samplerDesc, &sampleStateShadow);
 	if(FAILED(result))
 	{
 		return false;
@@ -372,6 +375,26 @@ bool Render::Initialize(ID3D11Device* device, HWND hwnd, WCHAR* filename, D3DXMA
 	directionalLight->SetAmbientColor(0.4f, 0.4f, 0.4f, 1.0f);
 	directionalLight->SetDiffuseColor(0.7f, 0.7f, 0.7f, 1.0f);
 
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;//D3D11_TEXTURE_ADDRESS_WRAP
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.MipLODBias = 0.0f;
+	samplerDesc.MaxAnisotropy = 1;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	samplerDesc.BorderColor[0] = 0;
+	samplerDesc.BorderColor[1] = 0;
+	samplerDesc.BorderColor[2] = 0;
+	samplerDesc.BorderColor[3] = 0;
+	samplerDesc.MinLOD = 0;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	result = device->CreateSamplerState(&samplerDesc, &sampleState);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
 	return true;
 }
 
@@ -400,10 +423,15 @@ void Render::CleanShader()
 		lightBuffer = 0;
 	}
 
-	if(sampleState)
+	if (sampleState)
 	{
 		sampleState->Release();
 		sampleState = 0;
+	}
+	if(sampleStateShadow)
+	{
+		sampleStateShadow->Release();
+		sampleStateShadow = 0;
 	}
 
 	if (cbAniMatrixBuffer)
@@ -429,11 +457,6 @@ void Render::CleanShader()
 		effect->Release();
 		effect = 0;
 	}
-
-	if (plane)
-	{
-		delete[] plane;
-	}
 }
 
 void Render::Draw(ID3D11DeviceContext* deviceContext, int indexCount, int technique)
@@ -441,6 +464,7 @@ void Render::Draw(ID3D11DeviceContext* deviceContext, int indexCount, int techni
 	deviceContext->IASetInputLayout(layout);
 
 	samplerVariable->SetSampler(0, sampleState);
+	samplerVariableShadow->SetSampler(0, sampleStateShadow);
 
 	D3DX11_TECHNIQUE_DESC techDesc;
     eTech->GetDesc( &techDesc );

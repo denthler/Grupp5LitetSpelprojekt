@@ -18,6 +18,10 @@ public:
 	bool Initialize(float x, float y, float z, D3DXVECTOR3);
 	void Flip();
 	void FlipS();
+	void Reset()
+	{
+		targetUp = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	}
 	D3DXMATRIX GetView()
 	{
 		return viewMatrix;
@@ -26,6 +30,7 @@ public:
 	{
 		return worldMatrix;
 	}
+	D3DXVECTOR3 GetPosition() { return D3DXVECTOR3(viewMatrix._41, viewMatrix._42, viewMatrix._43); }
 
 	bool IsNotFlipping() { return s == 1.0f; }
 private:

@@ -87,8 +87,10 @@ private:
 	ID3D11Buffer* cbAniMatrixBuffer;
 	ID3D11Buffer* cbMatrixBuffer;
 	ID3D11Buffer* lightBuffer;
-	ID3D11SamplerState* sampleState; 
-	ID3DX11EffectSamplerVariable* samplerVariable; 
+	ID3D11SamplerState* sampleState;
+	ID3D11SamplerState* sampleStateShadow; 
+	ID3DX11EffectSamplerVariable* samplerVariable;
+	ID3DX11EffectSamplerVariable* samplerVariableShadow;
 	ID3DX11EffectShaderResourceVariable* shaderResourceView;
 	ID3DX11EffectShaderResourceVariable* normalMapShaderResourceView;
 	ID3D11Buffer* materialBuffer;

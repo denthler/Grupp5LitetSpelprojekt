@@ -8,6 +8,7 @@ WorldClass::WorldClass()
 	input = 0;
 	eManager = 0;
 	hud = 0;
+	exit = false;
 }
 
 WorldClass::WorldClass(const WorldClass& other)
@@ -22,6 +23,8 @@ WorldClass::~WorldClass()
 bool WorldClass::Initialize(ID3D11Device* device, ID3D11DeviceContext * deviceContext, HWND hwnd, D3DXMATRIX proj, HINSTANCE hInstance)
 {
 	bool result;
+
+	currentLevel = 3;
 
 	projection = proj;
 
@@ -69,14 +72,19 @@ bool WorldClass::Initialize(ID3D11Device* device, ID3D11DeviceContext * deviceCo
 	pro = proj;
 	hInst = hInstance;
 
-	NewLevel(device, "Level1");
+	menu = new Menu(device);
+
+	stringstream ss;
+	ss << "Level";
+	ss << currentLevel;
+
+	NewLevel(device, ss.str());
 	
 	return true;
 }
 
 void WorldClass::HandleInput(std::vector<ModelClass::BoundingBox>& tempBB)
 {
-	input->Update();
 	if (input->CheckSingleKeyPress(DIK_SPACE))
 	{
 		player->SetJump();
@@ -115,6 +123,45 @@ void WorldClass::HandleInput(std::vector<ModelClass::BoundingBox>& tempBB)
 			//}
 
 			
+		}
+	}
+}
+
+void WorldClass::HandleMenuInput(ID3D11Device* device)
+{
+	input->Update();
+	if(input->CheckKeyPress(DIK_P))
+	{
+		menu->Pause();
+	}
+
+	if (menu->pause)
+	{
+		if (input->CheckSingleKeyPress(DIK_W))
+		{
+			menu->RotateCogUp();
+		}
+		if (input->CheckSingleKeyPress(DIK_S))
+		{
+			menu->RotateCogDown();
+		}
+		if (input->CheckSingleKeyPress(DIK_SPACE))
+		{
+			if (menu->currentOption == 0)
+			{
+
+			}
+			else if (menu->currentOption == 1)
+			{
+				menu->pause = false;
+				menu->notMoving = true;
+				currentLevel = 1;
+				NewLevel(device, "Level1");
+			}
+			else if (menu->currentOption == 2)
+			{
+				exit = true;
+			}
 		}
 	}
 }
@@ -178,33 +225,86 @@ void WorldClass::NewLevel(ID3D11Device* device, std::string level)
 	player->bBox = rManager.player.bBox[0];
 	player->bBoxOriginal = rManager.player.bBox[0];
 
-	eManager = new EnemyManager(rManager.enemys[0].transforms[0], rManager.enemys[0].textureMap, rManager.enemys[0].normalMap, 
-		rManager.enemys[0].animationSets, rManager.enemys[0].m_vertexBuffer, rManager.enemys[0].vCount, rManager.enemys[0].bBox[0]);
+	if (currentLevel != 0)
+	{
+		//std::vector<int> tempType;
+		/*
+		for (int c = 0; c < rManager.enemys.size(); c++)
+		{
+			if (rManager.enemys[c].type.c_str() == )
+		}
+		*/
+		/*
+		tempType.push_back(0);
+		tempType.push_back(1);
+		tempType.push_back(0);
+		tempType.push_back(1);
+		tempType.push_back(0);
+		tempType.push_back(1);
+		tempType.push_back(0);
+		tempType.push_back(1);
+		tempType.push_back(0);
+		tempType.push_back(1);
+		*/
+		//eManager = new EnemyManager(rManager.enemys[0].transforms, tempType, rManager.enemys[0].textureMap, rManager.enemys[0].normalMap,
+		eManager = new EnemyManager(rManager.enemys);
+		//rManager.enemys[0].animationSets, rManager.enemys[0].m_vertexBuffer, rManager.enemys[0].vCount, rManager.enemys[0].bBox[0]);
+	}		
 
 	hud = new HUD(device, context, hwn, pro, hInst, &pManager);
 }
 
 bool WorldClass::Update(float time, ID3D11Device* DContext)
 {
-	//HandleInput();
-	std::vector<ModelClass::BoundingBox> tempBB;
+	menu->Update(player->GetWorldMatrix(), player->Rotated, player->worldAxis);
+	HandleMenuInput(DContext);
+
+	if (currentLevel == 0)
+	{
+		menu->pause = true;
+
+		std::vector<ModelClass::BoundingBox> tempBB;
+
+		pManager.Update(player->GetPosition(), tempBB);
+
+		camera->Update(player->GetPosition());
+		renderClass->UpdateFrustum(camera->GetView(), projection);
+		renderClass->setLightPosition(player->GetPosition());
+	}
+
+	if(!menu->pause && currentLevel != 0)
+	{
+		std::vector<ModelClass::BoundingBox> tempBB;
 	
-	pManager.Update(player->GetPosition(), tempBB);
+		pManager.Update(player->GetPosition(), tempBB);
 	
-	HandleInput(tempBB);
+		HandleInput(tempBB);
 
-	eManager->Update(tempBB, time, player, DContext);
+		eManager->Update(tempBB, time, player, DContext);
+		if (player->IsDead())
+		{
+			camera->Reset();
+			player->Revive();
+		}
+		player->Update(time, tempBB);
+		
+		camera->Update(player->GetPosition());
+		renderClass->UpdateFrustum(camera->GetView(), projection);
+		renderClass->setLightPosition(player->GetPosition());
 
-	player->Update(time, tempBB);
-	camera->Update(player->GetPosition());
-	renderClass->UpdateFrustum(camera->GetView(), projection);
-	renderClass->setLightPosition(player->GetPosition());
+		if (pManager.endLevel)
+		{
+			currentLevel++;
+			stringstream ss;
+			ss << "Level";
+			ss << currentLevel;
 
-	if(pManager.endLevel)
-		NewLevel(DContext, "Level2");
+			NewLevel(DContext, ss.str());
+		}		
 
-	//pointLight->SetDiffuseColor(red, 0.5f, 0.5f, 1.0f);
-	hud->Update();
+		//pointLight->SetDiffuseColor(red, 0.5f, 0.5f, 1.0f);
+		hud->Update();
+	}
 	return true;
 }
 
@@ -228,7 +328,13 @@ void WorldClass::Draw(ID3D11DeviceContext* DContext)
 	result = renderClass->UpdateRender(DContext, player->GetWorldMatrix(), viewMatrix, player->GetTextureMap(), player->GetNormalMap(), player->GetMaterial(), player->GetCurrentFrame());
 	renderClass->Draw(DContext, rManager.player.vCount, 1);
 
-	eManager->Draw(DContext, renderClass, viewMatrix);
+	if (currentLevel != 0)
+	{
+		eManager->Draw(DContext, renderClass, viewMatrix);
+	}
+
+	menu->Draw(DContext, renderClass, viewMatrix, tempTex, tempNor, material);
+
 	hud->Draw();
 }
 
@@ -242,5 +348,8 @@ void WorldClass::DrawShadow(ID3D11DeviceContext* DContext)
 	result = renderClass->UpdateRenderShadow(DContext, player->GetWorldMatrix(), player->GetCurrentFrame());
 	renderClass->Draw(DContext, rManager.player.vCount, 3);
 
-	eManager->DrawShadow(DContext, renderClass);
+	if (currentLevel != 0)
+	{
+		eManager->DrawShadow(DContext, renderClass);
+	}	
 }

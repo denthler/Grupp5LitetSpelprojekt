@@ -606,6 +606,20 @@ bool Application::UpdateStates(int screenWidth, int screenHeight)
 	srv.Texture2D.MostDetailedMip = 0;
 	D3DDevice->CreateShaderResourceView(depthMap, &srv, &shaderResourceViewShadow);
 
+	D3D11_BLEND_DESC blendStateDesc;
+	ZeroMemory(&blendStateDesc, sizeof(blendStateDesc));
+	blendStateDesc.AlphaToCoverageEnable = false;
+	blendStateDesc.RenderTarget[0].BlendEnable = true;
+	blendStateDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	blendStateDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	blendStateDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendStateDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_INV_DEST_ALPHA;
+	blendStateDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
+	blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendStateDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	D3DDevice->CreateBlendState(&blendStateDesc, &blendState);
+
 	return true;
 }
 
@@ -620,6 +634,9 @@ void Application::Begin(float red, float green, float blue, float alpha)
 
 	D3DDeviceContext->RSSetViewports(1, &viewport);
 	D3DDeviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+
+	float blendFactor[] = { 0.75f, 0.75f, 0.75f, 1.0f };
+	D3DDeviceContext->OMSetBlendState(blendState, blendFactor, 0xffffffff);
 
 	D3DDeviceContext->ClearRenderTargetView(renderTargetView, color);
 	D3DDeviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);	
