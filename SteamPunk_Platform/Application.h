@@ -85,6 +85,7 @@ private:
 	ID3D11DepthStencilState* depthStencilState;
 	ID3D11DepthStencilView* depthStencilView;
 	ID3D11RasterizerState* rasterState;
+	ID3D11BlendState* blendState;
 	D3DXMATRIX projectionMatrix;
 	IDXGISwapChain* swapChain;
 	UINT m4xMsaaQuality;

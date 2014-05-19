@@ -14,6 +14,7 @@
 #include "PlatformManager.h"
 #include "EnemyManager.h"
 #include "HUD.h"
+#include "Menu.h"
 #include <sstream>
 
 class WorldClass
@@ -34,6 +35,8 @@ public:
 private:
 
 	void HandleInput(std::vector<ModelClass::BoundingBox>& tempBB);
+	void HandleMenuInput();
+
 	//void HandleInput();
 	void NewLevel(ID3D11Device*, std::string);
 
@@ -45,6 +48,7 @@ private:
 	D3DXMATRIX projection;
 	EnemyManager* eManager;
 	HUD * hud;
+	Menu* menu;
 
 	int currentLevel;
 	ID3D11DeviceContext* context;

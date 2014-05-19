@@ -71,7 +71,7 @@ bool WorldClass::Initialize(ID3D11Device* device, ID3D11DeviceContext * deviceCo
 	pro = proj;
 	hInst = hInstance;
 
-	currentLevel;
+	menu = new Menu(device);
 
 	stringstream ss;
 	ss << "Level";
@@ -84,7 +84,6 @@ bool WorldClass::Initialize(ID3D11Device* device, ID3D11DeviceContext * deviceCo
 
 void WorldClass::HandleInput(std::vector<ModelClass::BoundingBox>& tempBB)
 {
-	input->Update();
 	if (input->CheckSingleKeyPress(DIK_SPACE))
 	{
 		player->SetJump();
@@ -124,6 +123,15 @@ void WorldClass::HandleInput(std::vector<ModelClass::BoundingBox>& tempBB)
 
 			
 		}
+	}
+}
+
+void WorldClass::HandleMenuInput()
+{
+	input->Update();
+	if(input->CheckKeyPress(DIK_P))
+	{
+		menu->Pause();
 	}
 }
 
@@ -194,32 +202,37 @@ void WorldClass::NewLevel(ID3D11Device* device, std::string level)
 
 bool WorldClass::Update(float time, ID3D11Device* DContext)
 {
-	//HandleInput();
-	std::vector<ModelClass::BoundingBox> tempBB;
-	
-	pManager.Update(player->GetPosition(), tempBB);
-	
-	HandleInput(tempBB);
+	menu->Update(player->GetWorldMatrix(), player->Rotated, player->worldAxis);
+	HandleMenuInput();
 
-	eManager->Update(tempBB, time, player, DContext);
-
-	player->Update(time, tempBB);
-	camera->Update(player->GetPosition());
-	renderClass->UpdateFrustum(camera->GetView(), projection);
-	renderClass->setLightPosition(player->GetPosition());
-
-	if (pManager.endLevel)
+	if(!menu->pause)
 	{
-		currentLevel++;
-		stringstream ss;
-		ss << "Level";
-		ss << currentLevel;
+		std::vector<ModelClass::BoundingBox> tempBB;
+	
+		pManager.Update(player->GetPosition(), tempBB);
+	
+		HandleInput(tempBB);
 
-		NewLevel(DContext, ss.str());
-	}		
+		eManager->Update(tempBB, time, player, DContext);
 
-	//pointLight->SetDiffuseColor(red, 0.5f, 0.5f, 1.0f);
-	hud->Update();
+		player->Update(time, tempBB);
+		camera->Update(player->GetPosition());
+		renderClass->UpdateFrustum(camera->GetView(), projection);
+		renderClass->setLightPosition(player->GetPosition());
+
+		if (pManager.endLevel)
+		{
+			currentLevel++;
+			stringstream ss;
+			ss << "Level";
+			ss << currentLevel;
+
+			NewLevel(DContext, ss.str());
+		}		
+
+		//pointLight->SetDiffuseColor(red, 0.5f, 0.5f, 1.0f);
+		hud->Update();
+	}
 	return true;
 }
 
@@ -243,7 +256,10 @@ void WorldClass::Draw(ID3D11DeviceContext* DContext)
 	result = renderClass->UpdateRender(DContext, player->GetWorldMatrix(), viewMatrix, player->GetTextureMap(), player->GetNormalMap(), player->GetMaterial(), player->GetCurrentFrame());
 	renderClass->Draw(DContext, rManager.player.vCount, 1);
 
-	eManager->Draw(DContext, renderClass, viewMatrix);
+	eManager->Draw(DContext, renderClass, viewMatrix);	
+
+	menu->Draw(DContext, renderClass, viewMatrix, tempTex, tempNor, material);
+
 	hud->Draw();
 }
 

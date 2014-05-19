@@ -281,6 +281,7 @@ float4 PS(PixelInputType input) : SV_TARGET
 
 	color *= shadowCoeff;
 
+	color.a = textureColor.a;
 	return color;
 }
 

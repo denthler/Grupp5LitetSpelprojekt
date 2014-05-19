@@ -108,12 +108,14 @@ public:
 	virtual bool FlipGravityS(std::vector<BoundingBox>& bb);// { D3DXVec3Cross(&worldAxis, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f)); };
 	BoundingBox bBox;
 	BoundingBox bBoxOriginal;
+
+	bool Rotated;
+	D3DXVECTOR3 worldAxis;
 protected:
 	D3DXVECTOR3 position;
 	D3DXVECTOR3 velocity;
 	bool FallDamage;
 	float gravity;
-	D3DXVECTOR3 worldAxis;
 	float moveScale;
 	bool OnGround;
 
@@ -127,7 +129,6 @@ protected:
 	int currentAnimStack;
 	Material mat;
 
-	bool Rotated;
 	D3DXMATRIX m_worldMatrix;
 private:
 	//bool LoadTexture(ID3D11Device*, const WCHAR*, int i);

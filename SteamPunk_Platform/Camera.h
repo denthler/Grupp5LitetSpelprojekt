@@ -26,6 +26,7 @@ public:
 	{
 		return worldMatrix;
 	}
+	D3DXVECTOR3 GetPosition() { return D3DXVECTOR3(viewMatrix._41, viewMatrix._42, viewMatrix._43); }
 
 	bool IsNotFlipping() { return s == 1.0f; }
 private:
