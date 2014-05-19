@@ -233,6 +233,7 @@ bool Player::Update(float gameTime, std::vector<BoundingBox>& bb)
 			{
 				FallDamage = false;
 				Kill();
+				dead = true;
 			}
 		}
 	}

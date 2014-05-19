@@ -21,6 +21,7 @@ public:
 	void Reset()
 	{
 		targetUp = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+		currentUp = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 	}
 	D3DXMATRIX GetView()
 	{

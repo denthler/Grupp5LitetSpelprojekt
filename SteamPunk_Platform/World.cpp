@@ -24,7 +24,7 @@ bool WorldClass::Initialize(ID3D11Device* device, ID3D11DeviceContext * deviceCo
 {
 	bool result;
 
-	currentLevel = 3;
+	currentLevel = 0;
 
 	projection = proj;
 
