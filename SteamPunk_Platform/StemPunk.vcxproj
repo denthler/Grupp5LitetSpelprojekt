@@ -140,6 +140,7 @@
   <ItemGroup>
     <None Include="effect.fx" />
     <None Include="shader.fx" />
+    <None Include="simpleShader.fx" />
     <None Include="texture.fx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

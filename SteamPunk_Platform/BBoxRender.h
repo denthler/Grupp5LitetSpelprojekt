@@ -5,11 +5,18 @@ class BBoxRender
 {
 	void BBoxToVertices(ModelClass::BoundingBox bbox);
 	std::vector<float> vertices;
-	std::vector<byte> indices;
+
+	ID3D11Device * device;
+	ID3D11DeviceContext * deviceContext;
+	ID3D11VertexShader * VS;
+	ID3D11PixelShader * PS;
+	ID3D11Buffer * buffer;
+	ID3D11InputLayout * vertLayout;
+
 public:
-	BBoxRender() {};
+	BBoxRender(ID3D11Device * device, ID3D11DeviceContext * deviceContext);
 	~BBoxRender();
 	
-	void Update();
+	void Update(std::vector<ModelClass::BoundingBox> bboxes);
 	void Draw();
 };
