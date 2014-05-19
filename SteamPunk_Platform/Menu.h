@@ -33,16 +33,24 @@ public:
 	void						Draw(ID3D11DeviceContext*, Render*, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, ModelClass::Material);
 	void						Pause();
 
+	void						RotateCogUp();
+	void						RotateCogDown();
+
 private:
 	void						CreateVertexBuffer(ID3D11Device* device);
+	void						RotateMenu();
 public:
 	bool						pause;	
+	bool						notMoving;
+	int							currentOption;
 private:
 	AssetImporter				aImporter;
 	TextureClass				texture;
 	MenuMesh					mesh;
-	bool						notMoving;
 	float						offset;
+
+	bool						rotateUp, rotateDown;
+	float						rotationOffset, rotation;
 };
 
 #endif

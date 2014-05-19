@@ -32,10 +32,11 @@ public:
 	void DrawShadow(ID3D11DeviceContext*);
 
 	Render* renderClass;
+	bool exit;
 private:
 
 	void HandleInput(std::vector<ModelClass::BoundingBox>& tempBB);
-	void HandleMenuInput();
+	void HandleMenuInput(ID3D11Device* DContext);
 
 	//void HandleInput();
 	void NewLevel(ID3D11Device*, std::string);

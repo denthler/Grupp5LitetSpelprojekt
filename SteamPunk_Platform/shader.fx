@@ -9,6 +9,7 @@ Texture2D shaderTexture;
 Texture2D normalMap;
 Texture2D shadowMap;
 SamplerState SampleType;
+SamplerState SampleTypeShadow;
 
 cbuffer gMaterial
 {
@@ -270,7 +271,7 @@ float4 PS(PixelInputType input) : SV_TARGET
 
 	input.posLightView.z /= input.posLightView.w;
 
-	float shadowCoeff = shadowMap.Sample(SampleType, smTex).r;
+	float shadowCoeff = shadowMap.Sample(SampleTypeShadow, smTex).r;
 
 	if(shadowCoeff + 0.00001f < input.posLightView.z)
 	{

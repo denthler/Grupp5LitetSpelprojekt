@@ -5,6 +5,13 @@ Menu::Menu(ID3D11Device* device)
 	offset = 1.0f;
 	notMoving = true;
 	pause = false;
+
+	currentOption = 1;
+	rotateUp = false;
+	rotateDown = false;
+	rotationOffset = 0.0f;
+	rotation = 0.0f;
+
 	aImporter.LoadAsset("meny_cogwheel_");
 	CreateVertexBuffer(device);
 
@@ -83,8 +90,30 @@ void Menu::Pause()
 	}
 }
 
+void Menu::RotateCogUp()
+{
+	if (!rotateUp && !rotateDown)
+	{
+		rotation = 0.0f;
+		rotateUp = true;
+	}
+}
+
+void Menu::RotateCogDown()
+{
+	if (!rotateUp && !rotateDown)
+	{
+		rotation = 0.0f;
+		rotateDown = true;
+	}		
+}
+
 void Menu::Update(D3DXMATRIX playerPos, bool Rotated, D3DXVECTOR3 worldAxis)
 {
+	if (pause)
+		Rotated = true;
+
+	RotateMenu();
 	UpdatePosition(playerPos, Rotated, worldAxis);
 
 	if (offset != 0.0f && pause)
@@ -167,19 +196,19 @@ void Menu::UpdatePosition(D3DXMATRIX playerPos, bool Rotated, D3DXVECTOR3 worldA
 	{
 		if (worldAxis.y > 0.0f)
 		{
-			D3DXMatrixRotationY(&playerPos, 0.0f);
+			D3DXMatrixRotationZ(&playerPos, 0.0f + rotationOffset);
 		}
 		else if (worldAxis.y < 0.0f)
 		{
-			D3DXMatrixRotationZ(&playerPos, D3DX_PI);
+			D3DXMatrixRotationZ(&playerPos, D3DX_PI + rotationOffset);
 		}
 		else if (worldAxis.x < 0.0f)
 		{
-			D3DXMatrixRotationZ(&playerPos, D3DX_PI / 2);
+			D3DXMatrixRotationZ(&playerPos, (D3DX_PI / 2) + rotationOffset);
 		}
 		else if (worldAxis.x > 0.0f)
 		{
-			D3DXMatrixRotationZ(&playerPos, -D3DX_PI / 2);
+			D3DXMatrixRotationZ(&playerPos, (-D3DX_PI / 2) + rotationOffset);
 		}		
 	}
 
@@ -205,4 +234,48 @@ void Menu::UpdatePosition(D3DXMATRIX playerPos, bool Rotated, D3DXVECTOR3 worldA
 	playerPos._43 = temp.z;
 
 	mesh.world_Matrix = playerPos;
+}
+
+void Menu::RotateMenu()
+{
+	if (rotateUp)
+	{
+		if (rotation > -D3DX_PI / 4)
+		{
+			rotation -= 0.01f;
+			rotationOffset -= 0.01f;
+		}
+		else
+		{
+			rotation = -D3DX_PI / 4;
+			rotateUp = false;
+			currentOption--;
+
+			if (currentOption < 0)
+				currentOption = 0;
+		}
+
+		if (rotationOffset < -D3DX_PI / 4)
+			rotationOffset = -D3DX_PI / 4;
+	}
+	else if (rotateDown)
+	{
+		if (rotation < D3DX_PI / 4)
+		{
+			rotation += 0.01f;
+			rotationOffset += 0.01f;
+		}
+		else
+		{
+			rotation = D3DX_PI / 4;
+			rotateDown = false;
+			currentOption++;
+
+			if (currentOption > 2)
+				currentOption = 2;
+		}
+
+		if (rotationOffset > D3DX_PI / 4)
+			rotationOffset = D3DX_PI / 4;
+	}
 }

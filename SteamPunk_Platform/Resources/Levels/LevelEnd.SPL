@@ -88,8 +88,6 @@ mtransform 1 0 0 0 0 1 0 0 0 0 1 0 -59.0779 -4.03377 1.42109e-014 1
 mtransform 1 0 0 0 0 1 0 0 0 0 1 0 -7.61851 -71.7395 1.42109e-014 1 
 type bg_moon_
 mtransform 1 0 0 0 0 1 0 0 0 0 1 0 -220.357 -111.119 -2.84217e-014 1 
-type bg_spacehouse_
-mtransform 1.70567 -1.07977 -0 0 1.07977 1.70567 0 0 0 -0 2.01872 0 -180.4 -51.5365 -0.881332 1 
 type go_mechanic_
 mtransform 2.22045e-016 0 -1 0 0 1 0 0 1 0 2.22045e-016 0 -144.723 -61.555 0 1 
 type e_type1_spacerabbit_
@@ -112,7 +110,9 @@ mtransform -1 1.22465e-016 0 0 -1.22465e-016 -1 0 0 0 0 1 0 -27.4745 25.4889 -1.
 type bg_imageplane_space_
 mtransform 1 0 0 0 0 1 0 0 0 0 1 0 0 0 135.493 1 
 type bg_galaxy_
-mtransform 1 0 0 0 0 1 0 0 0 0 1 0 0 0 128.805 1 
+mtransform 1 0 0 0 0 1 0 0 0 0 1 0 0 0 117.209 1 
 mtransform 1 0 0 0 0 1 0 0 0 0 1 0 -106.672 -49.1973 80.028 1 
 mtransform 1 0 0 0 0 1 0 0 0 0 1 0 89.911 -49.1973 49.394 1 
+type bg_spacehouse_
+mtransform 0.773575 0.633705 0 0 -0.633705 0.773575 0 0 0 0 1 0 -172.199 -57.682 0 1 
 EndOfFile

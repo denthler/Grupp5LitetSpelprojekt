@@ -31,6 +31,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevious, LPSTR lpCmdLine, in
 			application.Begin(1.0f, 0.0f, 0.0f, 1.0f);
 			world.Draw(application.GetDeviceContext());
 			application.End(true);
+
+			if (world.exit)
+				break;
 		}
 	}
 	application.CleanUp();
