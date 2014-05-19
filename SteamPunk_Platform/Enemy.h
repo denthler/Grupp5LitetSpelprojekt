@@ -18,6 +18,7 @@ public:
 	~Enemy();
 
 	virtual bool Update(float, std::vector<BoundingBox>&);
+	D3DXMATRIX GetWorldMatrix();
 	//D3DXMATRIX GetWorldMatrix()
 	//{
 		//D3DXMATRIX worldMatrix;

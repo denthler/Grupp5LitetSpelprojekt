@@ -44,16 +44,43 @@ Enemy::~Enemy()
 
 }
 
+D3DXMATRIX Enemy::GetWorldMatrix()
+{
+	ModelClass::GetWorldMatrix();
+	//Enemy only
+	if (OnGround)
+	{
+		D3DXVECTOR3 temp;
+		D3DXVec3Cross(&temp, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis);
+		float value = -1.5f;
+		if (moveScale < 0)
+			value *= -1.0f;
+		bBox.max += temp * value;
+		bBox.min += temp * value;
+	}
+	//
+
+	return m_worldMatrix;
+}
+
 bool Enemy::FlipGravity(std::vector<BoundingBox>& bb, D3DXVECTOR3 wAxis)
 {
-	//D3DXVec3Cross(&worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis);
+	//Fix This
+	position += worldAxis * 1.5f;
+	prevPos = position;
+	worldAxis = wAxis;
+
+	/*
 	worldAxis = wAxis;
 	D3DXVECTOR3 right;
-	D3DXVec3Cross(&right, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f));
+	if (moveScale > 0)
+		D3DXVec3Cross(&right, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f));
+	else
+		D3DXVec3Cross(&right, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis);
 	position += right * 2.0f;
 	prevPos = position;
 	GetWorldMatrix();
-
+	
 	D3DXVECTOR3 tempMax = bBox.max;
 	D3DXVECTOR3 tempMin = bBox.min;
 	tempMax = position + tempMax;
@@ -71,18 +98,24 @@ bool Enemy::FlipGravity(std::vector<BoundingBox>& bb, D3DXVECTOR3 wAxis)
 			prevPos = position;
 		}
 	}
+	*/
 	return true;
 }
 
 bool Enemy::FlipGravityS(std::vector<BoundingBox>& bb, D3DXVECTOR3 wAxis)
 {
 
-	//D3DXVECTOR3 tempWorldAxis;
-	//tempWorldAxis = worldAxis;
-	//D3DXVec3Cross(&worldAxis, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f));
+	position += worldAxis * 1.5f;
+	prevPos = position;
+	worldAxis = wAxis;
+	//Fix this
+	/*
 	worldAxis = wAxis;
 	D3DXVECTOR3 right;
-	D3DXVec3Cross(&right, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f));
+	if (moveScale > 0)
+		D3DXVec3Cross(&right, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f));
+	else
+		D3DXVec3Cross(&right, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis);
 	position -= right * 2.0f;
 	prevPos = position;
 	GetWorldMatrix();
@@ -104,6 +137,7 @@ bool Enemy::FlipGravityS(std::vector<BoundingBox>& bb, D3DXVECTOR3 wAxis)
 			prevPos = position;
 		}
 	}
+	*/
 	return true;
 }
 

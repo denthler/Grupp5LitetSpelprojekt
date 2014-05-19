@@ -47,7 +47,6 @@ public:
 		//worldAxis = D3DXVECTOR3(0.0f, 1.0f, 0.0f); }
 private:
 
-	bool dead;
 	D3DXVECTOR3 StartPos;
 	bool left, right, up, down, jump;
 	int numberOfCogs;

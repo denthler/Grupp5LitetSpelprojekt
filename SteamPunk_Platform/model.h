@@ -59,6 +59,7 @@ public:
 	{
 		D3DXVECTOR3 min;
 		D3DXVECTOR3 max;
+		std::string type;
 	};
 
 	struct Material
@@ -79,7 +80,7 @@ public:
 	virtual void Shutdown();
 	virtual void Apply(ID3D11DeviceContext*);
 
-	D3DXMATRIX GetWorldMatrix();
+	virtual D3DXMATRIX GetWorldMatrix();
 	int GetIndexCount();
 
 	Material GetMaterial()
@@ -116,6 +117,7 @@ protected:
 	D3DXVECTOR3 worldAxis;
 	float moveScale;
 	bool OnGround;
+	bool dead;
 
 	ID3D11ShaderResourceView* textureMap;
 	ID3D11ShaderResourceView* normalMap;

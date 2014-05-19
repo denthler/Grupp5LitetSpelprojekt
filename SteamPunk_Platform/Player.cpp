@@ -233,7 +233,11 @@ bool Player::Update(float gameTime, std::vector<BoundingBox>& bb)
 			}
 		}
 	}
-	
+	else
+	{
+		Kill();
+		dead = false;
+	}
 	if (!OnGround && !jumpAni)
 	{
 		for (int i = 0; i < animationStack.size(); i++)
