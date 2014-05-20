@@ -76,6 +76,11 @@ public:
 	bool InsideFrustum(D3DXVECTOR3 min, D3DXVECTOR3 max);
 	void setShadowMap(ID3D11ShaderResourceView* sM){ shadowMap = sM; };
 	void setLightPosition(D3DXVECTOR3 playerPos);
+	void SetProjectionMatrix(D3DXMATRIX proj)
+	{
+		projectionMatrix = proj;
+		D3DXMatrixTranspose(&projectionMatrix, &projectionMatrix);
+	}
 
 private:	
 	ID3DX11EffectConstantBuffer* cbMatrix;

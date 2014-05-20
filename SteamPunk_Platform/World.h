@@ -29,7 +29,12 @@ public:
 	void CleanUp();
 	bool Update(float, ID3D11Device*);
 	void Draw(ID3D11DeviceContext*);
+	void DrawLoadingScreen(ID3D11DeviceContext*, float, float);
 	void DrawShadow(ID3D11DeviceContext*);
+	bool IsLoading()
+	{
+		return loading;
+	}
 
 	Render* renderClass;
 	bool exit;
@@ -40,6 +45,7 @@ private:
 
 	//void HandleInput();
 	void NewLevel(ID3D11Device*, std::string);
+	bool loading;
 
 	Camera* camera;
 	Player* player;
@@ -54,8 +60,11 @@ private:
 	int currentLevel;
 	ID3D11DeviceContext* context;
 	HWND hwn;
-	D3DXMATRIX pro;
+	D3DXMATRIX pro;// orthoGraph;
 	HINSTANCE hInst;
+	ID3D11Buffer* loadingBuffer;
+	TextureClass* temptexture;
+
 };
 
 #endif

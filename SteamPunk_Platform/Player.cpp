@@ -10,6 +10,7 @@ Player::Player()
 	gravity = -0.01f;
 	worldAxis = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 	numberOfCogs = 0;
+	canFlip = true;
 }
 
 Player::~Player()
@@ -20,6 +21,18 @@ Player::~Player()
 void Player::Shutdown()
 {
 	ModelClass::Shutdown();
+}
+
+bool Player::FlipGravity(std::vector<BoundingBox>& bb)
+{
+	canFlip = false;
+	return ModelClass::FlipGravity(bb);
+}
+
+bool Player::FlipGravityS(std::vector<BoundingBox>& bb)
+{
+	canFlip = false;
+	return ModelClass::FlipGravityS(bb);
 }
 
 bool Player::Initialize(ID3D11Device* device, D3DXVECTOR3 startPos, ID3D11ShaderResourceView* tM, ID3D11ShaderResourceView* nM, std::vector<AnimationStack> aS, ID3D11Buffer* vB, int vC)
@@ -224,6 +237,8 @@ bool Player::Update(float gameTime, std::vector<BoundingBox>& bb)
 
 		if(!OnGround)
 			inAir = true;
+		else
+			canFlip = true;
 		if(OnGround && !landAni && inAir)
 		{
 			landAni = true;
