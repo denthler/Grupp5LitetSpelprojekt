@@ -319,7 +319,7 @@ bool WorldClass::Update(float time, ID3D11Device* DContext)
 			stringstream ss;
 			ss << "Level";
 			ss << currentLevel;
-
+			loading = false;
 			NewLevel(DContext, ss.str());
 		}
 

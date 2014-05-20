@@ -186,7 +186,7 @@ void Menu::UpdatePosition(D3DXMATRIX playerPos, bool Rotated, D3DXVECTOR3 worldA
 	D3DXVECTOR3 temp;
 	temp.x = playerPos._41;
 	temp.y = playerPos._42;
-	temp.z = playerPos._43 -35;
+	temp.z = playerPos._43 -40;
 
 	playerPos._41 = 0.0f;
 	playerPos._42 = 0.0f;
@@ -214,19 +214,19 @@ void Menu::UpdatePosition(D3DXMATRIX playerPos, bool Rotated, D3DXVECTOR3 worldA
 
 	if (worldAxis.y > 0.0f)
 	{
-		temp.x -= 10.0f + offset * 10;
+		temp.x -= 7.0f + offset * 10;
 	}
 	else if (worldAxis.y < 0.0f)
 	{
-		temp.x += 10.0f + offset * 10;
+		temp.x += 7.0f + offset * 10;
 	}
 	else if (worldAxis.x < 0.0f)
 	{
-		temp.y -= 10.0f + offset * 10;
+		temp.y -= 7.0f + offset * 10;
 	}
 	else if (worldAxis.x > 0.0f)
 	{
-		temp.y += 10.0f + offset * 10;
+		temp.y += 7.0f + offset * 10;
 	}	
 
 	playerPos._41 = temp.x;
