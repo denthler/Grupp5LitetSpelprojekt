@@ -32,7 +32,14 @@ public:
 		return worldAxis;
 	}
 	D3DXMATRIX GetWorldMatrix();
-
+	void Revive()
+	{
+		dead = false;
+	}
+	bool CanFlip()
+	{
+		return canFlip;
+	}
 	void SetLeft(){left = true;}
 	void SetRight(){right = true;}
 	void SetDown(){left = true;}
@@ -41,15 +48,12 @@ public:
 	void Kill();
 	void AddCog();
 	D3DXVECTOR3 GetPosition(){return position;}
-	//void FlipGravity(){D3DXVec3Cross(&worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis);}
-		//worldAxis = D3DXVECTOR3(-1.0f, 0.0f, 0.0f); }
-	//void FlipGravityS(){D3DXVec3Cross(&worldAxis, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f));}
-		//worldAxis = D3DXVECTOR3(0.0f, 1.0f, 0.0f); }
+	bool FlipGravity(std::vector<BoundingBox>& bb);// { D3DXVec3Cross(&worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis); };
+	bool FlipGravityS(std::vector<BoundingBox>& bb);
 private:
 
-	bool dead;
 	D3DXVECTOR3 StartPos;
-	bool left, right, up, down, jump;
+	bool left, right, up, down, jump, canFlip;
 	int numberOfCogs;
 
 	//Ani

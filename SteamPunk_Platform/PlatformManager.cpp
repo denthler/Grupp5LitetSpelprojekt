@@ -18,6 +18,8 @@ PlatformManager::PlatformManager(const PlatformManager& other)
 void PlatformManager::CreateLevel(std::vector<Mesh>& meshes)
 {
 	endLevel = false;
+	endGame = false;
+	mechanicLoaded = false;
 	std::string tempString;
 
 	objects.clear();
@@ -58,6 +60,7 @@ void PlatformManager::CreateLevel(std::vector<Mesh>& meshes)
 		{
 			for (int j = 0; j < meshes[i].transforms.size(); j++)
 			{
+				meshes[i].bBox[j].type = "normal";
 				Platform* newPlatform = new Platform(meshes[i].transforms[j], meshes[i].bBox[j], false, GameObject::ObjectType::Platform);
 				//newPlatform.position = meshes[i].transforms[j];
 				//newPlatform.BoundingBox = meshes[i].BoundingBox;
@@ -89,12 +92,18 @@ void PlatformManager::CreateLevel(std::vector<Mesh>& meshes)
 					newMesh.bufferIndices.push_back(i);
 					newMesh.objectData.push_back(newDoor);
 				}
+			else if (tempSubString == "go_m")
+				for (int j = 0; j < meshes[i].transforms.size(); j++)
+				{
+					mechanic = new ModelClass(meshes[i].transforms[j], meshes[i].bBox[j], meshes[i].animationSets, meshes[i].m_vertexBuffer, meshes[i].vCount, meshes[i].textureMap, meshes[i].normalMap);
+					mechanicLoaded = true;
+				}
 		}
 		objects.push_back(newMesh);		
 	}
 }
 
-void PlatformManager::Update(D3DXVECTOR3 playerPosition, std::vector<ModelClass::BoundingBox>& bb)
+void PlatformManager::Update(D3DXVECTOR3 playerPosition, std::vector<ModelClass::BoundingBox>& bb, float gT)
 {
 	//std::vector<BoundingBox> bb;
 	for (int i = 0; i < objects.size(); i++)
@@ -116,7 +125,7 @@ void PlatformManager::Update(D3DXVECTOR3 playerPosition, std::vector<ModelClass:
 				case GameObject::ObjectType::Gear :
 				{
 					float length = D3DXVec3Length(&(playerPosition - objects[i].objectData[j]->GetPosition()));
-					if (length < 1.0f)
+					if (length < 2.0f)
 					{
 						objects[i].objectData.erase(objects[i].objectData.begin() + j);
 						gearsFound++;
@@ -129,7 +138,7 @@ void PlatformManager::Update(D3DXVECTOR3 playerPosition, std::vector<ModelClass:
 				case GameObject::ObjectType::Door :
 				{
 					float length = D3DXVec3Length(&(playerPosition - objects[i].objectData[j]->GetPosition()));
-					if (length < 1.0f && gearsFound == gearsTotal)
+					if (length < 3.0f && gearsFound == gearsTotal)
 					{
 						endLevel = true;
 					}
@@ -141,7 +150,17 @@ void PlatformManager::Update(D3DXVECTOR3 playerPosition, std::vector<ModelClass:
 				//bb.push_back(objects[i].objectData[j]->getBoundingBox());
 		}
 	}
-	
+
+	if (mechanicLoaded)
+	{
+		mechanic->UpdateMechanic(gT);
+
+		float length = D3DXVec3Length(&(playerPosition - mechanic->GetPosition()));
+		if (length < 3.0f && gearsFound == gearsTotal)
+		{
+			endGame = true;
+		}
+	}
 }
 
 void PlatformManager::Draw(ID3D11DeviceContext* deviceContext, Render* render, D3DXMATRIX viewMatrix, ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* normal, ModelClass::Material mat)
@@ -190,6 +209,43 @@ void PlatformManager::Draw(ID3D11DeviceContext* deviceContext, Render* render, D
 			}
 		}
 	}	
+
+	if (mechanicLoaded)
+	{
+		stride = sizeof(VertexTypeAni);
+		offset = 0;
+
+		if (render->InsideFrustum(mechanic->GetBoundingBox().min, mechanic->GetBoundingBox().max))
+		{
+			ID3D11Buffer* tempVB = mechanic->GetVertBuffer();
+			deviceContext->IASetVertexBuffers(0, 1, &tempVB, &stride, &offset);
+
+			if (mechanic->GetTextureMap())
+			{
+				texture = mechanic->GetTextureMap();
+				mat.hasTexture = true;
+			}
+			else
+			{
+				texture = 0;
+				mat.hasTexture = false;
+			}
+
+			if (mechanic->GetNormalMap())
+			{
+				normal = mechanic->GetNormalMap();
+				mat.hasNormal = true;
+			}
+			else
+			{
+				normal = 0;
+				mat.hasNormal = false;
+			}
+
+			bool result = render->UpdateRender(deviceContext, mechanic->GetWorldMatrixMechanic(), viewMatrix, texture, normal, mat, mechanic->GetCurrentFrame());
+			render->Draw(deviceContext, mechanic->GetVertexCount(), 1);
+		}
+	}
 }
 
 void PlatformManager::DrawShadow(ID3D11DeviceContext* deviceContext, Render* render)
@@ -206,7 +262,7 @@ void PlatformManager::DrawShadow(ID3D11DeviceContext* deviceContext, Render* ren
 	{
 		for (int j = 0; j < objects[i].objectData.size(); j++)
 		{			
-			if (render->InsideFrustum(objects[i].objectData[j]->getBoundingBox().min, objects[i].objectData[j]->getBoundingBox().max))
+			//if (render->InsideFrustum(objects[i].objectData[j]->getBoundingBox().min, objects[i].objectData[j]->getBoundingBox().max))
 			{
 				deviceContext->IASetVertexBuffers(0, 1, &buffers[objects[i].bufferIndices[j]], &stride, &offset);
 

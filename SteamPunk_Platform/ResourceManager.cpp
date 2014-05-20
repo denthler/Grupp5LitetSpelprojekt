@@ -38,8 +38,9 @@ bool ResourceManager::LoadLevel(std::string level, ID3D11Device* DContext)
 
 			std::string type = lImporter.types[i]->type;
 			std::string tempSubString = type.substr(0, 2);
+			std::string tempSubString2 = type.substr(0, 4);
 
-			if (tempSubString != "p_" && tempSubString != "e_")
+			if (tempSubString != "p_" && tempSubString != "e_" && tempSubString2 != "go_m")
 				CreateStaticMeshes(DContext, i);
 			else
 				CreateAnimatedMeshes(DContext, i);
@@ -48,8 +49,9 @@ bool ResourceManager::LoadLevel(std::string level, ID3D11Device* DContext)
 		{
 			std::string type = lImporter.types[i]->type;
 			std::string tempSubString = type.substr(0, 2);
+			std::string tempSubString2 = type.substr(0, 4);
 
-			if (tempSubString != "p_" && tempSubString != "e_")
+			if (tempSubString != "p_" && tempSubString != "e_" && tempSubString2 != "go_m")
 				UpdateTransformsAndBBoxStatic(i);
 			else
 				UpdateTransformsAndBBoxAnimation(i);
@@ -176,6 +178,7 @@ void ResourceManager::CreateAnimatedMeshes(ID3D11Device* DContext, int index)
 
 		newMesh.type = lImporter.types[index]->type;
 		std::string tempSubString = newMesh.type.substr(0, 2);
+		std::string tempSubString2 = newMesh.type.substr(0, 4);
 
 		struct weightTemp
 		{
@@ -316,6 +319,8 @@ void ResourceManager::CreateAnimatedMeshes(ID3D11Device* DContext, int index)
 			player = newMesh;
 		else if (tempSubString == "e_")
 			enemys.push_back(newMesh);
+		else if (tempSubString2 == "go_m")
+			meshes.push_back(newMesh);
 	}
 }
 
@@ -408,6 +413,14 @@ void ResourceManager::DeleteUnusedMeshes()
 				if(types[t] == meshes[i].type)
 				{
 					meshes.erase(meshes.begin() + i);
+				}
+			}
+
+			for (int i = 0; i < enemys.size(); i++)
+			{
+				if(types[t] == enemys[i].type)
+				{
+					enemys.erase(enemys.begin() + i);
 				}
 			}
 			

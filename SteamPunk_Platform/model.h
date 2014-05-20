@@ -59,6 +59,7 @@ public:
 	{
 		D3DXVECTOR3 min;
 		D3DXVECTOR3 max;
+		std::string type;
 	};
 
 	struct Material
@@ -72,6 +73,7 @@ public:
 	};
 
 	ModelClass();
+	ModelClass(D3DXMATRIX, BoundingBox, std::vector<AnimationStack>, ID3D11Buffer*, int, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*);
 	ModelClass(const ModelClass&);
 	~ModelClass();
 
@@ -79,12 +81,20 @@ public:
 	virtual void Shutdown();
 	virtual void Apply(ID3D11DeviceContext*);
 
-	D3DXMATRIX GetWorldMatrix();
+	virtual D3DXMATRIX GetWorldMatrix();
 	int GetIndexCount();
 
+	D3DXMATRIX GetWorldMatrixMechanic()
+	{
+		return m_worldMatrix;
+	}
 	Material GetMaterial()
 	{
 		return mat;
+	};
+	ID3D11Buffer* GetVertBuffer()
+	{
+		return m_vertexBuffer;
 	};
 
 	std::vector<D3DMATRIX> GetCurrentFrame(){ return currentFrame; };
@@ -104,6 +114,7 @@ public:
 	}
 
 	virtual bool Update(float, std::vector<ModelClass::BoundingBox>&);
+	void UpdateMechanic(float);
 	virtual bool FlipGravity(std::vector<BoundingBox>& bb);// { D3DXVec3Cross(&worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis); };
 	virtual bool FlipGravityS(std::vector<BoundingBox>& bb);// { D3DXVec3Cross(&worldAxis, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f)); };
 	BoundingBox bBox;
@@ -118,6 +129,7 @@ protected:
 	float gravity;
 	float moveScale;
 	bool OnGround;
+	bool dead;
 
 	ID3D11ShaderResourceView* textureMap;
 	ID3D11ShaderResourceView* normalMap;

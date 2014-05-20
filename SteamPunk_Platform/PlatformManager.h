@@ -38,13 +38,14 @@ public:
 	void CreateLevel(std::vector<Mesh>&);
 	void Draw(ID3D11DeviceContext*, Render*, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, ModelClass::Material);
 	void DrawShadow(ID3D11DeviceContext*, Render*);
-	void Update(D3DXVECTOR3 playerPosition, std::vector<ModelClass::BoundingBox>& bb);
+	void Update(D3DXVECTOR3 playerPosition, std::vector<ModelClass::BoundingBox>& bb, float gT);
 	//Get Boundingboxes
 	int gearsFound;
 	int gearsTotal;
 	int GetGearCount();
 
 	bool endLevel;
+<<<<<<< HEAD
 	std::vector<D3DXMATRIX> GetWorldMatrices()
 	{
 		std::vector<D3DXMATRIX> matrices;
@@ -57,6 +58,9 @@ public:
 		}
 		return matrices;
 	}
+=======
+	bool endGame;
+>>>>>>> 76115ea61eee8a858442a48c144482a99d40bdbc
 
 private:
 	void OrganizeLevel(std::vector<GameObject>&);
@@ -64,5 +68,8 @@ private:
 	std::vector<ID3D11Buffer*> buffers;
 	std::vector<ID3D11ShaderResourceView*> textureMap;
 	std::vector<ID3D11ShaderResourceView*> normalMap;
+
+	ModelClass* mechanic;
+	bool mechanicLoaded;
 };
 #endif

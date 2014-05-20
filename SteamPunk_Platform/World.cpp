@@ -9,6 +9,7 @@ WorldClass::WorldClass()
 	eManager = 0;
 	hud = 0;
 	exit = false;
+	loading = false;
 }
 
 WorldClass::WorldClass(const WorldClass& other)
@@ -26,9 +27,10 @@ bool WorldClass::Initialize(ID3D11Device* device, ID3D11DeviceContext * deviceCo
 	bBoxRender.Init(device, deviceContext);
 	bool result;
 
-	currentLevel = 2;
+	currentLevel = 0;
 
 	projection = proj;
+	//orthoGraph = ortho;
 
 	renderClass = new Render();
 	if(!renderClass)
@@ -81,7 +83,22 @@ bool WorldClass::Initialize(ID3D11Device* device, ID3D11DeviceContext * deviceCo
 	ss << currentLevel;
 
 	NewLevel(device, ss.str());
+
+	D3D11_BUFFER_DESC bufferDesc;
+	ZeroMemory(&bufferDesc, sizeof(D3D11_BUFFER_DESC));
+	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	bufferDesc.ByteWidth = sizeof(VertexTypeT)* 6;
+	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	bufferDesc.MiscFlags = 0;
+	bufferDesc.StructureByteStride = 0;
+
+	device->CreateBuffer(&bufferDesc, NULL, &loadingBuffer);
 	
+	temptexture = new TextureClass();
+
+	temptexture->Initialize(device, "Resources/Textures/loadingscreen.png");	
+
 	return true;
 }
 
@@ -103,12 +120,12 @@ void WorldClass::HandleInput(std::vector<ModelClass::BoundingBox>& tempBB)
 	{
 		if(camera->IsNotFlipping())
 		{
-			//if (player->IsOnGround())
-			//{
-				if(player->FlipGravity(tempBB))
+			if (player->CanFlip())
+			{
+				if (player->FlipGravity(tempBB))
 					camera->Flip();
 				eManager->FlipGravityW(tempBB, player->GetAxis());
-
+			}
 			
 		}
 	}
@@ -116,13 +133,13 @@ void WorldClass::HandleInput(std::vector<ModelClass::BoundingBox>& tempBB)
 	{
 		if(camera->IsNotFlipping())
 		{
-			//if (player->IsOnGround())
-			//{
+			if (player->CanFlip())
+			{
 				if(player->FlipGravityS(tempBB))
 					camera->FlipS();
 				eManager->FlipGravityS(tempBB, player->GetAxis());
 
-			//}
+			}
 
 			
 		}
@@ -213,11 +230,24 @@ void WorldClass::CleanUp()
 		delete hud;
 		hud = 0;
 	}
+
+	if (temptexture)
+	{
+		temptexture->Shutdown();
+		delete temptexture;
+		temptexture = 0;
+	}
+	if (loadingBuffer)
+	{
+		loadingBuffer->Release();
+		loadingBuffer = 0;
+	}
 }
 
 void WorldClass::NewLevel(ID3D11Device* device, std::string level)
 {
 	level += ".SPL";
+	
 
 	rManager.LoadLevel(level, device);
 	pManager.CreateLevel(rManager.meshes);
@@ -229,8 +259,9 @@ void WorldClass::NewLevel(ID3D11Device* device, std::string level)
 
 	if (currentLevel != 0)
 	{
-		eManager = new EnemyManager(rManager.enemys[0].transforms[0], rManager.enemys[0].textureMap, rManager.enemys[0].normalMap,
-		rManager.enemys[0].animationSets, rManager.enemys[0].m_vertexBuffer, rManager.enemys[0].vCount, rManager.enemys[0].bBox[0]);
+		//eManager = new EnemyManager(rManager.enemys[0].transforms, tempType, rManager.enemys[0].textureMap, rManager.enemys[0].normalMap,
+		eManager = new EnemyManager(rManager.enemys);
+		//rManager.enemys[0].animationSets, rManager.enemys[0].m_vertexBuffer, rManager.enemys[0].vCount, rManager.enemys[0].bBox[0]);
 	}		
 
 	hud = new HUD(device, context, hwn, pro, hInst, &pManager);
@@ -247,7 +278,7 @@ bool WorldClass::Update(float time, ID3D11Device* DContext)
 
 		std::vector<ModelClass::BoundingBox> tempBB;
 
-		pManager.Update(player->GetPosition(), tempBB);
+		pManager.Update(player->GetPosition(), tempBB, time);
 
 		camera->Update(player->GetPosition());
 		renderClass->UpdateFrustum(camera->GetView(), projection);
@@ -258,26 +289,44 @@ bool WorldClass::Update(float time, ID3D11Device* DContext)
 	{
 		std::vector<ModelClass::BoundingBox> tempBB;
 	
-		pManager.Update(player->GetPosition(), tempBB);
+		pManager.Update(player->GetPosition(), tempBB, time);
 	
 		HandleInput(tempBB);
 
 		eManager->Update(tempBB, time, player, DContext);
-
+		if (player->IsDead())
+		{
+			camera->Reset();
+			player->Revive();
+		}
 		player->Update(time, tempBB);
+		
 		camera->Update(player->GetPosition());
 		renderClass->UpdateFrustum(camera->GetView(), projection);
 		renderClass->setLightPosition(player->GetPosition());
 
-		if (pManager.endLevel)
+		//if (pManager.endLevel)
+		if (loading && pManager.endLevel)
 		{
 			currentLevel++;
 			stringstream ss;
 			ss << "Level";
 			ss << currentLevel;
-
+			loading = false;
 			NewLevel(DContext, ss.str());
 		}		
+		if (loading && pManager.endGame)
+		{
+			currentLevel = 0;
+			stringstream ss;
+			ss << "Level";
+			ss << currentLevel;
+			loading = false;
+			NewLevel(DContext, ss.str());
+		}
+
+		if (pManager.endLevel || pManager.endGame)
+			loading = true;
 
 		//pointLight->SetDiffuseColor(red, 0.5f, 0.5f, 1.0f);
 		hud->Update();
@@ -291,6 +340,82 @@ bool WorldClass::Update(float time, ID3D11Device* DContext)
 	return true;
 }
 
+void WorldClass::DrawLoadingScreen(ID3D11DeviceContext* DContext, float width, float height)
+{
+	D3DXMATRIX viewMatrix;
+
+	bool result;
+
+	D3DXMatrixIdentity(&viewMatrix);
+
+	VertexTypeT* vertices = new VertexTypeT[6];
+	if (!vertices)
+	{
+		return;
+	}
+
+	vertices[0].position = D3DXVECTOR3((-800.0f / 2.0f), (-640.0f / 2.0f), 5.0f);  
+	vertices[0].texture = D3DXVECTOR2(0.0f, 1.0f);
+	vertices[0].normal = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	vertices[0].tangent = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
+
+	vertices[1].position = D3DXVECTOR3((800.0f / 2.0f), (640.0f / 2.0f), 5.0f);  
+	vertices[1].texture = D3DXVECTOR2(1.0f, 0.0f);
+	vertices[1].normal = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	vertices[1].tangent = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
+
+	vertices[2].position = D3DXVECTOR3((-800.0f / 2.0f), (640.0f / 2.0f), 5.0f);  
+	vertices[2].texture = D3DXVECTOR2(0.0f, 0.0f);
+	vertices[2].normal = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	vertices[2].tangent = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
+
+	vertices[3].position = D3DXVECTOR3((-800.0f / 2.0f), (-640.0f / 2.0f), 5.0f);  
+	vertices[3].texture = D3DXVECTOR2(0.0f, 1.0f);
+	vertices[3].normal = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	vertices[3].tangent = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
+
+	vertices[4].position = D3DXVECTOR3((800.0f / 2.0f), (-640.0f / 2.0f), 5.0f);  
+	vertices[4].texture = D3DXVECTOR2(1.0f, 1.0f);
+	vertices[4].normal = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	vertices[4].tangent = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
+
+	vertices[5].position = D3DXVECTOR3((800.0f / 2.0f), (640.0f / 2.0f), 5.0f);  
+	vertices[5].texture = D3DXVECTOR2(1.0f, 0.0f);
+	vertices[5].normal = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	vertices[5].tangent = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
+	
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	result = DContext->Map(loadingBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	if (FAILED(result))
+	{
+		return;
+	}
+
+	VertexTypeT* verticesPtr = (VertexTypeT*)mappedResource.pData;
+	
+	memcpy(verticesPtr, (void*)vertices, (sizeof(VertexTypeT)* 6));
+	
+	DContext->Unmap(loadingBuffer, 0);
+
+	delete[] vertices;
+	vertices = 0;
+
+	unsigned int stride;
+	unsigned int offset;
+
+	stride = sizeof(VertexTypeT);
+	offset = 0;
+
+	DContext->IASetVertexBuffers(0, 1, &loadingBuffer, &stride, &offset);
+	DContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	D3DXMATRIX orthoMatrix;
+	D3DXMatrixOrthoLH(&orthoMatrix, (float)width, (float)height, 0.1f, 10000.0f);
+	renderClass->SetProjectionMatrix(orthoMatrix);
+
+	result = renderClass->UpdateRender(DContext, viewMatrix, viewMatrix, temptexture->GetTexture(), NULL, player->GetMaterial(), player->GetCurrentFrame());
+	renderClass->Draw(DContext, 6, 0);
+}
+
 void WorldClass::Draw(ID3D11DeviceContext* DContext)
 {
 	D3DXMATRIX viewMatrix;
@@ -298,6 +423,7 @@ void WorldClass::Draw(ID3D11DeviceContext* DContext)
 	bool result;
 
 	viewMatrix = camera->GetView();
+	renderClass->SetProjectionMatrix(projection);
 
 	Player::Material material = player->GetMaterial();
 	ID3D11ShaderResourceView* tempTex;
@@ -307,12 +433,12 @@ void WorldClass::Draw(ID3D11DeviceContext* DContext)
 	tempTex = 0;
 	pManager.Draw(DContext, renderClass, viewMatrix, tempTex, tempNor, material);
 
-	player->Apply(DContext);
-	result = renderClass->UpdateRender(DContext, player->GetWorldMatrix(), viewMatrix, player->GetTextureMap(), player->GetNormalMap(), player->GetMaterial(), player->GetCurrentFrame());
-	renderClass->Draw(DContext, rManager.player.vCount, 1);
-
 	if (currentLevel != 0)
 	{
+		player->Apply(DContext);
+		result = renderClass->UpdateRender(DContext, player->GetWorldMatrix(), viewMatrix, player->GetTextureMap(), player->GetNormalMap(), player->GetMaterial(), player->GetCurrentFrame());
+		renderClass->Draw(DContext, rManager.player.vCount, 1);
+
 		eManager->Draw(DContext, renderClass, viewMatrix);
 	}
 
@@ -326,6 +452,7 @@ void WorldClass::Draw(ID3D11DeviceContext* DContext)
 void WorldClass::DrawShadow(ID3D11DeviceContext* DContext)
 {
 	bool result;
+	renderClass->SetProjectionMatrix(projection);
 
 	pManager.DrawShadow(DContext, renderClass);
 
