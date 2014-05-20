@@ -25,7 +25,6 @@ bool WorldClass::Initialize(ID3D11Device* device, ID3D11DeviceContext * deviceCo
 {
 	bool result;
 
-
 	currentLevel = 0;
 
 	projection = proj;
@@ -277,7 +276,7 @@ bool WorldClass::Update(float time, ID3D11Device* DContext)
 
 		std::vector<ModelClass::BoundingBox> tempBB;
 
-		pManager.Update(player->GetPosition(), tempBB);
+		pManager.Update(player->GetPosition(), tempBB, time);
 
 		camera->Update(player->GetPosition());
 		renderClass->UpdateFrustum(camera->GetView(), projection);
@@ -288,7 +287,7 @@ bool WorldClass::Update(float time, ID3D11Device* DContext)
 	{
 		std::vector<ModelClass::BoundingBox> tempBB;
 	
-		pManager.Update(player->GetPosition(), tempBB);
+		pManager.Update(player->GetPosition(), tempBB, time);
 	
 		HandleInput(tempBB);
 
@@ -305,7 +304,7 @@ bool WorldClass::Update(float time, ID3D11Device* DContext)
 		renderClass->setLightPosition(player->GetPosition());
 
 		//if (pManager.endLevel)
-		if (loading)
+		if (loading && pManager.endLevel)
 		{
 			currentLevel++;
 			stringstream ss;
@@ -314,8 +313,19 @@ bool WorldClass::Update(float time, ID3D11Device* DContext)
 			loading = false;
 			NewLevel(DContext, ss.str());
 		}		
-		if (pManager.endLevel)
+		if (loading && pManager.endGame)
+		{
+			currentLevel = 0;
+			stringstream ss;
+			ss << "Level";
+			ss << currentLevel;
+
+			NewLevel(DContext, ss.str());
+		}
+
+		if (pManager.endLevel || pManager.endGame)
 			loading = true;
+
 		//pointLight->SetDiffuseColor(red, 0.5f, 0.5f, 1.0f);
 		hud->Update();
 	}
@@ -415,12 +425,12 @@ void WorldClass::Draw(ID3D11DeviceContext* DContext)
 	tempTex = 0;
 	pManager.Draw(DContext, renderClass, viewMatrix, tempTex, tempNor, material);
 
-	player->Apply(DContext);
-	result = renderClass->UpdateRender(DContext, player->GetWorldMatrix(), viewMatrix, player->GetTextureMap(), player->GetNormalMap(), player->GetMaterial(), player->GetCurrentFrame());
-	renderClass->Draw(DContext, rManager.player.vCount, 1);
-
 	if (currentLevel != 0)
 	{
+		player->Apply(DContext);
+		result = renderClass->UpdateRender(DContext, player->GetWorldMatrix(), viewMatrix, player->GetTextureMap(), player->GetNormalMap(), player->GetMaterial(), player->GetCurrentFrame());
+		renderClass->Draw(DContext, rManager.player.vCount, 1);
+
 		eManager->Draw(DContext, renderClass, viewMatrix);
 	}
 
