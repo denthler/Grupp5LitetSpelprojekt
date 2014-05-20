@@ -73,6 +73,7 @@ public:
 	};
 
 	ModelClass();
+	ModelClass(D3DXMATRIX, BoundingBox, std::vector<AnimationStack>, ID3D11Buffer*, int, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*);
 	ModelClass(const ModelClass&);
 	~ModelClass();
 
@@ -83,6 +84,10 @@ public:
 	virtual D3DXMATRIX GetWorldMatrix();
 	int GetIndexCount();
 
+	D3DXMATRIX GetWorldMatrixMechanic()
+	{
+		return m_worldMatrix;
+	}
 	Material GetMaterial()
 	{
 		return mat;
@@ -109,6 +114,7 @@ public:
 	}
 
 	virtual bool Update(float, std::vector<ModelClass::BoundingBox>&);
+	void UpdateMechanic(float);
 	virtual bool FlipGravity(std::vector<BoundingBox>& bb);// { D3DXVec3Cross(&worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis); };
 	virtual bool FlipGravityS(std::vector<BoundingBox>& bb);// { D3DXVec3Cross(&worldAxis, &worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f)); };
 	BoundingBox bBox;

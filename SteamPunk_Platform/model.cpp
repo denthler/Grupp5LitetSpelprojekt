@@ -17,6 +17,33 @@ ModelClass::ModelClass()
 	FallDamage = false;
 }
 
+ModelClass::ModelClass(D3DXMATRIX t, BoundingBox bB, std::vector<AnimationStack> aS, ID3D11Buffer* vB, int vC, ID3D11ShaderResourceView* tM, ID3D11ShaderResourceView* nM)
+{
+	m_worldMatrix = t;
+
+	bB.min.x += t._41;
+	bB.min.y += t._42;
+	bB.min.z += t._43;
+
+	bB.max.x += t._41;
+	bB.max.y += t._42;
+	bB.max.z += t._43;
+
+	bBox = bB;
+	bBoxOriginal = bB;
+	animationStack = aS;
+	m_vertexBuffer = vB;
+	vCount = vC;
+	textureMap = tM;
+	normalMap = nM;
+
+	position.x = t._41;
+	position.y = t._42;
+	position.z = t._43;
+	animationTime = 0;
+	currentAnimStack = 0;
+}
+
 ModelClass::ModelClass(const ModelClass& other)
 {
 }
@@ -411,4 +438,15 @@ bool ModelClass::VerticalCollisionTest(D3DXVECTOR3& amount, std::vector<ModelCla
 		}
 	}
 	return false;
+}
+
+void ModelClass::UpdateMechanic(float gameTime)
+{
+	gameTime *= (1.0f / gameTime);
+
+	if (animationTime > animationStack[currentAnimStack].keyFrames.size() - 1)
+		animationTime = 0;
+
+	currentFrame = animationStack[currentAnimStack].keyFrames[(int)animationTime].boneTransforms;
+	animationTime += gameTime;
 }

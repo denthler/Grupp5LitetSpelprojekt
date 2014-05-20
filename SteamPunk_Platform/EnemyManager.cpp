@@ -18,6 +18,14 @@ EnemyManager::EnemyManager(std::vector<D3DXMATRIX> p, std::vector<int> type, ID3
 }
 EnemyManager::EnemyManager(std::vector<Mesh> m)
 {
+	enemies.clear();
+	vCount.clear();
+	vBuffer.clear();
+	bBox.clear();
+	textureMap.clear();
+	normalMap.clear();
+	animationStack.clear();
+
 	enemySpawnPoint = m[0].transforms;
 	for (int i = 0; i < m.size(); i++)
 	{
