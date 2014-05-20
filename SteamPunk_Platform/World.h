@@ -15,6 +15,7 @@
 #include "EnemyManager.h"
 #include "HUD.h"
 #include "Menu.h"
+#include "BBoxRender.h"
 #include <sstream>
 
 class WorldClass
@@ -31,8 +32,9 @@ public:
 	void Draw(ID3D11DeviceContext*);
 	void DrawShadow(ID3D11DeviceContext*);
 
-	Render* renderClass;
+	Render * renderClass;
 	bool exit;
+
 private:
 
 	void HandleInput(std::vector<ModelClass::BoundingBox>& tempBB);
@@ -52,10 +54,13 @@ private:
 	Menu* menu;
 
 	int currentLevel;
+	ID3D11Device * device;
 	ID3D11DeviceContext* context;
 	HWND hwn;
 	D3DXMATRIX pro;
 	HINSTANCE hInst;
+
+	BBoxRender bBoxRender;
 };
 
 #endif

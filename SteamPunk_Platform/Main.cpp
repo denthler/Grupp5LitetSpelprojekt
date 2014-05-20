@@ -1,5 +1,4 @@
 #include "Application.h"
-#include "BBoxRender.h"
 //#include "World.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevious, LPSTR lpCmdLine, int cmd)
@@ -9,7 +8,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevious, LPSTR lpCmdLine, in
 	application.Initialize(hInstance, 800, 640);
 	application.InitializeD3D(800, 640, true, true);
 	world.Initialize(application.GetDevice(), application.GetDeviceContext(), application.GetWindow(), application.GetProj(), hInstance);
-	BBoxRender bboxRender(application.GetDevice(), application.GetDeviceContext());
 
 
 	MSG msg;
