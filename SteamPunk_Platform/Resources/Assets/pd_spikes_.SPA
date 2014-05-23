@@ -14,12 +14,6 @@ matdiffuse 0.8 0.8 0.8 1
 matspecular 0 0 0 1
 matambient 0.4 0.4 0.4 1
 mattransp 0 0 0 1
-material scale_char:lambert2
-matdiffuse 0 0 0 1
-matspecular 0 0 0 1
-matambient 0 0 0 1
-mattransp 0 0 0 1
-mattexturemap p_Start_texture.BMP
 camera perspShape
 viewmatrix -0.980271 2.22045e-016 0.197657 0 -0.0502851 -0.967098 -0.249386 0 0.191154 -0.254405 0.948018 0 4.14285 -4.15307 14.9022 1
 hfov 0.950022

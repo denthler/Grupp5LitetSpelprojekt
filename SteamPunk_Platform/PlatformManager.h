@@ -38,7 +38,7 @@ public:
 	void CreateLevel(std::vector<Mesh>&);
 	void Draw(ID3D11DeviceContext*, Render*, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, ModelClass::Material);
 	void DrawShadow(ID3D11DeviceContext*, Render*);
-	void Update(D3DXVECTOR3 playerPosition, std::vector<ModelClass::BoundingBox>& bb, float gT);
+	void Update(D3DXVECTOR3 playerPosition, std::vector<ModelClass::BoundingBox>& bb, float gT, bool);
 	//Get Boundingboxes
 	int gearsFound;
 	int gearsTotal;

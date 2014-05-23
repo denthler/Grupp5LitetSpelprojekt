@@ -245,7 +245,6 @@ void WorldClass::CleanUp()
 void WorldClass::NewLevel(ID3D11Device* device, std::string level)
 {
 	level += ".SPL";
-	
 
 	rManager.LoadLevel(level, device);
 	pManager.CreateLevel(rManager.meshes);
@@ -254,6 +253,9 @@ void WorldClass::NewLevel(ID3D11Device* device, std::string level)
 	player->Initialize(device, playerPos, rManager.player.textureMap, rManager.player.normalMap, rManager.player.animationSets, rManager.player.m_vertexBuffer, rManager.player.vCount);
 	player->bBox = rManager.player.bBox[0];
 	player->bBoxOriginal = rManager.player.bBox[0];
+	player->SetWorldMatrix(rManager.player.transforms[0]);
+	player->SetWorldAxis();
+	camera->Reset();
 
 	if (currentLevel != 0)
 	{
@@ -276,7 +278,7 @@ bool WorldClass::Update(float time, ID3D11Device* DContext)
 
 		std::vector<ModelClass::BoundingBox> tempBB;
 
-		pManager.Update(player->GetPosition(), tempBB, time);
+		pManager.Update(player->GetPosition(), tempBB, time, true);
 
 		camera->Update(player->GetPosition());
 		renderClass->UpdateFrustum(camera->GetView(), projection);
@@ -287,15 +289,22 @@ bool WorldClass::Update(float time, ID3D11Device* DContext)
 	{
 		std::vector<ModelClass::BoundingBox> tempBB;
 	
-		pManager.Update(player->GetPosition(), tempBB, time);
+		pManager.Update(player->GetPosition(), tempBB, time, player->IsOnGround());
 	
-		HandleInput(tempBB);
+		if(!player->deathAni)
+			HandleInput(tempBB);
 
 		eManager->Update(tempBB, time, player, DContext);
 		if (player->IsDead())
 		{
 			camera->Reset();
 			player->Revive();
+			
+			stringstream ss;
+			ss << "Level";
+			ss << currentLevel;
+			loading = false;
+			NewLevel(DContext, ss.str());
 		}
 		player->Update(time, tempBB);
 		

@@ -122,6 +122,7 @@ public:
 
 	bool Rotated;
 	D3DXVECTOR3 worldAxis;
+	bool deathAni;
 protected:
 	D3DXVECTOR3 position;
 	D3DXVECTOR3 velocity;

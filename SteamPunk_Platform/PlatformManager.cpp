@@ -69,6 +69,19 @@ void PlatformManager::CreateLevel(std::vector<Mesh>& meshes)
 				newMesh.objectData.push_back(newPlatform);
 			}
 		}
+		else if (tempSubString == "pd")
+		{
+			for (int j = 0; j < meshes[i].transforms.size(); j++)
+			{
+				meshes[i].bBox[j].type = "k";
+				Platform* newPlatform = new Platform(meshes[i].transforms[j], meshes[i].bBox[j], false, GameObject::ObjectType::Platform);
+				//newPlatform.position = meshes[i].transforms[j];
+				//newPlatform.BoundingBox = meshes[i].BoundingBox;
+				//tempObjects.push_back(newPlatform); 
+				newMesh.bufferIndices.push_back(i);
+				newMesh.objectData.push_back(newPlatform);
+			}
+		}
 		else if (tempSubString == "go")
 		{
 			tempSubString = meshes[i].type;
@@ -103,7 +116,7 @@ void PlatformManager::CreateLevel(std::vector<Mesh>& meshes)
 	}
 }
 
-void PlatformManager::Update(D3DXVECTOR3 playerPosition, std::vector<ModelClass::BoundingBox>& bb, float gT)
+void PlatformManager::Update(D3DXVECTOR3 playerPosition, std::vector<ModelClass::BoundingBox>& bb, float gT, bool onGround)
 {
 	//std::vector<BoundingBox> bb;
 	for (int i = 0; i < objects.size(); i++)
@@ -138,7 +151,7 @@ void PlatformManager::Update(D3DXVECTOR3 playerPosition, std::vector<ModelClass:
 				case GameObject::ObjectType::Door :
 				{
 					float length = D3DXVec3Length(&(playerPosition - objects[i].objectData[j]->GetPosition()));
-					if (length < 3.0f && gearsFound == gearsTotal)
+					if (length < 3.0f && gearsFound == gearsTotal && onGround)
 					{
 						endLevel = true;
 					}
@@ -156,7 +169,7 @@ void PlatformManager::Update(D3DXVECTOR3 playerPosition, std::vector<ModelClass:
 		mechanic->UpdateMechanic(gT);
 
 		float length = D3DXVec3Length(&(playerPosition - mechanic->GetPosition()));
-		if (length < 3.0f && gearsFound == gearsTotal)
+		if (length < 3.0f && gearsFound == gearsTotal && onGround)
 		{
 			endGame = true;
 		}

@@ -31,7 +31,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevious, LPSTR lpCmdLine, in
 				world.DrawShadow(application.GetDeviceContext());
 				world.renderClass->setShadowMap(application.GetShadowMap());
 			}
-			application.Begin(1.0f, 0.0f, 0.0f, 1.0f);
+			application.Begin(0.0f, 0.0f, 0.0f, 1.0f);
 			if (world.IsLoading())
 			{
 				world.DrawLoadingScreen(application.GetDeviceContext(), 800, 640);

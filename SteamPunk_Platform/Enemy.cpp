@@ -32,6 +32,16 @@ Enemy::Enemy(ID3D11Device * device, D3DXMATRIX p, ID3D11ShaderResourceView* tM, 
 	vCount = vC;
 	animationTime = 0;
 
+	D3DXVec3TransformNormal(&worldAxis, &worldAxis, &p);
+	if(worldAxis.x < 0.5 && worldAxis.x > -0.5)
+		worldAxis.x = 0.0f;
+	if(worldAxis.y < 0.5 && worldAxis.y > -0.5)
+		worldAxis.y = 0.0f;
+	if(worldAxis.z < 0.5 && worldAxis.z > -0.5)
+		worldAxis.z = 0.0f;
+
+	D3DXVec3Normalize(&worldAxis, &worldAxis);
+
 	//ModelClass::position = position;
 	m_worldMatrix = p;
 	position = D3DXVECTOR3(p._41, p._42, p._43);

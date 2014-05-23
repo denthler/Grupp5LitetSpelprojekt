@@ -384,11 +384,16 @@ void ResourceManager::UpdateTransformsAndBBoxAnimation(int index)
 	else if (tempSubString == "e_")
 	{
 		for(int e = 0; e < enemys.size(); e++)
-			for (int j = 0; j < lImporter.types[index]->transforms.size(); j++)
+		{
+			if (enemys[e].type == lImporter.types[index]->type)
 			{
 				enemys[e].transforms.clear();
-				enemys[e].transforms.push_back(lImporter.types[index]->transforms[j]);
-			}		
+				for (int j = 0; j < lImporter.types[index]->transforms.size(); j++)
+				{				
+					enemys[e].transforms.push_back(lImporter.types[index]->transforms[j]);
+				}	
+			}
+		}
 	}
 }
 
