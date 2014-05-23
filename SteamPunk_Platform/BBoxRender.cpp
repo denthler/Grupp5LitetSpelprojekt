@@ -28,10 +28,10 @@ void BBoxRender::Init(ID3D11Device * device, ID3D11DeviceContext * deviceContext
 	this->device = device;
 	this->deviceContext = deviceContext;
 
-	ID3D10Blob * VSBuffer, *PSBuffer, *errorBlob;
+	ID3D10Blob * VSBuffer, *PSBuffer;
 	HRESULT result;
 	result = D3DX11CompileFromFile(L"simpleShader.fx", 0, 0, "VS", "vs_5_0", 0, 0, 0, &VSBuffer, NULL, 0);
-	result = D3DX11CompileFromFile(L"simpleShader.fx", 0, 0, "PS", "ps_5_0", 0, 0, 0, &PSBuffer, &errorBlob, 0);
+	result = D3DX11CompileFromFile(L"simpleShader.fx", 0, 0, "PS", "ps_5_0", 0, 0, 0, &PSBuffer, NULL, 0);
 
 	result = device->CreateVertexShader(VSBuffer->GetBufferPointer(), VSBuffer->GetBufferSize(), NULL, &VS);
 	result = device->CreatePixelShader(PSBuffer->GetBufferPointer(), PSBuffer->GetBufferSize(), NULL, &PS);
@@ -43,6 +43,22 @@ void BBoxRender::Init(ID3D11Device * device, ID3D11DeviceContext * deviceContext
 	layout.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 
 	result = device->CreateInputLayout(&layout, 1, VSBuffer->GetBufferPointer(), VSBuffer->GetBufferSize(), &vertLayout);
+
+	matrices.push_back(D3DXMATRIX());
+	matrices.push_back(D3DXMATRIX());
+	matrices.push_back(D3DXMATRIX());
+
+	D3D11_SUBRESOURCE_DATA  matrixData;
+	ZeroMemory(&matrixData, sizeof(matrixData));
+	matrixData.pSysMem = matrices.data();
+
+	D3D11_BUFFER_DESC matrixBufferDesc;
+	ZeroMemory(&matrixBufferDesc, sizeof(matrixBufferDesc));
+	matrixBufferDesc.ByteWidth = sizeof(D3DXMATRIX)* matrices.size();
+	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	result = device->CreateBuffer(&matrixBufferDesc, &matrixData, &matrixBuffer);
 }
 
 void BBoxRender::Update(vector<ModelClass::BoundingBox> & bboxes)
@@ -59,13 +75,10 @@ void BBoxRender::Update(vector<ModelClass::BoundingBox> & bboxes)
 		}
 	
 		if (lastSize < bboxes.size())
-		{
-			/*
+		{			
 			if (buffer)
-				buffer->Release();
-			if (matrixBuffer)
-				matrixBuffer->Release();
-			*/
+				buffer->Release();	
+
 			D3D11_SUBRESOURCE_DATA bufferData;
 			ZeroMemory(&bufferData, sizeof(bufferData));
 			bufferData.pSysMem = vertices.data();
@@ -76,22 +89,6 @@ void BBoxRender::Update(vector<ModelClass::BoundingBox> & bboxes)
 			bufferDesc.Usage = D3D11_USAGE_DEFAULT;
 			bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 			HRESULT result = device->CreateBuffer(&bufferDesc, &bufferData, &buffer);
-
-			matrices.push_back(D3DXMATRIX());
-			matrices.push_back(D3DXMATRIX());
-			matrices.push_back(D3DXMATRIX());
-
-			D3D11_SUBRESOURCE_DATA  matrixData;
-			ZeroMemory(&matrixData, sizeof(matrixData));
-			matrixData.pSysMem = matrices.data();
-	
-			D3D11_BUFFER_DESC matrixBufferDesc;
-			ZeroMemory(&matrixBufferDesc, sizeof(matrixBufferDesc));
-			matrixBufferDesc.ByteWidth = sizeof(D3DXMATRIX) * matrices.size();
-			matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-			matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-			matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-			result = device->CreateBuffer(&matrixBufferDesc, &matrixData, &matrixBuffer);
 		}
 		else
 		{
