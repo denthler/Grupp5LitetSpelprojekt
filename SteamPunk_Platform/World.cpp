@@ -273,12 +273,12 @@ bool WorldClass::Update(float time, ID3D11Device* DContext)
 {
 	menu->Update(player->GetWorldMatrix(), player->Rotated, player->worldAxis);
 	HandleMenuInput(DContext);
-
+	std::vector<ModelClass::BoundingBox> tempBB;
 	if (currentLevel == 0)
 	{
 		menu->pause = true;
 
-		std::vector<ModelClass::BoundingBox> tempBB;
+
 
 		pManager.Update(player->GetPosition(), tempBB, time, true);
 
@@ -289,7 +289,6 @@ bool WorldClass::Update(float time, ID3D11Device* DContext)
 
 	if(!menu->pause && currentLevel != 0)
 	{
-		std::vector<ModelClass::BoundingBox> tempBB;
 	
 		pManager.Update(player->GetPosition(), tempBB, time, player->IsOnGround());
 	
@@ -339,13 +338,10 @@ bool WorldClass::Update(float time, ID3D11Device* DContext)
 
 		//pointLight->SetDiffuseColor(red, 0.5f, 0.5f, 1.0f);
 		hud->Update();
-		/*
-		vector<D3DXMATRIX> worldMatrices(pManager.GetWorldMatrices());
-		worldMatrices.push_back(player->GetWorldMatrix());
-		bBoxRender.Update(tempBB, worldMatrices, camera->GetView(), projection);
-		*/
+		
+	
 	}
-
+	bBoxRender.Update(tempBB);
 	return true;
 }
 
@@ -455,7 +451,9 @@ void WorldClass::Draw(ID3D11DeviceContext* DContext)
 
 	hud->Draw();
 
-	//bBoxRender.Draw();
+	vector<D3DXMATRIX> worldMatrices(pManager.GetWorldMatrices());
+	worldMatrices.push_back(player->GetWorldMatrix());
+	bBoxRender.Draw(worldMatrices, camera->GetView(), projection);
 }
 
 void WorldClass::DrawShadow(ID3D11DeviceContext* DContext)
