@@ -15,6 +15,7 @@
 #include "EnemyManager.h"
 #include "HUD.h"
 #include "Menu.h"
+#include "BBoxRender.h"
 #include <sstream>
 
 class WorldClass
@@ -36,8 +37,9 @@ public:
 		return loading;
 	}
 
-	Render* renderClass;
+	Render * renderClass;
 	bool exit;
+
 private:
 
 	void HandleInput(std::vector<ModelClass::BoundingBox>& tempBB);
@@ -58,13 +60,19 @@ private:
 	Menu* menu;
 
 	int currentLevel;
+	ID3D11Device * device;
 	ID3D11DeviceContext* context;
 	HWND hwn;
 	D3DXMATRIX pro;// orthoGraph;
 	HINSTANCE hInst;
+<<<<<<< HEAD
+
+	BBoxRender bBoxRender;
+=======
 	ID3D11Buffer* loadingBuffer;
 	TextureClass* temptexture;
 
+>>>>>>> 76115ea61eee8a858442a48c144482a99d40bdbc
 };
 
 #endif

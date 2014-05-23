@@ -23,6 +23,8 @@ WorldClass::~WorldClass()
 
 bool WorldClass::Initialize(ID3D11Device* device, ID3D11DeviceContext * deviceContext, HWND hwnd, D3DXMATRIX proj, HINSTANCE hInstance)
 {
+	this->device = device;
+	bBoxRender.Init(device, deviceContext);
 	bool result;
 
 	currentLevel = 0;
@@ -337,7 +339,13 @@ bool WorldClass::Update(float time, ID3D11Device* DContext)
 
 		//pointLight->SetDiffuseColor(red, 0.5f, 0.5f, 1.0f);
 		hud->Update();
+		/*
+		vector<D3DXMATRIX> worldMatrices(pManager.GetWorldMatrices());
+		worldMatrices.push_back(player->GetWorldMatrix());
+		bBoxRender.Update(tempBB, worldMatrices, camera->GetView(), projection);
+		*/
 	}
+
 	return true;
 }
 
@@ -446,6 +454,8 @@ void WorldClass::Draw(ID3D11DeviceContext* DContext)
 	menu->Draw(DContext, renderClass, viewMatrix, tempTex, tempNor, material);
 
 	hud->Draw();
+
+	//bBoxRender.Draw();
 }
 
 void WorldClass::DrawShadow(ID3D11DeviceContext* DContext)
