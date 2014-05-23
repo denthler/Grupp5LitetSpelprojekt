@@ -19,6 +19,6 @@ public:
 	~BBoxRender();
 	
 	void Init(ID3D11Device * device, ID3D11DeviceContext * deviceContext);
-	void Update(std::vector<ModelClass::BoundingBox> & bboxes, std::vector<D3DXMATRIX> & worldMatrices, D3DXMATRIX view, D3DXMATRIX proj);
-	void Draw();
+	void Update(std::vector<ModelClass::BoundingBox> & bboxes);
+	void Draw(std::vector<D3DXMATRIX> & worldMatrices, D3DXMATRIX view, D3DXMATRIX proj);
 };

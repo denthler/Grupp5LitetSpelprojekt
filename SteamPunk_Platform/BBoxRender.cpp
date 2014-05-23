@@ -45,7 +45,7 @@ void BBoxRender::Init(ID3D11Device * device, ID3D11DeviceContext * deviceContext
 	result = device->CreateInputLayout(&layout, 3, VSBuffer->GetBufferPointer(), VSBuffer->GetBufferSize(), &vertLayout);
 }
 
-void BBoxRender::Update(vector<ModelClass::BoundingBox> & bboxes, vector<D3DXMATRIX> & worldMatrices, D3DXMATRIX view, D3DXMATRIX proj)
+void BBoxRender::Update(vector<ModelClass::BoundingBox> & bboxes)
 {
 	static unsigned int lastSize = 0;
 
@@ -76,12 +76,6 @@ void BBoxRender::Update(vector<ModelClass::BoundingBox> & bboxes, vector<D3DXMAT
 			bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 			HRESULT result = device->CreateBuffer(&bufferDesc, &bufferData, &buffer);
 
-			for (int i = 0; i < worldMatrices.size(); i++)
-			{
-				matrices.push_back(worldMatrices[i]);
-				matrices.push_back(view);
-				matrices.push_back(proj);
-			}
 			D3D11_SUBRESOURCE_DATA  matrixData;
 			ZeroMemory(&matrixData, sizeof(matrixData));
 			matrixData.pSysMem = matrices.data();
@@ -110,8 +104,15 @@ void BBoxRender::Update(vector<ModelClass::BoundingBox> & bboxes, vector<D3DXMAT
 	lastSize = bboxes.size();
 }
 
-void BBoxRender::Draw()
+void BBoxRender::Draw(vector<D3DXMATRIX> & worldMatrices, D3DXMATRIX view, D3DXMATRIX proj)
 {
+
+	for (int i = 0; i < worldMatrices.size(); i++)
+	{
+		matrices.push_back(worldMatrices[i]);
+		matrices.push_back(view);
+		matrices.push_back(proj);
+	}
 	deviceContext->VSSetShader(VS, 0, 0);
 	deviceContext->PSSetShader(PS, 0, 0);
 	deviceContext->IASetInputLayout(vertLayout);
