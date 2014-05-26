@@ -100,11 +100,6 @@ void BBoxRender::Update(vector<ModelClass::BoundingBox> & bboxes)
 
 void BBoxRender::Draw(vector<D3DXMATRIX> & worldMatrices, D3DXMATRIX view, D3DXMATRIX proj)
 {	
-	D3D11_MAPPED_SUBRESOURCE matrixData;
-	matrixData.pData = matrices.data();
-	matrixData.DepthPitch = 0;
-	matrixData.RowPitch = 0;
-
 	deviceContext->VSSetShader(VS, 0, 0);
 	deviceContext->VSSetConstantBuffers(0, 1, &matrixBuffer);
 	deviceContext->PSSetShader(PS, 0, 0);
@@ -120,8 +115,9 @@ void BBoxRender::Draw(vector<D3DXMATRIX> & worldMatrices, D3DXMATRIX view, D3DXM
 		matrices.push_back(worldMatrices[i]);
 		matrices.push_back(view);
 		matrices.push_back(proj);
-		deviceContext->Map(matrixBuffer, 0, D3D11_MAP_WRITE, 0, &matrixData);
-		memcpy(matrixBuffer, matrices.data(), matrices.size());
+		D3D11_MAPPED_SUBRESOURCE mappedMatrix;
+		HRESULT result = deviceContext->Map(matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedMatrix);		
+		memcpy(mappedMatrix.pData, matrices.data(), matrices.size() * sizeof(D3DXMATRIX));
 		deviceContext->Unmap(matrixBuffer, 0);
 
 		deviceContext->Draw(14, i * 14);
