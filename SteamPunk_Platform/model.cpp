@@ -265,7 +265,7 @@ bool ModelClass::Initialize(ID3D11Device* device)
 	bool result;
 
 	mat.ambColor = D3DXVECTOR4(0.4f, 0.4f, 0.4f, 1.0f);
-	mat.difColor = D3DXVECTOR4(0.5f, 0.5f, 0.5f, 1.0f);
+	mat.difColor = D3DXVECTOR4(0.75f, 0.18f, 0.0f, 1.0f);
 	mat.hasTexture = false;
 	mat.hasNormal = false;
 
@@ -417,8 +417,8 @@ bool ModelClass::VerticalCollisionTest(D3DXVECTOR3& amount, std::vector<ModelCla
 		{
 			if (bb[j].type.c_str()[0] == 'k')
 			{
-				dead = true;
-				return true;
+				deathAni = true;
+				//return true;
 			}
 			if ((abs(worldAxis.x) * amount.x) != 0.0f)
 			{

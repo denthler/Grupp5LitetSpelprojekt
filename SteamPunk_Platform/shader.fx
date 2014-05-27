@@ -230,6 +230,7 @@ float4 PS(PixelInputType input) : SV_TARGET
 	if(test > 1.0f)
 		test = 1.0f;*/
 
+	textureColor = difColor;
 	if(hasTexture != 0)
 	{
 		textureColor = shaderTexture.Sample(SampleType, input.tex);

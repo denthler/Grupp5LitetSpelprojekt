@@ -23,6 +23,8 @@ WorldClass::~WorldClass()
 
 bool WorldClass::Initialize(ID3D11Device* device, ID3D11DeviceContext * deviceContext, HWND hwnd, D3DXMATRIX proj, HINSTANCE hInstance)
 {
+	this->device = device;
+	bBoxRender.Init(device, deviceContext);
 	bool result;
 
 	currentLevel = 0;
@@ -273,7 +275,6 @@ void WorldClass::CleanUp()
 void WorldClass::NewLevel(ID3D11Device* device, std::string level)
 {
 	level += ".SPL";
-	
 
 	rManager.LoadLevel(level, device);
 	pManager.CreateLevel(rManager.meshes);
@@ -282,6 +283,9 @@ void WorldClass::NewLevel(ID3D11Device* device, std::string level)
 	player->Initialize(device, playerPos, rManager.player.textureMap, rManager.player.normalMap, rManager.player.animationSets, rManager.player.m_vertexBuffer, rManager.player.vCount);
 	player->bBox = rManager.player.bBox[0];
 	player->bBoxOriginal = rManager.player.bBox[0];
+	player->SetWorldMatrix(rManager.player.transforms[0]);
+	player->SetWorldAxis();
+	camera->Reset();
 
 	if (currentLevel != 0)
 	{
@@ -297,14 +301,14 @@ bool WorldClass::Update(float time, ID3D11Device* DContext)
 {
 	menu->Update(player->GetWorldMatrix(), player->Rotated, player->worldAxis);
 	HandleMenuInput(DContext);
-
+	std::vector<ModelClass::BoundingBox> tempBB;
 	if (currentLevel == 0)
 	{
 		menu->pause = true;
 
-		std::vector<ModelClass::BoundingBox> tempBB;
 
-		pManager.Update(player->GetPosition(), tempBB, time);
+
+		pManager.Update(player->GetPosition(), tempBB, time, true);
 
 		camera->Update(player->GetPosition());
 		renderClass->UpdateFrustum(camera->GetView(), projection);
@@ -319,15 +323,23 @@ bool WorldClass::Update(float time, ID3D11Device* DContext)
 			sound->Stop(currentLevel);
 			sound->PlayWaveFile(true, currentLevel + 1);
 		}
-		pManager.Update(player->GetPosition(), tempBB, time);
 	
-		HandleInput(tempBB);
+		pManager.Update(player->GetPosition(), tempBB, time, player->IsOnGround());
+	
+		if(!player->deathAni)
+			HandleInput(tempBB);
 
 		eManager->Update(tempBB, time, player, DContext);
 		if (player->IsDead())
 		{
 			camera->Reset();
 			player->Revive();
+			
+			stringstream ss;
+			ss << "Level";
+			ss << currentLevel;
+			loading = false;
+			NewLevel(DContext, ss.str());
 		}
 		player->Update(time, tempBB);
 		
@@ -351,7 +363,7 @@ bool WorldClass::Update(float time, ID3D11Device* DContext)
 			stringstream ss;
 			ss << "Level";
 			ss << currentLevel;
-
+			loading = false;
 			NewLevel(DContext, ss.str());
 		}
 
@@ -360,7 +372,10 @@ bool WorldClass::Update(float time, ID3D11Device* DContext)
 
 		//pointLight->SetDiffuseColor(red, 0.5f, 0.5f, 1.0f);
 		hud->Update();
+		
+	
 	}
+	bBoxRender.Update(tempBB);
 	return true;
 }
 
@@ -469,6 +484,10 @@ void WorldClass::Draw(ID3D11DeviceContext* DContext)
 	menu->Draw(DContext, renderClass, viewMatrix, tempTex, tempNor, material);
 
 	hud->Draw();
+
+	vector<D3DXMATRIX> worldMatrices(pManager.GetWorldMatrices());
+	worldMatrices.push_back(player->GetWorldMatrix());
+	bBoxRender.Draw(worldMatrices, camera->GetView(), projection);
 }
 
 void WorldClass::DrawShadow(ID3D11DeviceContext* DContext)

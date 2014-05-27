@@ -25,29 +25,37 @@ EnemyManager::EnemyManager(std::vector<Mesh> m)
 	textureMap.clear();
 	normalMap.clear();
 	animationStack.clear();
+	spawnPoints.clear();
 
-	enemySpawnPoint = m[0].transforms;
 	for (int i = 0; i < m.size(); i++)
 	{
+		for (int j = 0; j < m[i].transforms.size(); j++)
+		{
+			EnemySpawnPoint temp;
+			temp.location = m[i].transforms[j];
+			temp.maxEnemies = 1;
+			temp.enemyCount = 0;
+			temp.model = i;
+
+
+			int type1 = m[i].type.find("type1");
+			int type2 = m[i].type.find("type2");
+
+			if (type1 > 0)
+				temp.type = 0;
+			if (type2 > 0)
+				temp.type = 1;
+
+			spawnPoints.push_back(temp);
+		}
+
 		vCount.push_back(m[i].vCount);
 		vBuffer.push_back(m[i].m_vertexBuffer);
 		bBox.push_back(m[i].bBox[0]);
 		textureMap.push_back(m[i].textureMap);
 		normalMap.push_back(m[i].normalMap);
 		animationStack.push_back(m[i].animationSets);
-		
 	}
-	maxEnemy = 1;
-	enemyType.push_back(0);
-	enemyType.push_back(1);
-	enemyType.push_back(0);
-	enemyType.push_back(1);
-	enemyType.push_back(0);
-	enemyType.push_back(1);
-	enemyType.push_back(0);
-	enemyType.push_back(1);
-	enemyType.push_back(0);
-	enemyType.push_back(1);
 }
 
 EnemyManager::EnemyManager(const EnemyManager& other)
@@ -61,18 +69,19 @@ EnemyManager::~EnemyManager()
 
 void EnemyManager::SpawnEnemy(ID3D11Device* device, int t)
 {
-	if (enemyType[t] == 0)
+	spawnPoints[t].currentEnemy = enemies.size();
+	if (spawnPoints[t].type == 0)
 	{
-		FallingEnemy* fEnemy = new FallingEnemy(device, enemySpawnPoint[t], textureMap[0], normalMap[0], animationStack[0], vBuffer[0], vCount[0]);
-		fEnemy->bBox = bBox[0];
-		fEnemy->bBoxOriginal = bBox[0];
+		FallingEnemy* fEnemy = new FallingEnemy(device, spawnPoints[t].location, textureMap[spawnPoints[t].model], normalMap[spawnPoints[t].model], animationStack[spawnPoints[t].model], vBuffer[spawnPoints[t].model], vCount[spawnPoints[t].model]);
+		fEnemy->bBox = bBox[spawnPoints[t].model];
+		fEnemy->bBoxOriginal = bBox[spawnPoints[t].model];
 		enemies.push_back(fEnemy);
 	}
 	else
 	{
-		NonFallingEnemy* fEnemy = new NonFallingEnemy(device, enemySpawnPoint[t], textureMap[1], normalMap[1], animationStack[1], vBuffer[1], vCount[1]);
-		fEnemy->bBox = bBox[0];
-		fEnemy->bBoxOriginal = bBox[0];
+		NonFallingEnemy* fEnemy = new NonFallingEnemy(device, spawnPoints[t].location, textureMap[spawnPoints[t].model], normalMap[spawnPoints[t].model], animationStack[spawnPoints[t].model], vBuffer[spawnPoints[t].model], vCount[spawnPoints[t].model]);
+		fEnemy->bBox = bBox[spawnPoints[t].model];
+		fEnemy->bBoxOriginal = bBox[spawnPoints[t].model];
 		enemies.push_back(fEnemy);
 	}
 }
@@ -109,28 +118,36 @@ void EnemyManager::FlipGravityS(std::vector<ModelClass::BoundingBox>& bb, D3DXVE
 
 void EnemyManager::Update(std::vector<ModelClass::BoundingBox>& bBoxes, float time, Player* playerPosition, ID3D11Device* device)
 {
-	if (enemies.size() >= maxEnemy)
-	{
-		//return;
-	}
-	for (int c = 0; c < enemySpawnPoint.size(); c++)
+	for (int c = 0; c < spawnPoints.size(); c++)
 	{
 
-		D3DXVECTOR3 enemyPoint = D3DXVECTOR3(enemySpawnPoint[c]._41, enemySpawnPoint[c]._42, enemySpawnPoint[c]._43);
+		D3DXVECTOR3 enemyPoint = D3DXVECTOR3(spawnPoints[c].location._41, spawnPoints[c].location._42, spawnPoints[c].location._43);
 		float length;
 		length = D3DXVec3Length(&(playerPosition->GetPosition() - enemyPoint));
-		if ((length < 50.0f) && (enemies.size() < maxEnemy))
-			SpawnEnemy(device, c);
-		for (int i = 0; i < enemies.size(); i++)
+
+		if ((length < 50.0f) && (spawnPoints[c].enemyCount < spawnPoints[c].maxEnemies))
 		{
-			length = D3DXVec3Length(&(playerPosition->GetPosition() - enemies[i]->GetPosition()));
-			if (length > 40.0f)
+			spawnPoints[c].enemyCount++;
+			SpawnEnemy(device, c);
+		}
+
+		if (spawnPoints[c].enemyCount > 0)
+		{
+			length = D3DXVec3Length(&(playerPosition->GetPosition() - enemies[spawnPoints[c].currentEnemy]->GetPosition()));
+			if (length > 50.0f)
 			{
-				enemies.erase(enemies.begin() + i);
+				enemies.erase(enemies.begin() + spawnPoints[c].currentEnemy);
+				spawnPoints[c].enemyCount--;
+
+				for (int i = 0; i < spawnPoints.size(); i++)
+				{
+					if (spawnPoints[c].currentEnemy < spawnPoints[i].currentEnemy)
+						spawnPoints[i].currentEnemy--;
+				}
 			}
 			else if (length < 2.5f)
 			{
-				playerPosition->Kill();
+				playerPosition->deathAni = true;
 			}
 
 		}

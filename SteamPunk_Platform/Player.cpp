@@ -4,6 +4,7 @@ Player::Player()
 {
 	velocity = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	dead = false;
+	deathAni = false;
 	left = false; right = false; up = false; down = false; jump = false;
 	OnGround = false;
 	moveScale = -0.2f;//-0.1f
@@ -239,32 +240,42 @@ bool Player::Update(float gameTime, std::vector<BoundingBox>& bb)
 			inAir = true;
 		else
 			canFlip = true;
+
+		if (FallDamage)
+		{
+			animationTime = 0;
+			FallDamage = false;
+			deathAni = true;
+		}
 		if(OnGround && !landAni && inAir)
 		{
 			landAni = true;
 			animationTime = 0;
-			inAir = false;
-			if (FallDamage)
-			{
-				FallDamage = false;
-				Kill();
-				dead = true;
-			}
+			inAir = false;			
 		}
 	}
 	else
 	{
-		Kill();
-		//dead = false;
+		animationTime = 0;
+		deathAni = true;
 	}
-	if (!OnGround && !jumpAni)
+
+	if (deathAni)
+	{
+		for (int i = 0; i < animationStack.size(); i++)
+		{
+			if (animationStack[i].name == "Die")
+				currentAnimStack = i;
+		}
+	}
+	else if (!OnGround && !jumpAni)
 	{
 		for (int i = 0; i < animationStack.size(); i++)
 		{
 			if (animationStack[i].name == "Fall")
 				currentAnimStack = i;
 		}
-	}		
+	}
 	else if (jumpAni)
 	{
 		for (int i = 0; i < animationStack.size(); i++)
@@ -298,7 +309,13 @@ bool Player::Update(float gameTime, std::vector<BoundingBox>& bb)
 		}
 	}
 
-	if (animationTime > animationStack[currentAnimStack].keyFrames.size() - 1 && jumpAni)
+	if (animationTime > animationStack[currentAnimStack].keyFrames.size() - 1 && deathAni)
+	{
+		animationTime = 0;
+		deathAni = false;
+		Kill();
+	}
+	else if (animationTime > animationStack[currentAnimStack].keyFrames.size() - 1 && jumpAni)
 	{
 		jumpAni = false;
 		animationTime = 0;

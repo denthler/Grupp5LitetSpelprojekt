@@ -44,6 +44,15 @@ public:
 	{
 		return canFlip;
 	}
+	void SetWorldMatrix(D3DXMATRIX newWorld)
+	{
+		m_worldMatrix = newWorld;
+	}
+	void SetWorldAxis()
+	{
+		worldAxis = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	}
+
 	void SetLeft(){left = true;}
 	void SetRight(){right = true;}
 	void SetDown(){left = true;}
@@ -54,6 +63,7 @@ public:
 	D3DXVECTOR3 GetPosition(){return position;}
 	bool FlipGravity(std::vector<BoundingBox>& bb);// { D3DXVec3Cross(&worldAxis, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &worldAxis); };
 	bool FlipGravityS(std::vector<BoundingBox>& bb);
+
 private:
 
 	D3DXVECTOR3 StartPos;

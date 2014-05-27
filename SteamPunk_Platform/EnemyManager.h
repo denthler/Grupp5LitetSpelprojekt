@@ -12,6 +12,17 @@
 #include "Player.h"
 //
 
+struct EnemySpawnPoint
+{
+	int maxEnemies;
+	int enemyCount;
+	int type;
+
+	int currentEnemy;
+	int model;
+	D3DMATRIX location;
+};
+
 class EnemyManager
 {
 
@@ -30,10 +41,7 @@ public:
 	void FlipGravityS(std::vector<ModelClass::BoundingBox>& bb, D3DXVECTOR3);
 private:
 	void SpawnEnemy(ID3D11Device* device, int);
-	int maxEnemy;
 
-	std::vector<D3DXMATRIX> enemySpawnPoint;
-	std::vector<int> enemyType;
 	std::vector<Enemy*> enemies;
 	std::vector<ID3D11Buffer*> vBuffer;
 	std::vector<int> vCount;
@@ -43,6 +51,8 @@ private:
 	std::vector<ID3D11ShaderResourceView*> normalMap;
 	std::vector<std::vector<AnimationStack>> animationStack;
 	ModelClass::Material mat;
+
+	std::vector<EnemySpawnPoint> spawnPoints;
 };
 
 #endif

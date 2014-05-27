@@ -38,13 +38,25 @@ public:
 	void CreateLevel(std::vector<Mesh>&);
 	void Draw(ID3D11DeviceContext*, Render*, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, ModelClass::Material);
 	void DrawShadow(ID3D11DeviceContext*, Render*);
-	void Update(D3DXVECTOR3 playerPosition, std::vector<ModelClass::BoundingBox>& bb, float gT);
+	void Update(D3DXVECTOR3 playerPosition, std::vector<ModelClass::BoundingBox>& bb, float gT, bool);
 	//Get Boundingboxes
 	int gearsFound;
 	int gearsTotal;
 	int GetGearCount();
 
 	bool endLevel;
+	std::vector<D3DXMATRIX> GetWorldMatrices()
+	{
+		std::vector<D3DXMATRIX> matrices;
+		for (int i = 0; i < objects.size(); i++)
+		{
+			for (int j = 0; j < objects[i].objectData.size(); j++)
+			{
+				matrices.push_back(objects[i].objectData[j]->getWorld());
+			}			
+		}
+		return matrices;
+	}
 	bool endGame;
 
 private:

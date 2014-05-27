@@ -15,6 +15,7 @@
 #include "EnemyManager.h"
 #include "HUD.h"
 #include "Menu.h"
+#include "BBoxRender.h"
 #include <sstream>
 #include "Sound.h"
 
@@ -37,8 +38,9 @@ public:
 		return loading;
 	}
 
-	Render* renderClass;
+	Render * renderClass;
 	bool exit;
+
 private:
 
 	void HandleInput(std::vector<ModelClass::BoundingBox>& tempBB);
@@ -60,13 +62,15 @@ private:
 	SoundClass* sound;
 
 	int currentLevel;
+	ID3D11Device * device;
 	ID3D11DeviceContext* context;
 	HWND hwn;
 	D3DXMATRIX pro;// orthoGraph;
 	HINSTANCE hInst;
+
+	BBoxRender bBoxRender;
 	ID3D11Buffer* loadingBuffer;
 	TextureClass* temptexture;
-
 };
 
 #endif
