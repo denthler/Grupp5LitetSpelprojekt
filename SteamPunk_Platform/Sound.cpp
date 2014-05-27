@@ -1,485 +1,449 @@
-
-#include <Windows.h>
-#include <MMSystem.h>
-#include <DxErr.h>
+///////////////////////////////////////////////////////////////////////////////
+// Filename: soundclass.cpp
+///////////////////////////////////////////////////////////////////////////////
 #include "Sound.h"
 
-
-directSound::directSound(LPDIRECTSOUNDBUFFER* soundBuff, DWORD buffSize, DWORD numBuffers, WaveFile* waveFile, DWORD creationFlags)
+SoundClass::SoundClass()
 {
-
-DWORD i;
-/*
-soundBuffer = new LPDIRECTSOUNDBUFFER[numBuffers];
-if (NULL != soundBuffer)
-{
-for (i = 0; i < numBuffers; i++)
-{
-soundBuffer[i] = soundBuff[i];
+	m_DirectSound = 0;
+	m_primaryBuffer = 0;
 }
 
-bufferSize = buffSize;
-this->numBuffers = numBuffers;
-this->waveFile = waveFile;
-this->creationFlags = creationFlags;
-
-StoreSound(soundBuffer[0], false);
-}
-*/
+SoundClass::SoundClass(const SoundClass& other)
+{
 }
 
-directSound::directSound(LPTSTR fileName, LPDIRECTSOUND8 soundInterface)
+SoundClass::~SoundClass()
 {
-	waveFile = NULL;
-
-	soundBuffer = NULL;
-
-	waveFile = new WaveFile();
-	m_waveMap[waveFile] = 1;
-
-	bool res = waveFile->Open(fileName, NULL, 0);
-	
-	DSBUFFERDESC dsbd;
-	ZeroMemory(&dsbd, sizeof(DSBUFFERDESC));
-	dsbd.dwFlags = DSBCAPS_STATIC;
-	dsbd.dwBufferBytes = waveFile->GetCkInfo().cksize;
-	dsbd.lpwfxFormat = waveFile->GetFormat();
-
-	LPDIRECTSOUNDBUFFER tempB = NULL;
-
-	soundInterface->CreateSoundBuffer(&dsbd, &tempB, NULL);
-
-	tempB->QueryInterface(IID_IDirectSoundBuffer8, (void**)&soundBuffer);
-
-	tempB->Release();
-
-	bufferSize = dsbd.dwBufferBytes;
-
-	StoreSound(soundBuffer, false);
-
-}
-
-directSound::~directSound()
-{
-
-}
-
-
-
-void directSound::Shutdown()
-{
-DWORD i;
-/*
-for (i = 0; i < this->numBuffers; i++)
-{
-if (this->soundBuffer[i])
-{
-this->soundBuffer[i]->Release();
-this->soundBuffer[i] = 0;
-}
-
-if (this->soundBuffer)
-{
-delete[] this->soundBuffer;
-this->soundBuffer = NULL;
-}
-if (this->waveFile)
-{
-delete this->waveFile;
-this->waveFile = 0;
-}
-}
-*/
-int count = m_waveMap[waveFile];
-if (count == 1)
-{
-	delete waveFile;
-}
-else
-{
-	m_waveMap[waveFile] = count - 1;
-}
-if (soundBuffer)
-{
-	soundBuffer->Release();
-	delete soundBuffer;
-	soundBuffer = 0;
-}
-
-}
-
-bool directSound::StoreSound(LPDIRECTSOUNDBUFFER8 soundBuffer, bool repeatWav)
-{
-
-HRESULT result;
-VOID* lockedBuffer = NULL;
-DWORD lockedBufferSize = 0;
-DWORD dwWavDataRead = 0;
-
-if (soundBuffer == NULL)
-return false;
-
-result = RestoreBuffer(soundBuffer, NULL);
-if (FAILED(result))
-{
-return false;
-}
-
-result = soundBuffer->Lock(0, this->bufferSize, &lockedBuffer, &lockedBufferSize, NULL, NULL, 0L);
-if (FAILED(result))
-{
-return false;
-}
-
-//this->waveFile->ResetFile();
-this->waveFile->Reset();
-
-result = this->waveFile->Read((BYTE*)lockedBuffer, lockedBufferSize, &dwWavDataRead);
-if (FAILED(result))
-{
-return false;
-}
-
-if (dwWavDataRead == 0)
-{
-FillMemory((BYTE*)lockedBuffer, lockedBufferSize, (BYTE)(this->waveFile->GetFormat()->wBitsPerSample == 8 ? 128 : 0));
-}
-else if (dwWavDataRead < lockedBufferSize)
-{
-if (repeatWav)
-{
-DWORD readSoFar = dwWavDataRead;
-
-while (readSoFar < lockedBufferSize)
-{
-
-result = this->waveFile->Reset();
-
-result = this->waveFile->Read((BYTE*)lockedBuffer + readSoFar, lockedBufferSize - readSoFar, &dwWavDataRead);
-if (FAILED(result))
-{
-return false;
-}
-
-readSoFar += dwWavDataRead;
-}
-
-}
-else
-{
-FillMemory((BYTE*)lockedBuffer, lockedBufferSize, (BYTE)(this->waveFile->GetFormat()->wBitsPerSample == 8 ? 128 : 0));
-}
-}
-
-soundBuffer->Unlock(lockedBuffer, lockedBufferSize, NULL, 0);
-
-return true;
-}
-
-bool directSound::RestoreBuffer(LPDIRECTSOUNDBUFFER soundBuffer, bool* wasRestored)
-{
-HRESULT result;
-
-if (soundBuffer == NULL)
-return false;
-if (wasRestored)
-*wasRestored = false;
-
-DWORD status;
-result = soundBuffer->GetStatus(&status);
-if (FAILED(result))
-{
-return false;
-}
-
-if (status & DSBSTATUS_BUFFERLOST)
-{
-do
-{
-result = soundBuffer->Restore();
-if (result == DSERR_BUFFERLOST)
-Sleep(10);
-} while ((result = soundBuffer->Restore()) == DSERR_BUFFERLOST);
-
-if (wasRestored != NULL)
-*wasRestored = true;
-
-return true;
-}
-else
-return false;
-}
-
-LPDIRECTSOUNDBUFFER8 directSound::GetBuffer()
-{
-if (this->soundBuffer == NULL)
-return FALSE;
-
-DWORD i;
-//for (i = 0; i < numBuffers; i++)
-
-if (this->soundBuffer)
-{
-	DWORD status = 0;
-	this->soundBuffer->GetStatus(&status);
-	if ((status & DSBSTATUS_PLAYING) == 0)
-		return NULL;
-	else return this->soundBuffer;
-}
-
-/*
-if (i != numBuffers)
-return this->soundBuffer[i];
-else
-return this->soundBuffer[rand() % numBuffers];
-*/
-}
-
-bool directSound::Play(DWORD priority, DWORD dwFlags, LONG volume, LONG freq, LONG pan)
-{
-
-HRESULT result;
-
-bool restored;
-
-if (this->soundBuffer = NULL)
-return false;
-
-LPDIRECTSOUNDBUFFER8 dsb = GetBuffer();
-
-if (!dsb)
-return false;
-
-if (!directSound::RestoreBuffer(dsb, &restored))
-return false;
-
-if (restored)
-{
-if (!StoreSound(dsb, FALSE))
-return false;
-}
-
-if (creationFlags & DSBCAPS_CTRLVOLUME)
-{
-dsb->SetVolume(volume);
-}
-
-if (freq != -1 && (creationFlags & DSBCAPS_CTRLFREQUENCY))
-{
-dsb->SetFrequency(freq);
-}
-
-if (creationFlags & DSBCAPS_CTRLPAN)
-{
-dsb->SetPan(pan);
-}
-
-return dsb->Play(0, priority, dwFlags);
-}
-
-bool directSound::Stop()
-{
-if (this->soundBuffer == NULL)
-return false;
-
-HRESULT result = 0;
-
-//for (DWORD i = 0; i < numBuffers; i++)
-{
-this->soundBuffer->Stop();
-}
-
-return true;
-}
-
-bool WaveFile::ReadMMIO() // HMMIO mmio, MMCKINFO* riff, WAVEFORMATEX** formatInfo
-{
-MMRESULT mResult;
-MMCKINFO tempInfo;
-PCMWAVEFORMAT tempformat;
-
-waveFormat = NULL;
-
-mResult = mmioDescend(wStruct.hmmio, &wStruct.ckRiff, NULL, 0);
-if (mResult != 0)
-{
-return false;
-}
-
-if ((wStruct.ckRiff.ckid != FOURCC_RIFF) || (wStruct.ckRiff.fccType != mmioFOURCC('W', 'A', 'V', 'E')))
-{
-return false;
-}
-
-tempInfo.ckid = mmioFOURCC('f', 'm', 't', ' ');
-
-mResult = mmioDescend(wStruct.hmmio, &tempInfo, &wStruct.ckRiff, MMIO_FINDCHUNK);
-if (mResult != 0)
-{
-return false;
-}
-
-if (tempInfo.cksize < (long)sizeof(PCMWAVEFORMAT))
-{
-return false;
-}
-
-if ((mmioRead(wStruct.hmmio, (HPSTR)&tempformat, sizeof(PCMWAVEFORMAT))) != sizeof(PCMWAVEFORMAT))
-return false;
-
-if (tempformat.wf.wFormatTag == WAVE_FORMAT_PCM)
-{
-waveFormat = new WAVEFORMATEX;
-if (!waveFormat)
-return false;
-
-memcpy(waveFormat, &tempformat, sizeof(PCMWAVEFORMAT));
-
-waveFormat->cbSize = 0;
-}
-else
-{
-WORD extraBytes = 0L;
-
-if ((mmioRead(wStruct.hmmio, (CHAR*)&extraBytes, sizeof(WORD))) != sizeof(WORD))
-return false;
-
-waveFormat = (WAVEFORMATEX*)new char[sizeof(WAVEFORMATEX)+extraBytes];
-if (!waveFormat)
-return false;
-
-memcpy(waveFormat, &tempformat, sizeof(PCMWAVEFORMAT));
-
-waveFormat->cbSize = extraBytes;
-
-LONG debug = mmioRead(wStruct.hmmio, (CHAR*)(((BYTE*)&((waveFormat)->cbSize)) + sizeof(WORD)),
-extraBytes);
-if (debug != extraBytes)
-{
-delete waveFormat;
-waveFormat = NULL;
-return false;
-}
-
-}
-
-if (mmioAscend(wStruct.hmmio, &tempInfo, 0))
-{
-delete waveFormat;
-waveFormat = NULL;
-return false;
-}
-return true;
-}
-
-bool WaveFile::Open(LPTSTR fileName, WAVEFORMATEX* wFormat, DWORD flags)
-{
-
-HMMIO tempHmmio = NULL;
-
-tempHmmio = mmioOpen(fileName, NULL, MMIO_ALLOCBUF | MMIO_READ);
-
-if (tempHmmio == NULL)
-return false;
-
-bool result = ReadMMIO();// HMMIO mmio, MMCKINFO* riff, WAVEFORMATEX** formatInfo
-if (result == false)
-{
-mmioClose(tempHmmio, 0);
-return false;
-}
-
-wStruct.hmmio = tempHmmio;
-return true;
-}
-
-bool WaveFile::StartReadWave()
-{
-LONG dBug = mmioSeek(wStruct.hmmio, wStruct.ckRiff.dwDataOffset + sizeof(FOURCC), SEEK_SET);
-if (dBug == -1)
-return false;
-
-wStruct.ckInfo.ckid = mmioFOURCC('d', 'a', 't', 'a');
-if ((mmioDescend(wStruct.hmmio, &wStruct.ckInfo, &wStruct.ckRiff, MMIO_FINDCHUNK)) != 0)
-return false;
-
-return true;
-}
-
-bool WaveFile::Read(BYTE* buffer, DWORD sizeToRead, DWORD* sizeRead)
-{
-
-MMIOINFO mmioInfo;
-MMRESULT res;
-*sizeRead = 0;
-
-res = mmioGetInfo(wStruct.hmmio, &mmioInfo, 0);
-if (res != 0)
-return false;
-
-
-DWORD data = sizeToRead;
-if (data > wStruct.ckInfo.cksize)
-data = wStruct.ckInfo.cksize;
-
-wStruct.ckInfo.cksize -= data;
-
-for (DWORD i = 0; i < data; i++)
-{
-if (mmioInfo.pchNext == mmioInfo.pchEndRead)
-{
-if (mmioAdvance(wStruct.hmmio, &mmioInfo, MMIO_READ) != 0)
-return false;
-if (mmioInfo.pchNext == mmioInfo.pchEndRead)
-{
-return false;
-}
-}
-
-*((BYTE*)buffer + i) = *((BYTE*)mmioInfo.pchNext);
-mmioInfo.pchNext++;
-}
-
-res = mmioSetInfo(wStruct.hmmio, &mmioInfo, 0);
-if (res != 0)
-return false;
-
-*sizeRead = data;
 }
 
 WaveFile::WaveFile()
 {
-	waveFormat = NULL;
-	ZeroMemory(&wStruct, sizeof(WaveStruct));
+
 }
 
-bool WaveFile::Close()
+
+WaveFile::WaveFile(const WaveFile& other)
 {
-mmioClose(wStruct.hmmio, 0);
-return true;
+
 }
 
 WaveFile::~WaveFile()
 {
-Close();
-if (waveFormat)
+	if (soundBuff)
+	{
+		soundBuff->Release();
+		delete soundBuff;
+	}
+}
+
+bool SoundClass::Initialize(HWND hwnd)
 {
-delete waveFormat;
-waveFormat = 0;
-}
+	bool result;
+
+
+	m_DirectSound = NULL;
+	m_primaryBuffer = NULL;
+
+	HRESULT hr;
+
+	hr = DirectSoundCreate8(NULL, &m_DirectSound, NULL);
+	if (FAILED(hr))
+	{
+		return false;
+	}
+
+	hr = m_DirectSound->SetCooperativeLevel(hwnd, DSSCL_PRIORITY);
+	if (FAILED(hr))
+	{
+		return false;
+	}
+
+	DSBUFFERDESC dsbd;
+	ZeroMemory(&dsbd, sizeof(dsbd));
+
+	dsbd.dwSize = sizeof(dsbd);
+	dsbd.dwFlags = DSBCAPS_PRIMARYBUFFER | DSBCAPS_CTRLVOLUME;
+	dsbd.dwBufferBytes = 0;
+	dsbd.dwReserved = 0;
+	dsbd.lpwfxFormat = NULL;
+	dsbd.guid3DAlgorithm = GUID_NULL;
+
+
+	hr = m_DirectSound->CreateSoundBuffer(&dsbd, &m_primaryBuffer, NULL);
+	if (FAILED(hr))
+	{
+		return false;
+	}
+
+	WAVEFORMATEX wfx;
+	ZeroMemory(&wfx, sizeof(WAVEFORMATEX));
+	wfx.wFormatTag = WAVE_FORMAT_PCM;
+	wfx.nChannels = 2;
+	wfx.nSamplesPerSec = 44100;
+	wfx.wBitsPerSample = 16;
+	wfx.nBlockAlign = wfx.wBitsPerSample / 8 * wfx.nChannels;
+	wfx.nAvgBytesPerSec = wfx.nSamplesPerSec * wfx.nBlockAlign;
+
+	if (FAILED(hr = m_primaryBuffer->SetFormat(&wfx)))
+	{
+		return false;
+	}
+	return true;
 }
 
-/*
-Open( TCHAR* strFilename )
+void SoundClass::Shutdown()
 {
+	waveList.clear();
+	if (m_primaryBuffer)
+	{
+		m_primaryBuffer->Release();
+		m_primaryBuffer = 0;
+	}
 
+	if (m_DirectSound)
+	{
+		m_DirectSound->Release();
+		m_DirectSound = 0;
+	}
 }
-*/
 
-
-bool WaveFile::Reset()
+void SoundClass::AddSound(TCHAR* filename)
 {
-return StartReadWave();
+	WaveFile* tempWave = new WaveFile();
+
+	if (!tempWave->LoadWaveFile(filename, m_DirectSound))
+		return;
+
+	waveList.push_back(tempWave);
 }
 
+bool WaveFile::LoadWaveFile(TCHAR* filename, IDirectSound8* directSound)
+{
+	HRESULT hr;
+	HMMIO   hmmioIn = NULL;
+	MMCKINFO        ckIn;
+	PCMWAVEFORMAT   pcmWaveFormat;
 
+	m_pwfx = NULL;
+
+	if (NULL == (hmmioIn = mmioOpen(filename, NULL, MMIO_ALLOCBUF | MMIO_READ)))
+		return false;
+
+	if ((0 != mmioDescend(hmmioIn, &m_ckInRiff, NULL, 0)))
+		return false;
+
+	if (((&m_ckInRiff)->ckid != FOURCC_RIFF) ||
+		((&m_ckInRiff)->fccType != mmioFOURCC('W', 'A', 'V', 'E')))
+		return false;
+
+	ckIn.ckid = mmioFOURCC('f', 'm', 't', ' ');
+	if (0 != mmioDescend(hmmioIn, &ckIn, &m_ckInRiff, MMIO_FINDCHUNK))
+		return false;
+
+	if (ckIn.cksize < (LONG) sizeof(PCMWAVEFORMAT))
+		return false;
+
+	if (mmioRead(hmmioIn, (HPSTR)&pcmWaveFormat,
+		sizeof(pcmWaveFormat)) != sizeof(pcmWaveFormat))
+		return false;
+
+	if (pcmWaveFormat.wf.wFormatTag == WAVE_FORMAT_PCM)
+	{
+		if (NULL == (m_pwfx = new WAVEFORMATEX))
+			return false;
+
+		memcpy(m_pwfx, &pcmWaveFormat, sizeof(pcmWaveFormat));
+		(m_pwfx)->cbSize = 0;
+	}
+	else
+	{
+
+		WORD cbExtraBytes = 0L;
+		if (mmioRead(hmmioIn, (CHAR*)&cbExtraBytes, sizeof(WORD)) != sizeof(WORD))
+			return false;
+
+		m_pwfx = (WAVEFORMATEX*)new CHAR[sizeof(WAVEFORMATEX)+cbExtraBytes];
+		if (NULL == m_pwfx)
+			return false;
+
+
+		memcpy(m_pwfx, &pcmWaveFormat, sizeof(pcmWaveFormat));
+		(m_pwfx)->cbSize = cbExtraBytes;
+
+
+		if (mmioRead(hmmioIn, (CHAR*)(((BYTE*)&((m_pwfx)->cbSize)) + sizeof(WORD)),
+			cbExtraBytes) != cbExtraBytes)
+		{
+			delete m_pwfx;
+			m_pwfx = NULL;
+			return false;
+		}
+	}
+
+	if (0 != mmioAscend(hmmioIn, &ckIn, 0))
+	{
+		delete m_pwfx;
+		m_pwfx = NULL;
+		return false;
+	}
+
+	m_hmmioIn = hmmioIn;
+
+	StartRead();
+	WAVEFORMATEX waveFormat;
+	waveFormat.wFormatTag = WAVE_FORMAT_PCM;
+	waveFormat.nSamplesPerSec = 44100;
+	waveFormat.wBitsPerSample = 16;
+	waveFormat.nChannels = 2;
+	waveFormat.nBlockAlign = (waveFormat.wBitsPerSample / 8) * waveFormat.nChannels;
+	waveFormat.nAvgBytesPerSec = waveFormat.nSamplesPerSec * waveFormat.nBlockAlign;
+	waveFormat.cbSize = 0;
+	DSBUFFERDESC dsbd;
+	ZeroMemory(&dsbd, sizeof(dsbd));
+
+	dsbd.dwSize = sizeof(dsbd);
+	dsbd.dwFlags = DSBCAPS_CTRLVOLUME;
+	dsbd.dwBufferBytes = m_ckIn.cksize;
+	dsbd.dwReserved = 0;
+	dsbd.lpwfxFormat = &waveFormat;
+	dsbd.guid3DAlgorithm = GUID_NULL;
+
+	LPDIRECTSOUNDBUFFER pTempBuffer = 0;
+
+	hr = directSound->CreateSoundBuffer(&dsbd, &pTempBuffer, NULL);
+	if (FAILED(hr))
+	{
+		return false;
+	}
+
+	pTempBuffer->QueryInterface(IID_IDirectSoundBuffer8, (void**)&soundBuff);
+	if (FAILED(hr))
+	{
+
+		return false;
+	}
+
+	pTempBuffer->Release();
+
+	m_bufferSize = dsbd.dwBufferBytes;
+
+	BYTE* pbWavData;
+	UINT cbWavSize;
+	void *pbData = NULL;
+	void *pbData2 = NULL;
+	ULONG dwLength;
+	ULONG dwLength2;
+
+	UINT nWaveFileSize = m_ckIn.cksize;
+
+	pbWavData = new BYTE[nWaveFileSize];
+	if (NULL == pbWavData)
+	{
+
+		delete[] pbWavData;
+		return false;
+	}
+
+	hr = ReadFile(nWaveFileSize, pbWavData, &m_ckIn, &cbWavSize);
+	if (FAILED(hr))
+	{
+
+		delete[] pbWavData;
+		return false;
+	}
+
+	StartRead();
+
+	hr = soundBuff->Lock(0, m_bufferSize, &pbData, &dwLength, &pbData2, &dwLength2, 0L);
+	if (FAILED(hr))
+	{
+
+		delete[] pbWavData;
+		return false;
+	}
+
+	memcpy(pbData, pbWavData, m_bufferSize);
+	soundBuff->Unlock(pbData, m_bufferSize, NULL, 0);
+
+	delete[] pbWavData;
+
+	return true;
+}
+
+bool SoundClass::IsPlaying(int index)
+{
+	if (waveList.size() < index)
+		return false;
+
+	return waveList[index]->IsPlaying();
+}
+
+bool WaveFile::IsPlaying()
+{
+	DWORD dwStatus = 0;
+
+	soundBuff->GetStatus(&dwStatus);
+
+	if (dwStatus & DSBSTATUS_PLAYING)
+		return true;
+	else
+		return false;
+}
+bool WaveFile::Fill()
+{
+	HRESULT hr;
+	BYTE* pbWavData;
+	UINT cbWavSize;
+	void *pbData = NULL;
+	void *pbData2 = NULL;
+	ULONG dwLength;
+	ULONG dwLength2;
+
+
+	UINT nWaveFileSize = m_ckIn.cksize;
+
+
+
+	pbWavData = new BYTE[nWaveFileSize];
+	if (NULL == pbWavData)
+	{
+
+		delete[] pbWavData;
+		return false;
+	}
+
+	hr = ReadFile(nWaveFileSize, pbWavData, &m_ckIn, &cbWavSize);
+	if (FAILED(hr))
+	{
+
+		delete[] pbWavData;
+		return false;
+	}
+
+	StartRead();
+
+	hr = soundBuff->Lock(0, m_bufferSize, &pbData, &dwLength, &pbData2, &dwLength2, 0L);
+	if (FAILED(hr))
+	{
+
+		delete[] pbWavData;
+		return false;
+	}
+
+	memcpy(pbData, pbWavData, m_bufferSize);
+	soundBuff->Unlock(pbData, m_bufferSize, NULL, 0);
+
+	delete[] pbWavData;
+}
+bool WaveFile::ReadFile(UINT cbRead, BYTE* pbDest,
+	MMCKINFO* pckIn, UINT* cbActualRead)
+{
+	MMIOINFO mmioinfoIn;
+
+	*cbActualRead = 0;
+
+	if (0 != mmioGetInfo(m_hmmioIn, &mmioinfoIn, 0))
+		return false;
+
+	UINT cbDataIn = cbRead;
+	if (cbDataIn > pckIn->cksize)
+		cbDataIn = pckIn->cksize;
+
+	pckIn->cksize -= cbDataIn;
+
+	for (DWORD cT = 0; cT < cbDataIn; cT++)
+	{
+
+		if (mmioinfoIn.pchNext == mmioinfoIn.pchEndRead)
+		{
+			if (0 != mmioAdvance(m_hmmioIn, &mmioinfoIn, MMIO_READ))
+				return false;
+
+			if (mmioinfoIn.pchNext == mmioinfoIn.pchEndRead)
+				return false;
+		}
+
+		*((BYTE*)pbDest + cT) = *((BYTE*)mmioinfoIn.pchNext);
+		mmioinfoIn.pchNext++;
+	}
+
+	if (0 != mmioSetInfo(m_hmmioIn, &mmioinfoIn, 0))
+		return false;
+
+	*cbActualRead = cbDataIn;
+	return true;
+}
+
+bool WaveFile::StartRead()
+{
+	if (-1 == mmioSeek(m_hmmioIn, (&m_ckInRiff)->dwDataOffset + sizeof(FOURCC),
+		SEEK_SET))
+		return false;
+
+	(&m_ckIn)->ckid = mmioFOURCC('d', 'a', 't', 'a');
+	if (0 != mmioDescend(m_hmmioIn, &m_ckIn, &m_ckInRiff, MMIO_FINDCHUNK))
+		return false;
+
+	return false;
+}
+
+bool SoundClass::PlayWaveFile(bool loop, int index)
+{
+	HRESULT result;
+
+	HRESULT hr;
+	if (index > waveList.size())
+		return false;
+	if (NULL == waveList[index]->GetBuffer())
+		return false;
+
+	Restore(index);
+
+	DWORD dwLooped = loop ? DSBPLAY_LOOPING : 0L;
+	if (FAILED(hr = waveList[index]->GetBuffer()->Play(0, 0, dwLooped)))
+	{
+		return false;
+	}
+	return true;
+}
+
+void SoundClass::Stop(int index)
+{
+	if (index >= waveList.size())
+		return;
+
+	waveList[index]->GetBuffer()->Stop();
+	waveList[index]->GetBuffer()->SetCurrentPosition(0);
+}
+
+bool SoundClass::Restore(int index)
+{
+	HRESULT hr;
+
+	if (NULL == waveList[index]->GetBuffer())
+	{
+		return false;
+	}
+
+	DWORD dwStatus;
+	if (FAILED(hr = waveList[index]->GetBuffer()->GetStatus(&dwStatus)))
+	{
+		return false;
+	}
+
+	if (dwStatus & DSBSTATUS_BUFFERLOST)
+	{
+		do
+		{
+
+			hr = waveList[index]->GetBuffer()->Restore();
+			if (hr == DSERR_BUFFERLOST)
+				Sleep(10);
+		} while (hr = waveList[index]->GetBuffer()->Restore());
+
+		waveList[index]->Fill();
+	}
+
+	return true;
+}

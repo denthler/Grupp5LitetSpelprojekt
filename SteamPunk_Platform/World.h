@@ -17,6 +17,7 @@
 #include "Menu.h"
 #include "BBoxRender.h"
 #include <sstream>
+#include "Sound.h"
 
 class WorldClass
 {
@@ -62,6 +63,7 @@ private:
 	EnemyManager* eManager;
 	HUD * hud;
 	Menu* menu;
+	SoundClass* sound;
 
 	int currentLevel;
 	ID3D11Device * device;

@@ -103,6 +103,23 @@ bool WorldClass::Initialize(ID3D11Device* device, ID3D11DeviceContext * deviceCo
 
 	winLoading->Initialize(device, "Resources/Textures/winscreen.png");
 
+	sound = new SoundClass();
+	if (!sound)
+	{
+		return false;
+	}
+	result = sound->Initialize(hwnd);
+	if (!result)
+	{
+		return false;
+	}
+	sound->AddSound(L"Resources/Sound/comicbounce.wav");
+	sound->AddSound(L"Resources/Sound/Footsteps_on_Cement-Tim_Fryer-870410055.wav");
+	sound->AddSound(L"Resources/Sound/Industrial Revolution.wav");
+	sound->AddSound(L"Resources/Sound/Professor_Blood_-_Professor_Blood_-_invasion.wav");
+	sound->AddSound(L"Resources/Sound/Spiky_-_Steampunk_Engineering.wav");
+	//sound->AddSound(L"Resources/Sound/walk.wav");
+
 	return true;
 }
 
@@ -111,14 +128,20 @@ void WorldClass::HandleInput(std::vector<ModelClass::BoundingBox>& tempBB)
 	if (input->CheckSingleKeyPress(DIK_SPACE))
 	{
 		player->SetJump();
+		if (!sound->IsPlaying(0) && player->IsOnGround())
+			sound->PlayWaveFile(false, 0);
 	}
 	if(input->CheckKeyPress(DIK_A))
 	{
 		player->SetLeft();
+		if (!sound->IsPlaying(1) && player->IsOnGround() && player->IsMoving())
+			sound->PlayWaveFile(false, 1);
 	}
 	if(input->CheckKeyPress(DIK_D))
 	{
 		player->SetRight();
+		if (!sound->IsPlaying(1) && player->IsOnGround() && player->IsMoving())
+			sound->PlayWaveFile(false, 1);
 	}
 	if(input->CheckSingleKeyPress(DIK_W))
 	{
@@ -202,6 +225,12 @@ void WorldClass::Run(ID3D11DeviceContext* DContext, DWORD time)
 
 void WorldClass::CleanUp()
 {
+	if (sound)
+	{
+		sound->Shutdown();
+		delete sound;
+		sound = 0;
+	}
 	if(renderClass)
 	{
 		renderClass->CleanShader();
@@ -286,12 +315,12 @@ bool WorldClass::Update(float time, ID3D11Device* DContext)
 {
 	menu->Update(player->GetWorldMatrix(), player->Rotated, player->worldAxis);
 	HandleMenuInput(DContext);
-
+	std::vector<ModelClass::BoundingBox> tempBB;
 	if (currentLevel == 0)
 	{
 		menu->pause = true;
 
-		std::vector<ModelClass::BoundingBox> tempBB;
+
 
 		pManager.Update(player->GetPosition(), tempBB, time, true);
 
@@ -303,6 +332,11 @@ bool WorldClass::Update(float time, ID3D11Device* DContext)
 	if(!menu->pause && currentLevel != 0)
 	{
 		std::vector<ModelClass::BoundingBox> tempBB;
+		if (!sound->IsPlaying(currentLevel + 1))
+		{
+			sound->Stop(currentLevel);
+			sound->PlayWaveFile(true, currentLevel + 1);
+		}
 	
 		pManager.Update(player->GetPosition(), tempBB, time, player->IsOnGround());
 	
@@ -352,13 +386,10 @@ bool WorldClass::Update(float time, ID3D11Device* DContext)
 
 		//pointLight->SetDiffuseColor(red, 0.5f, 0.5f, 1.0f);
 		hud->Update();
-		/*
-		vector<D3DXMATRIX> worldMatrices(pManager.GetWorldMatrices());
-		worldMatrices.push_back(player->GetWorldMatrix());
-		bBoxRender.Update(tempBB, worldMatrices, camera->GetView(), projection);
-		*/
+		
+	
 	}
-
+	bBoxRender.Update(tempBB);
 	return true;
 }
 
@@ -478,7 +509,9 @@ void WorldClass::Draw(ID3D11DeviceContext* DContext)
 
 	hud->Draw();
 
-	//bBoxRender.Draw();
+	vector<D3DXMATRIX> worldMatrices(pManager.GetWorldMatrices());
+	worldMatrices.push_back(player->GetWorldMatrix());
+	bBoxRender.Draw(worldMatrices, camera->GetView(), projection);
 }
 
 void WorldClass::DrawShadow(ID3D11DeviceContext* DContext)

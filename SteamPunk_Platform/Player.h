@@ -27,6 +27,10 @@ public:
 	{
 		return OnGround;
 	}
+	bool IsMoving()
+	{
+		return (D3DXVec3Length(&velocity) > 0.0f);
+	}
 	D3DXVECTOR3 GetAxis()
 	{
 		return worldAxis;

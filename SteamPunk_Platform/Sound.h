@@ -1,95 +1,75 @@
-////////////////////////////////////////////////////////////////////////////////
-// Sound.h
-////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// Filename: soundclass.h
+///////////////////////////////////////////////////////////////////////////////
+#ifndef _SOUNDCLASS_H_
+#define _SOUNDCLASS_H_
 
-#ifndef _SOUND_H
-#define _SOUND_H
+/////////////
+// LINKING //
+/////////////
+#pragma comment(lib, "dsound.lib")
+#pragma comment(lib, "dxguid.lib")
+#pragma comment(lib, "winmm.lib")
 
-#include <map>
+//////////////
+// INCLUDES //
+//////////////
+#include <Windows.h>
+#include <MMSystem.h>
 #include <dsound.h>
-
+#include <stdio.h>
+#include <vector>
+///////////////////////////////////////////////////////////////////////////////
+// Class name: SoundClass
+///////////////////////////////////////////////////////////////////////////////
 class WaveFile
 {
-
 public:
-WaveFile();
-~WaveFile();
-
-WAVEFORMATEX* waveFormat;
-
-struct WaveStruct
-{
-HMMIO hmmio;
-MMCKINFO ckInfo;
-MMCKINFO ckRiff;
-DWORD size;
-MMIOINFO mmIoInfoOut;
-DWORD flags;
-bool readingFromMemory;
-BYTE* data;
-BYTE* dataCurrent;
-ULONG dataSize;
-CHAR* resourceBuffer;
-};
-
-bool Open(LPTSTR fileName, WAVEFORMATEX* wFormat, DWORD flags);
-bool Close();
-
-//bool Read(HMMIO mmio, MMCKINFO* riff, WAVEFORMATEX** formatInfo);
-bool Read(BYTE* buffer, DWORD sizeToRead, DWORD* sizeRead);
-//bool Write(UINT sizeToWrite, BYTE* data, UINT* sizeWrote);
-
-DWORD GetSize()
-{
-	return wStruct.size;
-}
-MMCKINFO GetCkInfo()
-{
-	return wStruct.ckInfo;
-}
-//bool ResetFile();
-bool Reset();
-WAVEFORMATEX* GetFormat()
-{
-return waveFormat;
-}
-private:
-WaveStruct wStruct;
-bool ReadMMIO();
-bool StartReadWave();
-//bool WriteMMIO(WAVEFORMATEX* wFormatDest);
-};
-
-class directSound
-{
-
-public:
-directSound(LPDIRECTSOUNDBUFFER* soundBuffer, DWORD bufferSize, DWORD numBuffers, WaveFile* waveFile, DWORD creationFlags);
-directSound(LPTSTR fileName, LPDIRECTSOUND8 soundInterface);
-~directSound();
-//directSound(TCHAR *filename);
-bool StoreSound(LPDIRECTSOUNDBUFFER8 soundBuffer, bool repeatWav);
-LPDIRECTSOUNDBUFFER8 GetBuffer();
-void Shutdown();
-//	void Init();
-
-bool Play(DWORD priority = 0, DWORD dwFlags = 0, LONG volume = 0, LONG freq = -1, LONG pan = 0);
-bool Stop();
-//bool Reset();
-bool IsPlaying();
+	WaveFile();
+	WaveFile(const WaveFile&);
+	~WaveFile();
 
 private:
-LPDIRECTSOUNDBUFFER8 soundBuffer;
-DWORD bufferSize;
-WaveFile* waveFile;
-DWORD numBuffers;
-DWORD creationFlags;
-std::map<WaveFile*, int> m_waveMap;
+	MMCKINFO m_ckInRiff;
+	WAVEFORMATEX* m_pwfx;
+	HMMIO         m_hmmioIn;
+	MMCKINFO      m_ckIn;
 
-bool RestoreBuffer(LPDIRECTSOUNDBUFFER soundBuffer, bool* wasRestored);
-
-
+	int m_bufferSize;
+	IDirectSoundBuffer8* soundBuff;
+public:
+	IDirectSoundBuffer8* GetBuffer(){ return soundBuff; }
+	bool LoadWaveFile(TCHAR*, IDirectSound8*);
+	bool StartRead();
+	bool ReadFile(UINT, BYTE*, MMCKINFO*, UINT*);
+	//void ShutdownWaveFile();
+	bool Fill();
+	bool IsPlaying();
 };
 
+class SoundClass
+{
+private:
 
+public:
+	SoundClass();
+	SoundClass(const SoundClass&);
+	~SoundClass();
+
+	bool Initialize(HWND);
+	void Shutdown();
+	void AddSound(TCHAR*);
+	bool PlayWaveFile(bool, int);
+	void Stop(int);
+	bool IsPlaying(int);
+private:
+	bool Restore(int);
+private:
+	IDirectSound8* m_DirectSound;
+	IDirectSoundBuffer* m_primaryBuffer;
+
+	//IDirectSoundBuffer8* m_secondaryBuffer1;
+
+	std::vector<WaveFile*> waveList;
+};
 #endif
