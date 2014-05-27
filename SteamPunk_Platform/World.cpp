@@ -99,6 +99,10 @@ bool WorldClass::Initialize(ID3D11Device* device, ID3D11DeviceContext * deviceCo
 
 	temptexture->Initialize(device, "Resources/Textures/loadingscreen.png");	
 
+	winLoading = new TextureClass();
+
+	winLoading->Initialize(device, "Resources/Textures/winscreen.png");
+
 	return true;
 }
 
@@ -168,7 +172,10 @@ void WorldClass::HandleMenuInput(ID3D11Device* device)
 		{
 			if (menu->currentOption == 0)
 			{
-
+				if (menu->controlScreen)
+					menu->controlScreen = false;
+				else
+					menu->controlScreen = true;
 			}
 			else if (menu->currentOption == 1)
 			{
@@ -236,6 +243,12 @@ void WorldClass::CleanUp()
 		temptexture->Shutdown();
 		delete temptexture;
 		temptexture = 0;
+	}
+	if (winLoading)
+	{
+		winLoading->Shutdown();
+		delete winLoading;
+		winLoading = 0;
 	}
 	if (loadingBuffer)
 	{
@@ -421,7 +434,17 @@ void WorldClass::DrawLoadingScreen(ID3D11DeviceContext* DContext, float width, f
 	D3DXMatrixOrthoLH(&orthoMatrix, (float)width, (float)height, 0.1f, 10000.0f);
 	renderClass->SetProjectionMatrix(orthoMatrix);
 
-	result = renderClass->UpdateRender(DContext, viewMatrix, viewMatrix, temptexture->GetTexture(), NULL, player->GetMaterial(), player->GetCurrentFrame());
+	ID3D11ShaderResourceView* tempTex;
+
+	tempTex = temptexture->GetTexture();
+
+	if (menu->controlScreen)
+		tempTex = menu->GetControlScreenTexture();
+
+	if (pManager.endGame)
+		tempTex = winLoading->GetTexture();
+
+	result = renderClass->UpdateRender(DContext, viewMatrix, viewMatrix, tempTex, NULL, player->GetMaterial(), player->GetCurrentFrame());
 	renderClass->Draw(DContext, 6, 0);
 }
 

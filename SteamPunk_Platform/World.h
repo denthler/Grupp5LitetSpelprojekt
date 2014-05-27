@@ -36,6 +36,10 @@ public:
 	{
 		return loading;
 	}
+	bool IsInControlScreen()
+	{
+		return menu->controlScreen;
+	}
 
 	Render * renderClass;
 	bool exit;
@@ -65,14 +69,11 @@ private:
 	HWND hwn;
 	D3DXMATRIX pro;// orthoGraph;
 	HINSTANCE hInst;
-<<<<<<< HEAD
 
 	BBoxRender bBoxRender;
-=======
 	ID3D11Buffer* loadingBuffer;
 	TextureClass* temptexture;
-
->>>>>>> 76115ea61eee8a858442a48c144482a99d40bdbc
+	TextureClass* winLoading;
 };
 
 #endif

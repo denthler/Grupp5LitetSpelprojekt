@@ -5,6 +5,7 @@ Menu::Menu(ID3D11Device* device)
 	offset = 1.0f;
 	notMoving = true;
 	pause = false;
+	controlScreen = false;
 
 	currentOption = 1;
 	rotateUp = false;
@@ -14,6 +15,9 @@ Menu::Menu(ID3D11Device* device)
 
 	aImporter.LoadAsset("meny_cogwheel_");
 	CreateVertexBuffer(device);
+
+	texture.Initialize(device, "Resources/Textures/controlscreen.png");
+	controlScreenTexture = texture.GetTexture();
 
 	D3DXMatrixIdentity(&mesh.world_Matrix);
 }

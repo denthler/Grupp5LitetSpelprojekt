@@ -18,9 +18,9 @@ BBoxRender::~BBoxRender()
 {
 	VS->Release();
 	PS->Release();
-	buffer->Release();
-	matrixBuffer->Release();	
-	vertLayout->Release();
+	//buffer->Release();
+	//matrixBuffer->Release();	
+	//vertLayout->Release();
 }
 
 void BBoxRender::Init(ID3D11Device * device, ID3D11DeviceContext * deviceContext)

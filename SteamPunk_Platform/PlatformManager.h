@@ -45,7 +45,8 @@ public:
 	int GetGearCount();
 
 	bool endLevel;
-<<<<<<< HEAD
+	bool endGame;
+
 	std::vector<D3DXMATRIX> GetWorldMatrices()
 	{
 		std::vector<D3DXMATRIX> matrices;
@@ -58,9 +59,6 @@ public:
 		}
 		return matrices;
 	}
-=======
-	bool endGame;
->>>>>>> 76115ea61eee8a858442a48c144482a99d40bdbc
 
 private:
 	void OrganizeLevel(std::vector<GameObject>&);

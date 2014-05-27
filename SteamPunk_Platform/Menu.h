@@ -36,11 +36,14 @@ public:
 	void						RotateCogUp();
 	void						RotateCogDown();
 
+	ID3D11ShaderResourceView*	GetControlScreenTexture() { return controlScreenTexture; };
+
 private:
 	void						CreateVertexBuffer(ID3D11Device* device);
 	void						RotateMenu();
 public:
 	bool						pause;	
+	bool						controlScreen;
 	bool						notMoving;
 	int							currentOption;
 private:
@@ -51,6 +54,8 @@ private:
 
 	bool						rotateUp, rotateDown;
 	float						rotationOffset, rotation;
+
+	ID3D11ShaderResourceView*   controlScreenTexture;
 };
 
 #endif
