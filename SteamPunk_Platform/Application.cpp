@@ -310,7 +310,7 @@ bool Application::InitializeD3D(int screenWidth, int screenHeight, bool vSync, b
 			0,                 
 			D3D_DRIVER_TYPE_HARDWARE,
 			0,                 
-			NULL, 
+			0,
 			0, 0,              
 			D3D11_SDK_VERSION,
 			&D3DDevice,

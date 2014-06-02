@@ -4,7 +4,7 @@
 
 float4 color = float4(1.0, 0.0f, 0.0f, 1.0f);
 
-cbuffer MatrixBuffer
+cbuffer MatrixBuffer : register(b0)
 {
 	matrix worldMatrix;
 	matrix viewMatrix;

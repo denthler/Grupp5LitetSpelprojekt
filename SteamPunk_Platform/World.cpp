@@ -389,7 +389,10 @@ bool WorldClass::Update(float time, ID3D11Device* DContext)
 		
 	
 	}
-	bBoxRender.Update(tempBB);
+	//bBoxRender.Update(tempBB);
+	vector<ModelClass::BoundingBox> bbox;
+	bbox.push_back(player->bBox);
+	bBoxRender.Update(bbox);
 	return true;
 }
 
@@ -487,7 +490,7 @@ void WorldClass::Draw(ID3D11DeviceContext* DContext)
 
 	viewMatrix = camera->GetView();
 	renderClass->SetProjectionMatrix(projection);
-
+	
 	Player::Material material = player->GetMaterial();
 	ID3D11ShaderResourceView* tempTex;
 	ID3D11ShaderResourceView* tempNor;
@@ -508,8 +511,10 @@ void WorldClass::Draw(ID3D11DeviceContext* DContext)
 	menu->Draw(DContext, renderClass, viewMatrix, tempTex, tempNor, material);
 
 	hud->Draw();
-
-	vector<D3DXMATRIX> worldMatrices(pManager.GetWorldMatrices());
+	
+	//vector<D3DXMATRIX> worldMatrices(pManager.GetWorldMatrices());
+	//worldMatrices.push_back(player->GetWorldMatrix());
+	vector<D3DXMATRIX> worldMatrices;
 	worldMatrices.push_back(player->GetWorldMatrix());
 	bBoxRender.Draw(worldMatrices, camera->GetView(), projection);
 }
